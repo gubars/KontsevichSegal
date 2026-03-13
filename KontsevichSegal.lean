@@ -1,1 +1,1 @@
-import KontsevichSegal.Basic
+import KontsevichSegal.All
