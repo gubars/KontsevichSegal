@@ -1,4 +1,6 @@
-/- Definition 2.1: allowable complex metrics
+/- Working definition of allowable complex metrics using the angle condition
+(Theorem 2.2 of the KS paper). This is equivalent to Definition 2.1 but avoids
+the Hodge star operator.
 
 This file develops the definition of allowable complex metrics on a finite-dimensional
 real vector space `V`, following Section 2 of:

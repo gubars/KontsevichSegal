@@ -1,4 +1,5 @@
 import KontsevichSegal.ComplexMetrics.Defs
-import KontsevichSegal.ComplexMetrics.Diagonal
+import KontsevichSegal.ComplexMetrics.Equivalence
 import KontsevichSegal.ComplexMetrics.Domain
 import KontsevichSegal.ComplexMetrics.Restriction
+import KontsevichSegal.ComplexMetrics.ShilovBoundary
