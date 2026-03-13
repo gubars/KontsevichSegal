@@ -19,7 +19,7 @@ this domain, whose Shilov boundary consists precisely of the Lorentzian metrics.
 
 | Module | Status |
 |--------|--------|
-| `ComplexMetrics/` | Definitions stated, proofs in progress |
+| `ComplexMetrics/` | Planned |
 | `Cobordism/` | Planned |
 | `FieldTheory/` | Planned |
 | `WickRotation/` | Planned |
