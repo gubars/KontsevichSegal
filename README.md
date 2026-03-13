@@ -31,9 +31,8 @@ subspaces (Proposition 2.5).
 
 ## Project Status
 
-This project uses **zero Lean `axiom` declarations**. All physics axioms from the
-KS paper are encoded as fields of Lean `structure` declarations. Remaining work is
-represented by explicit `sorry` placeholders — nothing is silently assumed.
+All physics axioms from the KS paper are encoded as fields of Lean `structure` declarations. Remaining work is
+represented by explicit `sorry` placeholders — nothing is assumed.
 
 ## Repository Layout
 
@@ -64,10 +63,6 @@ lake build
 
 - Kontsevich, M. and Segal, G., "Wick rotation and the positivity of energy in
   quantum field theory", arXiv:2105.10161 [hep-th], 2021.
-- Streater, R. F. and Wightman, A. S., *PCT, Spin and Statistics, and All That*,
-  Princeton University Press, 2000.
-- Feynman, R. P. and Hibbs, A. R., *Quantum Mechanics and Path Integrals*,
-  McGraw-Hill, 1965.
 
 ## License
 
