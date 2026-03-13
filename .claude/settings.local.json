@@ -1,6 +1,12 @@
 {
+  "model": "claude-opus-4-6",
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "lean-lsp"
   ],
-  "enableAllProjectMcpServers": true
+  "permissions": {
+    "allow": [
+      "mcp__lean-lsp__lean_diagnostic_messages"
+    ]
+  }
 }
