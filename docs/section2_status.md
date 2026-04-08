@@ -6,14 +6,14 @@
 |--------|-------------|------|--------|
 | Defn 2.1 | Allowable complex metric (Hodge star formulation) | `ComplexMetrics/Equivalence.lean` | Deferred — equivalence with Thm 2.2 stated as placeholder. Blocked on Hodge star not being in Mathlib. |
 | Thm 2.2 | Diagonal characterization / angle condition | `ComplexMetrics/Defs.lean` | ✅ Used as working definition. `AngleCondition` and `AllowableComplexMetric` structures defined. |
+| Prop 2.4 | QC(V) is a fiber bundle over positive-definite inner products; QC(V) is contractible | `ComplexMetrics/Domain.lean` | ✅ Stated with sorry. `TraceNormLtOne` defined. Contractibility and fiber bundle parametrization stated as placeholders (topology on QC not yet formalized). |
+| Prop 2.5 | Restriction of an allowable metric to a subspace is allowable | `ComplexMetrics/Restriction.lean` | ✅ Stated with sorry. `restrict` and `restrict_symmetric` defined. Main def `restrict_allowable` stated, proof requires eigenvalue interleaving argument. |
+| Prop 2.7 | QC(V) is holomorphically convex (domain of holomorphy) | `ComplexMetrics/Domain.lean` | ✅ Stated as placeholder with sorry. |
 
 ## In Progress
 
 | Result | Description | File | Status |
 |--------|-------------|------|--------|
-| Prop 2.4 | QC(V) is a fiber bundle over positive-definite inner products; QC(V) is contractible | `ComplexMetrics/Domain.lean` | To be stated with sorry |
-| Prop 2.5 | Restriction of an allowable metric to a subspace is allowable | `ComplexMetrics/Restriction.lean` | To be stated with sorry |
-| Prop 2.7 | QC(V) is holomorphically convex (domain of holomorphy) | `ComplexMetrics/Domain.lean` | To be stated with sorry |
 | Shilov boundary (unnumbered, p.9) | Real Lorentzian metrics of signature (d-1,1) — and no other nondegenerate real metrics — lie on the Shilov boundary of QC(V) | `ComplexMetrics/ShilovBoundary.lean` | To be stated with sorry |
 
 ## Deferred
@@ -31,5 +31,5 @@
 | g(v) is never real and negative for v ≠ 0 | p.9 | `ComplexMetrics/Defs.lean` | `not_neg_real_axis` — stated with sorry |
 | det(g) avoids the negative real axis; √det(g) has positive real part | p.7 | `ComplexMetrics/Defs.lean` | `volume_element_positive` — stated with sorry |
 | Values g(v) form a convex cone disjoint from the negative real axis | p.9 | `ComplexMetrics/Defs.lean` | Not yet stated |
-| Two-dimensional case: QC(V) is a 3-dimensional polydisc | p.15 | `ComplexMetrics/Domain.lean` | Not yet stated |
+| Two-dimensional case: QC(V) is a 3-dimensional polydisc | p.15 | `ComplexMetrics/Domain.lean` | `QC_two_dim_polydisc` — stated as placeholder with sorry |
 | One-dimensional case: electrical circuits | p.16 | — | Not planned for now |

@@ -31,10 +31,38 @@ subspaces (Proposition 2.5).
 
 ## Project Status
 
-All physics axioms from the KS paper are encoded as fields of Lean `structure` declarations. Remaining work is
-represented by explicit `sorry` placeholders — nothing is assumed.
+The tracked production tree contains **zero `axiom` declarations**. All physics
+axioms from the KS paper are encoded as fields of Lean `structure` declarations.
+Remaining work is represented by explicit theorem-level `sorry` placeholders —
+nothing is assumed.
 
-See [docs/section2_status.md](docs/section2_status.md) for detailed tracking of Section 2 formalization.
+Snapshot (2026-04-08, tracked production tree):
+
+| Module | Direct `sorry` lines |
+|--------|----------------------|
+| `ComplexMetrics/` | 4 |
+| **Total** | **4** |
+
+### Sorry Inventory (File Level)
+
+| File | `sorry`s | Notes |
+|------|----------|-------|
+| `ComplexMetrics/Defs.lean` | 2 | `not_neg_real_axis`, `volume_element_positive` |
+| `ComplexMetrics/Equivalence.lean` | 0 | `True` placeholder — Hodge star equivalence blocked on Mathlib |
+| `ComplexMetrics/Domain.lean` | 0 | `True` placeholders — Props 2.4, 2.7 (topology on QC not formalized) |
+| `ComplexMetrics/Restriction.lean` | 2 | Prop 2.5 — `nondegenerate` and `angle_cond` fields (eigenvalue interleaving argument) |
+| `ComplexMetrics/ShilovBoundary.lean` | 0 | No theorems stated yet — module docstring only |
+
+### Axiom Inventory
+
+The tracked production tree currently contains **zero explicit `axiom`
+declarations**. If any are introduced in the future (e.g., for Mathlib gaps that
+cannot be worked around), they will be tracked here with justification.
+
+### Detailed Status
+
+See [docs/section2_status.md](docs/section2_status.md) for per-result tracking
+of Section 2 formalization against the paper.
 
 ## Repository Layout
 
@@ -43,14 +71,16 @@ KontsevichSegal/
 ├── Basic.lean                  -- shared imports and notation
 ├── ComplexMetrics.lean         -- umbrella for ComplexMetrics/
 ├── ComplexMetrics/
-│   ├── Defs.lean               -- Definition 2.1: allowable complex metrics
-│   ├── Diagonal.lean           -- Theorem 2.2: diagonal characterization
+│   ├── Defs.lean               -- Theorem 2.2: allowable complex metrics (working def)
+│   ├── Equivalence.lean        -- Definition 2.1 ↔ Theorem 2.2 (deferred)
 │   ├── Domain.lean             -- QC(V): contractibility, domain of holomorphy
-│   └── Restriction.lean        -- Proposition 2.5: restriction to subspaces
+│   ├── Restriction.lean        -- Proposition 2.5: restriction to subspaces
+│   └── ShilovBoundary.lean     -- Lorentzian metrics on the Shilov boundary
 └── All.lean                    -- full umbrella
 KontsevichSegal.lean            -- root entry point
 docs/
-└── development_plan.md
+├── development_plan.md
+└── section2_status.md
 ```
 
 ## Building
