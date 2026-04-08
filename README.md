@@ -34,6 +34,8 @@ subspaces (Proposition 2.5).
 All physics axioms from the KS paper are encoded as fields of Lean `structure` declarations. Remaining work is
 represented by explicit `sorry` placeholders — nothing is assumed.
 
+See [docs/section2_status.md](docs/section2_status.md) for detailed tracking of Section 2 formalization.
+
 ## Repository Layout
 
 ```
