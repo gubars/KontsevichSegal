@@ -19,7 +19,7 @@ this domain, whose Shilov boundary consists precisely of the Lorentzian metrics.
 
 | Module | Status |
 |--------|--------|
-| `ComplexMetrics/` | In progress — core definitions |
+| `ComplexMetrics/` | Section 2 — all results stated or deferred |
 | `Cobordism/` | Planned |
 | `FieldTheory/` | Planned |
 | `WickRotation/` | Planned |
@@ -36,12 +36,12 @@ axioms from the KS paper are encoded as fields of Lean `structure` declarations.
 Remaining work is represented by explicit theorem-level `sorry` placeholders —
 nothing is assumed.
 
-Snapshot (2026-04-08, tracked production tree):
+Snapshot (2026-04-08, tracked production tree, updated):
 
 | Module | Direct `sorry` lines |
 |--------|----------------------|
-| `ComplexMetrics/` | 4 |
-| **Total** | **4** |
+| `ComplexMetrics/` | 7 |
+| **Total** | **7** |
 
 ### Sorry Inventory (File Level)
 
@@ -51,7 +51,7 @@ Snapshot (2026-04-08, tracked production tree):
 | `ComplexMetrics/Equivalence.lean` | 0 | `True` placeholder — Hodge star equivalence blocked on Mathlib |
 | `ComplexMetrics/Domain.lean` | 0 | `True` placeholders — Props 2.4, 2.7 (topology on QC not formalized) |
 | `ComplexMetrics/Restriction.lean` | 2 | Prop 2.5 — `nondegenerate` and `angle_cond` fields (eigenvalue interleaving argument) |
-| `ComplexMetrics/ShilovBoundary.lean` | 0 | No theorems stated yet — module docstring only |
+| `ComplexMetrics/ShilovBoundary.lean` | 3 | `lorentzian_on_boundary`, `only_lorentzian_on_boundary`, `two_copies_on_boundary` |
 
 ### Axiom Inventory
 
