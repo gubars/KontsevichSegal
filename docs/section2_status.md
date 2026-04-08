@@ -9,12 +9,11 @@
 | Prop 2.4 | QC(V) is a fiber bundle over positive-definite inner products; QC(V) is contractible | `ComplexMetrics/Domain.lean` | ✅ Stated with sorry. `TraceNormLtOne` defined. Contractibility and fiber bundle parametrization stated as placeholders (topology on QC not yet formalized). |
 | Prop 2.5 | Restriction of an allowable metric to a subspace is allowable | `ComplexMetrics/Restriction.lean` | ✅ Stated with sorry. `restrict` and `restrict_symmetric` defined. Main def `restrict_allowable` stated, proof requires eigenvalue interleaving argument. |
 | Prop 2.7 | QC(V) is holomorphically convex (domain of holomorphy) | `ComplexMetrics/Domain.lean` | ✅ Stated as placeholder with sorry. |
+| Shilov boundary (unnumbered, p.9) | Real Lorentzian metrics of signature (d-1,1) — and no other nondegenerate real metrics — lie on the Shilov boundary of QC(V) | `ComplexMetrics/ShilovBoundary.lean` | ✅ `IsLorentzian` predicate defined. `lorentzian_on_boundary`, `only_lorentzian_on_boundary`, and `two_copies_on_boundary` stated with sorry. |
 
 ## In Progress
 
-| Result | Description | File | Status |
-|--------|-------------|------|--------|
-| Shilov boundary (unnumbered, p.9) | Real Lorentzian metrics of signature (d-1,1) — and no other nondegenerate real metrics — lie on the Shilov boundary of QC(V) | `ComplexMetrics/ShilovBoundary.lean` | To be stated with sorry |
+All Section 2 results are now either completed or deferred. No results currently in progress.
 
 ## Deferred
 
