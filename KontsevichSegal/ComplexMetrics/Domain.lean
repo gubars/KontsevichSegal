@@ -17,33 +17,40 @@ set of `g₀`-self-adjoint operators Θ on V with trace-norm ∑ᵢ |θᵢ| < 1,
 `θᵢ` are the eigenvalues of Θ. This is the interior of the convex hull of rank-1
 orthogonal projections, and in particular is convex (hence contractible).
 
-We define `TraceNormLtOne` as a simplified formulation: a self-adjoint linear map
-Θ : V →ₗ[ℝ] V is in the fiber when there exist eigenvalues θ : Fin d → ℝ with
-∑ i, |θ i| < 1.
+We define `TraceNormLtOne` as a simplified formulation: a linear map
+Θ : V →ₗ[ℝ] V is in the fiber when it admits an eigenbasis with real
+eigenvalues θ : Fin d → ℝ satisfying ∑ i, |θ i| < 1.
 -/
 
 /-- The set of self-adjoint operators with trace-norm less than 1, denoted Π(V) in
 [KS]. This is the fiber of the bundle QC(V) → {positive-definite inner products}
 from KS paper Proposition 2.4.
 
-Given a reference inner product on V, Π(V) consists of ℝ-linear endomorphisms
-Θ : V →ₗ[ℝ] V that are self-adjoint (with respect to the given inner product)
-and satisfy ∑ᵢ |θᵢ| < 1 where θᵢ are the eigenvalues. Equivalently, Π(V) is
+Given a reference inner product g₀ on V, Π(V, g₀) consists of ℝ-linear
+endomorphisms Θ : V →ₗ[ℝ] V that are self-adjoint with respect to g₀
+and satisfy ∑ᵢ |θᵢ| < 1 where θᵢ are the eigenvalues. Equivalently, Π(V, g₀) is
 the interior of the convex hull of rank-1 orthogonal projections in V.
 
-**Simplified formulation.** Since Mathlib does not yet provide a general eigenvalue
-decomposition for self-adjoint operators on finite-dimensional inner product spaces
-in the form needed, we package the eigenvalue data existentially: Θ is in
-`TraceNormLtOne` when there exist real eigenvalues summing (in absolute value)
-to less than 1. -/
+**Simplified formulation.** `V` carries no inner product here (see the
+formalization note on `QC_parametrization`), so g₀-self-adjointness cannot be
+stated directly. We instead require that Θ is diagonalizable over ℝ — there is
+a basis `b` of eigenvectors with eigenvalues `θ i` — with ∑ᵢ |θᵢ| < 1. An
+operator is self-adjoint with respect to *some* positive-definite inner product
+iff it is diagonalizable over ℝ (declare the eigenbasis orthonormal), so this
+encodes "Θ ∈ Π(V, g₀) for some positive-definite g₀". The fiber at a *fixed*
+g₀ will need genuine self-adjointness once the inner-product-space version of
+Prop 2.4 is formalized. -/
 structure TraceNormLtOne (V : Type*) [AddCommGroup V] [Module ℝ V]
     [FiniteDimensional ℝ V] where
   /-- The underlying ℝ-linear endomorphism. -/
   toLinearMap : V →ₗ[ℝ] V
-  /-- There exist eigenvalues `θ : Fin d → ℝ` whose absolute values sum to
-  less than 1. This encodes the trace-norm condition ‖Θ‖₁ < 1. -/
-  eigenvalues_trace_norm_lt_one :
-    ∃ θ : Fin (Module.finrank ℝ V) → ℝ, ∑ i, |θ i| < 1
+  /-- There is an eigenbasis `b` with real eigenvalues `θ` whose absolute
+  values sum to less than 1. This ties the eigenvalues to the operator and
+  encodes the trace-norm condition ‖Θ‖₁ < 1. -/
+  exists_eigenbasis_trace_norm_lt_one :
+    ∃ (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+      (θ : Fin (Module.finrank ℝ V) → ℝ),
+      (∀ i, toLinearMap (b i) = θ i • b i) ∧ ∑ i, |θ i| < 1
 
 /-! ## KS paper Proposition 2.4: fiber bundle structure and contractibility -/
 

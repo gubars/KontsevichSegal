@@ -26,7 +26,7 @@ this domain, whose Shilov boundary consists precisely of the Lorentzian metrics.
 
 **`KontsevichSegal.ComplexMetrics`** — The domain QC(V) of allowable complex metrics
 (Section 2 of the paper): Definition 2.1, diagonal characterization (Theorem 2.2),
-the angle condition |arg(g_{ii})| < π/2, Shilov boundary, and restriction to
+the angle condition ∑ᵢ |arg(λᵢ)| < π, Shilov boundary, and restriction to
 subspaces (Proposition 2.5).
 
 ## Project Status
@@ -40,8 +40,8 @@ Snapshot (2026-04-08, tracked production tree, updated):
 
 | Module | Direct `sorry` lines |
 |--------|----------------------|
-| `ComplexMetrics/` | 7 |
-| **Total** | **7** |
+| `ComplexMetrics/` | 6 |
+| **Total** | **6** |
 
 ### Sorry Inventory (File Level)
 
@@ -51,7 +51,7 @@ Snapshot (2026-04-08, tracked production tree, updated):
 | `ComplexMetrics/Equivalence.lean` | 0 | `True` placeholder — Hodge star equivalence blocked on Mathlib |
 | `ComplexMetrics/Domain.lean` | 0 | `True` placeholders — Props 2.4, 2.7 (topology on QC not formalized) |
 | `ComplexMetrics/Restriction.lean` | 2 | Prop 2.5 — `nondegenerate` and `angle_cond` fields (eigenvalue interleaving argument) |
-| `ComplexMetrics/ShilovBoundary.lean` | 3 | `lorentzian_on_boundary`, `only_lorentzian_on_boundary`, `two_copies_on_boundary` |
+| `ComplexMetrics/ShilovBoundary.lean` | 2 | `lorentzian_on_boundary`, `only_lorentzian_on_boundary`; `two_copies_on_boundary` is a `True` placeholder (Shilov-boundary statement blocked on missing infrastructure) |
 
 ### Axiom Inventory
 
