@@ -61,8 +61,8 @@ cannot be worked around), they will be tracked here with justification.
 
 ### Detailed Status
 
-See [docs/section2_status.md](docs/section2_status.md) for per-result tracking
-of Section 2 formalization against the paper.
+See [docs/project_status.md](docs/project_status.md) for per-result tracking
+of the formalization against the paper.
 
 ## Repository Layout
 
@@ -80,7 +80,7 @@ KontsevichSegal/
 KontsevichSegal.lean            -- root entry point
 docs/
 ├── development_plan.md
-└── section2_status.md
+└── project_status.md
 ```
 
 ## Building
