@@ -60,7 +60,604 @@
     </dl>
   </div>
     <div id="graph"></div>
-<div id="statements"></div>
+<div id="statements">
+
+    
+    <div class="dep-modal-container" id="def:allowable_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:allowable" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">2</span><span class="definition_thmtitle">Allowable complex metric, working definition: the angle condition</span></div>
+    <div class="thm_thmcontent"><p>   A tuple of complex numbers \((\lambda _1, \dots , \lambda _d)\) satisfies the <em>angle condition</em> if every \(\lambda _i\) is nonzero, no \(\lambda _i\) lies on the non-positive real axis, and </p>
+<div class="displaymath" id="a0000000005">
+  \[  |\arg (\lambda _1)| + |\arg (\lambda _2)| + \dots + |\arg (\lambda _d)| \; {\lt}\;  \pi . \tag {4}  \]
+</div>
+<p> An <em>allowable complex metric</em> on a finite-dimensional real vector space \(V\) is a symmetric nondegenerate \(\mathbb R\)-bilinear form \(g \colon V \times V \to \mathbb C\) for which there exist a basis \((y_i)\) of coordinates on \(V\) and coefficients \((\lambda _i)\) satisfying the angle condition with </p>
+<div class="displaymath" id="a0000000006">
+  \[  g \; =\;  \lambda _1 y_1^2 + \lambda _2 y_2^2 + \dots + \lambda _d y_d^2 .  \]
+</div>
+<p> The collection of allowable complex metrics on \(V\) is denoted \(Q_{\mathbb C}(V)\); in the paper it is an open subset of the complex vector space \(S^2(V^*_{\mathbb C})\). This diagonal characterization serves as the definition of allowability throughout the formalization, since Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> requires the Hodge star operator. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:allowable">LaTeX</a>
+    
+    
+  <div class="tooltip">
+      <span class="lean_link">Lean</span>
+      <ul class="tooltip_list">
+        
+           <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/AngleCondition" class="lean_decl">AngleCondition</a></li>
+        
+           <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/AllowableComplexMetric" class="lean_decl">AllowableComplexMetric</a></li>
+        
+           <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC" class="lean_decl">QC</a></li>
+        
+      </ul>
+  </div>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:allowable-hodge_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:allowable-hodge" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">1</span><span class="definition_thmtitle">Allowable complex metric, Hodge-star form; KS Definition 2.1</span></div>
+    <div class="thm_thmcontent"><p>  On a \(d\)-dimensional real vector space \(V\), a quadratic form \(g \colon V \to \mathbb C\) is an <em>allowable complex metric</em> if, for all degrees \(p \geq 0\), the real part of the quadratic form </p>
+<div class="displaymath" id="a0000000004">
+  \[  \Lambda ^p(V^*) \longrightarrow |\Lambda ^d(V^*)|_{\mathbb C}, \qquad \alpha \mapsto \alpha \wedge *_g\,  \alpha  \]
+</div>
+<p> is positive-definite. Here \(*_g\) is the Hodge star operator of the complex metric \(g\), and \(|\Lambda ^d(V^*)|_{\mathbb C}\) is the complexified twisted determinant line, with orientation-reversing automorphisms of \(V\) acting antilinearly. </p>
+<p>The Hodge star operator for complex metrics, and the induced quadratic forms on the exterior powers \(\Lambda ^p(V^*)\), are not available in Mathlib. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:allowable-hodge">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:lorentzian_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:lorentzian" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">14</span><span class="definition_thmtitle">Lorentzian signature</span></div>
+    <div class="thm_thmcontent"><p>   A real symmetric bilinear form \(\varphi \) on \(V\) is <em>Lorentzian</em> (of signature \((d-1, 1)\)) if in some basis it diagonalizes as \(\sum _i s_i x_i y_i\) with each \(s_i \in \{ +1, -1\} \) and exactly one \(s_i = -1\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:lorentzian">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/IsLorentzian">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:restrict-form_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:restrict-form" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">9</span><span class="definition_thmtitle">Restriction of the form to a subspace</span></div>
+    <div class="thm_thmcontent"><p>    For \(g \in Q_{\mathbb C}(V)\) and a vector subspace \(W \leq V\), the restriction \(g|_W \colon W \times W \to \mathbb C\), \((w_1, w_2) \mapsto g(w_1, w_2)\), is a symmetric \(\mathbb R\)-bilinear form on \(W\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:restrict-form">LaTeX</a>
+    
+    
+  <div class="tooltip">
+      <span class="lean_link">Lean</span>
+      <ul class="tooltip_list">
+        
+           <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/AllowableComplexMetric.restrict" class="lean_decl">AllowableComplexMetric.restrict</a></li>
+        
+           <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/AllowableComplexMetric.restrict_symmetric" class="lean_decl">AllowableComplexMetric.restrict_symmetric</a></li>
+        
+      </ul>
+  </div>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:trace-norm-fiber_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:trace-norm-fiber" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">7</span><span class="definition_thmtitle">The fiber \(\Pi (V)\): trace-norm ball; KS p.&#160;11</span></div>
+    <div class="thm_thmcontent"><p>   For a positive-definite inner product \(g_0\) on \(V\), let \(\Pi (V, g_0)\) denote the convex open set of \(g_0\)-self-adjoint operators \(\Theta \colon V \to V\) with trace-norm \(\| \Theta \| _1 = \sum _i |\theta _i| {\lt} 1\), where \(\theta _i\) are the eigenvalues; that is, the interior of the convex hull of the rank-one orthogonal projections. Since \(V\) carries no inner-product structure in the formalization, self-adjointness with respect to <em>some</em> positive-definite \(g_0\) is encoded equivalently as diagonalizability over \(\mathbb R\): an eigenbasis with real eigenvalues \(\theta \) satisfying \(\sum _i |\theta _i| {\lt} 1\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#def:trace-norm-fiber">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/TraceNormLtOne">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:convex-cone_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:convex-cone" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">4</span><span class="lemma_thmtitle">Values form a convex cone; KS p.&#160;9</span></div>
+    <div class="thm_thmcontent"><p>    For \(g \in Q_{\mathbb C}(V)\) one has \(\max _i \arg \lambda _i - \min _i \arg \lambda _i {\lt} \pi \), so as \(v\) runs through \(V\) the values \(g(v)\) form a closed convex cone in \(\mathbb C\) disjoint from the open negative real axis. In particular \(g(v)\) is never real and negative. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:convex-cone">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/not_neg_real_axis">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:l-shape_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:l-shape" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">13</span><span class="lemma_thmtitle">Holomorphic extension from an L-shaped tube; KS Lemma 2.8</span></div>
+    <div class="thm_thmcontent"><p>  Let \(L\) be the L-shaped subset \((\{ 0\}  \times [0,1)) \cup ([0,1) \times \{ 0\} )\) of the quadrant \((\mathbb R_+)^2\). Then any holomorphic function \(F\) defined in a neighbourhood of \(L \times \mathrm i \mathbb R^2 \subset \mathbb C^2\) extends holomorphically to \(P \times \mathrm i \mathbb R^2\), where \(P\) is the intersection of \((\mathbb R_+)^2\) with a neighbourhood of \(L\) in \(\mathbb R^2\). </p>
+<p>Formalization requires several-complex-variables extension theory (continuity-principle and analytic-disc arguments, Bochner’s tube theorem), not in Mathlib; deferred together with Proposition&#160;<a href="sect0001.html#prop:conf-envelope">6</a>. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:l-shape">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="lem:volume-element_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="lem:volume-element" style="display: none">
+    <div class="thm_thmheading">
+      <span class="lemma_thmcaption">
+      Lemma
+      </span>
+      <span class="lemma_thmlabel">5</span><span class="lemma_thmtitle">The volume element; KS p.&#160;7</span></div>
+    <div class="thm_thmcontent"><p>    For \(g \in Q_{\mathbb C}(V)\) the determinant \(\det g\) (of the Gram matrix in any basis; it is invariantly defined up to multiplication by a positive real number) is not real and negative, and the square root \((\det g)^{1/2}\) can be chosen with strictly positive real part. This fixes the holomorphic volume element \(\mathrm{vol}_g = (\det g)^{1/2} |dy^1 \cdots dy^d|\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#lem:volume-element">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/volume_element_positive">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:conf-envelope_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:conf-envelope" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">6</span><span class="proposition_thmtitle">Configurations in the holomorphic envelope; KS Proposition 2.3</span></div>
+    <div class="thm_thmcontent"><p>   If a complex metric on a \(d\)-dimensional real vector space \(V\) satisfies condition (4), then the configuration space \(\mathrm{Conf}_k(V)\) of \(k\)-tuples of distinct points of \(V\) is contained in the holomorphic envelope of the Wightman permuted extended tube \(\mathcal U_k(V) \subset (V_{\mathbb C})^k\). </p>
+<p>Formalization requires the Wightman permuted extended tube, holomorphic envelopes of domains in \((\mathbb M_{\mathbb C})^k\), and Bochner’s tube theorem, none of which are available; deferred to the <span class="ttfamily">WickRotation</span> phase. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:conf-envelope">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:domain-holomorphy_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:domain-holomorphy" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">12</span><span class="proposition_thmtitle">Domain of holomorphy; KS Proposition 2.7</span></div>
+    <div class="thm_thmcontent"><p>    The domain \(Q_{\mathbb C}(V)\) is holomorphically convex, i.e. a domain of holomorphy in \(S^2(V^*_{\mathbb C})\). </p>
+<p>Stating this in Lean requires a complex-manifold structure on the space of quadratic forms, the notion of domain of holomorphy (Stein theory), and Siegel domains; none of these are in Mathlib. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:domain-holomorphy">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_domain_of_holomorphy">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:lorentzian-boundary_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:lorentzian-boundary" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">15</span><span class="proposition_thmtitle">Lorentzian metrics lie on the boundary; KS p.&#160;9</span></div>
+    <div class="thm_thmcontent"><p>    A real Lorentzian metric \(\varphi \) on \(V\) lies on the boundary of \(Q_{\mathbb C}(V)\): it is a limit of allowable complex metrics (entry-wise on a fixed basis, i.e. in the canonical topology on the finite-dimensional space of forms), but is not itself allowable. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:lorentzian-boundary">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/lorentzian_on_boundary">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:only-lorentzian_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:only-lorentzian" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">16</span><span class="proposition_thmtitle">Only Lorentzian metrics lie on the boundary; KS p.&#160;9</span></div>
+    <div class="thm_thmcontent"><p>    If a real nondegenerate bilinear form \(\varphi \) on \(V\) is a limit of allowable complex metrics but is not positive-definite (the positive-definite forms being the real points of the open domain \(Q_{\mathbb C}(V)\) itself), then \(\varphi \) is Lorentzian. Equivalently, among real nondegenerate metrics, those of signature \((d-1,1)\), and no others, lie on the boundary of \(Q_{\mathbb C}(V)\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:only-lorentzian">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/only_lorentzian_on_boundary">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:parametrization_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:parametrization" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">8</span><span class="proposition_thmtitle">Parametrization and contractibility; KS Proposition 2.4</span></div>
+    <div class="thm_thmcontent"><p>    \(Q_{\mathbb C}(V)\) is a fibre bundle over the space of positive-definite inner products on \(V\) whose fibre at \(g_0\) is \(\Pi (V, g_0)\). Equivalently, choosing a reference inner product, </p>
+<div class="displaymath" id="a0000000013">
+  \[  Q_{\mathbb C}(V) \; \cong \;  \mathrm{GL}(V) \times _{\mathrm{O}(V)} \Pi (V).  \]
+</div>
+<p> In particular, \(Q_{\mathbb C}(V)\) is contractible. </p>
+<p>Stating this in Lean requires \(\mathrm{GL}(V)/\mathrm{O}(V)\) actions with associated-bundle machinery, an inner-product-space structure compatible with the algebraic setup of the formalization, and a topology on \(Q_{\mathbb C}(V)\), which is needed even to state contractibility; none are available in Mathlib. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:parametrization">LaTeX</a>
+    
+    
+  <div class="tooltip">
+      <span class="lean_link">Lean</span>
+      <ul class="tooltip_list">
+        
+           <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_parametrization" class="lean_decl">QC_parametrization</a></li>
+        
+           <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_contractible" class="lean_decl">QC_contractible</a></li>
+        
+      </ul>
+  </div>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:real-subspaces_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:real-subspaces" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">11</span><span class="proposition_thmtitle">Real allowable subspaces of a complex quadratic space; KS Proposition 2.6</span></div>
+    <div class="thm_thmcontent"><p>   Let \(Z\) be a \(d\)-dimensional complex vector space with a nondegenerate quadratic form \(g\), and let \(\mathcal R(Z)\) be the space of \(d\)-dimensional real subspaces \(A \subset Z\) such that \(g|_A\) belongs to \(Q_{\mathbb C}(A)\) (an open subset of the real Grassmannian). Then \(\mathcal R(Z)\) is contractible, and </p>
+<div class="displaymath" id="a0000000016">
+  \[  \mathcal R(Z) \; \cong \;  \mathrm{O}_{\mathbb C}(Z) \times _{\mathrm{O}(Z_{\mathbb R})} \Pi (Z_{\mathbb R}).  \]
+</div>
+<p>Formalization requires the Grassmannian of real subspaces, \(\mathrm{O}_{\mathbb C}(Z)\)-actions, and the same associated-bundle machinery as Proposition&#160;<a href="sect0001.html#prop:parametrization">8</a>. The result is needed for the Wick rotation of field operators in Section&#160;5 of the paper and is deferred to <span class="ttfamily">WickRotation/FieldOperators</span>. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:real-subspaces">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:restriction_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:restriction" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">10</span><span class="proposition_thmtitle">Restriction preserves allowability; KS Proposition 2.5</span></div>
+    <div class="thm_thmcontent"><p>    If \(g \in Q_{\mathbb C}(V)\) and \(W\) is any vector subspace of \(V\), then \(g|_W\) belongs to \(Q_{\mathbb C}(W)\). </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:restriction">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/restrict_allowable">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="prop:two-dim-polydisc_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="prop:two-dim-polydisc" style="display: none">
+    <div class="thm_thmheading">
+      <span class="proposition_thmcaption">
+      Proposition
+      </span>
+      <span class="proposition_thmlabel">18</span><span class="proposition_thmtitle">\(Q_{\mathbb C}(V)\) is a polydisc when \(\dim V = 2\); KS p.&#160;15</span></div>
+    <div class="thm_thmcontent"><p>    When \(\dim V = 2\), the conformal class \((\det g)^{-1/2} g\) decouples from the volume element, and a nondegenerate complex metric is determined up to scale by its two null directions in \(\mathbb P(V_{\mathbb C})\); allowability puts one in each open hemisphere separated by the equator \(\mathbb P(V)\). The domain \(Q_{\mathbb C}(V)\) is thus a \(3\)-dimensional polydisc: one disc for each of the two complex structures (null directions) and one for the volume element. </p>
+<p>Stating this in Lean requires the projective geometry of \(\mathbb P(V_{\mathbb C})\) and the conformal/volume decomposition of quadratic forms. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#prop:two-dim-polydisc">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_two_dim_polydisc">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="thm:angle-equiv_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="thm:angle-equiv" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">3</span><span class="theorem_thmtitle">Equivalence of the two definitions; KS Theorem 2.2</span></div>
+    <div class="thm_thmcontent"><p>    A quadratic form \(g \colon V \to \mathbb C\) satisfies Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> if and only if it can be written, in some basis of \(V\), as \(\sum _i \lambda _i y_i^2\) with nonzero coefficients \(\lambda _i\), not on the negative real axis, satisfying the angle condition (4) of Definition&#160;<a href="sect0001.html#def:allowable">2</a>. </p>
+<p>The biconditional cannot yet be stated in Lean: the Hodge-star side (Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a>) is not expressible, pending the Hodge star operator and induced forms on exterior powers in Mathlib. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#thm:angle-equiv">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/defn_2_1_equiv_angle_condition">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="thm:two-copies_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="thm:two-copies" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">17</span><span class="theorem_thmtitle">Two copies of the Lorentzian metrics on the Shilov boundary; KS p.&#160;9</span></div>
+    <div class="thm_thmcontent"><p>    The Shilov boundary of \(Q_{\mathbb C}(V)\), regarded as a bounded domain in an affine variety as in the proof of Proposition&#160;<a href="sect0001.html#prop:domain-holomorphy">12</a>, contains <em>two</em> disjoint copies of the space of Lorentzian metrics on \(V\), for an eigenvalue \(\lambda \) can approach the negative real axis either from above or from below. The two copies are interchanged by the complex-conjugation map on \(Q_{\mathbb C}(V)\). With orientation-reversing elements of \(\mathrm{GL}(V)\) acting antilinearly on the orientation line, the nondegenerate points of the Shilov boundary are the <em>time-oriented</em> Lorentzian metrics. </p>
+<p>The faithful statement is not yet expressible in Lean. It requires: (1) induced forms on exterior powers and the Hodge star, for the affine-variety embedding \(Q_{\mathbb C}(V) \to \prod _{0 \leq p \leq d/2} \mathcal U(\Lambda ^p V)\) from the proof of Proposition&#160;<a href="sect0001.html#prop:domain-holomorphy">12</a>, whose \(p = 0\) factor \((\det g)^{1/2}\) carries the branch that separates the two copies (in the naive closure inside \(S^2(V^*_{\mathbb C})\) the copies coincide); (2) Siegel domains and the Cayley transform, giving the bounded realization; (3) the Shilov boundary notion itself, the smallest compact subset of the closure on which every holomorphic function attains its supremum. </p>
+</div>
+
+    <a class="latex_link" href="sect0001.html#thm:two-copies">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/two_copies_on_boundary">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+</div>
 </div> <!-- content -->
 </div> <!-- wrapper -->
 <script src="js/jquery.min.js" type="text/javascript"></script>
@@ -79,7 +676,7 @@ graphContainer.graphviz({useWorker: true})
     .width(width)
     .height(height)
     .fit(true)
-    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [penwidth=1.8];	edge [arrowhead=vee];}`)
+    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:allowable-hodge"	[color="#FFAA33",		label="allowable-hodge",		shape=box];	"thm:angle-equiv"	[color="#FFAA33",		label="angle-equiv",		shape=ellipse];	"def:allowable-hodge" -> "thm:angle-equiv"	[style=dashed];	"prop:domain-holomorphy"	[color="#FFAA33",		label="domain-holomorphy",		shape=ellipse];	"def:allowable-hodge" -> "prop:domain-holomorphy";	"thm:two-copies"	[color="#FFAA33",		label="two-copies",		shape=ellipse];	"prop:domain-holomorphy" -> "thm:two-copies"	[style=dashed];	"lem:l-shape"	[color="#FFAA33",		label="l-shape",		shape=ellipse];	"prop:conf-envelope"	[color="#FFAA33",		label="conf-envelope",		shape=ellipse];	"lem:l-shape" -> "prop:conf-envelope";	"prop:restriction"	[color=green,		fillcolor="#A3D6FF",		label=restriction,		shape=ellipse,		style=filled];	"prop:only-lorentzian"	[color=green,		fillcolor="#A3D6FF",		label="only-lorentzian",		shape=ellipse,		style=filled];	"prop:restriction" -> "prop:only-lorentzian";	"prop:lorentzian-boundary"	[color=green,		fillcolor="#A3D6FF",		label="lorentzian-boundary",		shape=ellipse,		style=filled];	"prop:two-dim-polydisc"	[color="#FFAA33",		label="two-dim-polydisc",		shape=ellipse];	"def:lorentzian"	[color=green,		fillcolor="#B0ECA3",		label=lorentzian,		shape=box,		style=filled];	"def:lorentzian" -> "thm:two-copies"	[style=dashed];	"def:lorentzian" -> "prop:only-lorentzian"	[style=dashed];	"def:lorentzian" -> "prop:lorentzian-boundary"	[style=dashed];	"def:allowable"	[color=green,		fillcolor="#B0ECA3",		label=allowable,		shape=box,		style=filled];	"def:allowable" -> "thm:angle-equiv"	[style=dashed];	"def:allowable" -> "prop:domain-holomorphy"	[style=dashed];	"def:allowable" -> "prop:conf-envelope"	[style=dashed];	"def:allowable" -> "prop:two-dim-polydisc"	[style=dashed];	"def:restrict-form"	[color=green,		fillcolor="#B0ECA3",		label="restrict-form",		shape=box,		style=filled];	"def:allowable" -> "def:restrict-form"	[style=dashed];	"lem:convex-cone"	[color=green,		fillcolor="#1CAC78",		label="convex-cone",		shape=ellipse,		style=filled];	"def:allowable" -> "lem:convex-cone"	[style=dashed];	"lem:volume-element"	[color=green,		fillcolor="#A3D6FF",		label="volume-element",		shape=ellipse,		style=filled];	"def:allowable" -> "lem:volume-element"	[style=dashed];	"prop:parametrization"	[color="#FFAA33",		label=parametrization,		shape=ellipse];	"def:allowable" -> "prop:parametrization"	[style=dashed];	"def:restrict-form" -> "prop:restriction"	[style=dashed];	"lem:convex-cone" -> "prop:lorentzian-boundary";	"prop:real-subspaces"	[color="#FFAA33",		label="real-subspaces",		shape=ellipse];	"prop:parametrization" -> "prop:real-subspaces";	"def:trace-norm-fiber"	[color=green,		fillcolor="#B0ECA3",		label="trace-norm-fiber",		shape=box,		style=filled];	"def:trace-norm-fiber" -> "prop:parametrization"	[style=dashed];}`)
     .on("end", interactive);
 
 latexLabelEscaper = function(label) {

@@ -40,14 +40,14 @@ Snapshot (2026-04-08, tracked production tree, updated):
 
 | Module | Direct `sorry` lines |
 |--------|----------------------|
-| `ComplexMetrics/` | 6 |
-| **Total** | **6** |
+| `ComplexMetrics/` | 5 |
+| **Total** | **5** |
 
 ### Sorry Inventory (File Level)
 
 | File | `sorry`s | Notes |
 |------|----------|-------|
-| `ComplexMetrics/Defs.lean` | 2 | `not_neg_real_axis`, `volume_element_positive` |
+| `ComplexMetrics/Defs.lean` | 1 | `volume_element_positive` (`not_neg_real_axis` fully proven) |
 | `ComplexMetrics/Equivalence.lean` | 0 | `True` placeholder — Hodge star equivalence blocked on Mathlib |
 | `ComplexMetrics/Domain.lean` | 0 | `True` placeholders — Props 2.4, 2.7 (topology on QC not formalized) |
 | `ComplexMetrics/Restriction.lean` | 2 | Prop 2.5 — `nondegenerate` and `angle_cond` fields (eigenvalue interleaving argument) |

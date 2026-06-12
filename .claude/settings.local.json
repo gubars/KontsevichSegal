@@ -3,7 +3,8 @@
     "allow": [
       "mcp__lean-lsp__lean_diagnostic_messages",
       "PowerShell(\\(Get-Content docs\\\\KSTeX.tex | Measure-Object -Line\\).Lines)",
-      "PowerShell(lake build *)"
+      "PowerShell(lake build *)",
+      "mcp__lean-lsp__lean_local_search"
     ]
   },
   "model": "claude-fable-5",
