@@ -27,6 +27,8 @@ import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Basis
+import Mathlib.Analysis.Complex.Trigonometric
 
 variable {d : ℕ}
 
@@ -208,4 +210,105 @@ lemma volume_element_positive {V : Type*} [AddCommGroup V] [Module ℝ V]
       Matrix.of (fun i j => g.toForm (b i) (b j))
     ¬ (M.det.im = 0 ∧ M.det.re < 0) ∧
     ∃ w : ℂ, w ^ 2 = M.det ∧ 0 < w.re := by
-  sorry
+  intro M
+  obtain ⟨e, eig, hAC, hdiag⟩ := g.angle_cond
+  -- Polarization: in the diagonalizing basis the full bilinear form is diagonal.
+  have hbil : ∀ v w, g.toForm v w
+      = ∑ i, eig i * (e.repr v i : ℂ) * (e.repr w i : ℂ) := by
+    intro v w
+    have h1 := hdiag (v + w)
+    simp only [map_add, LinearMap.add_apply, Finsupp.add_apply,
+      Complex.ofReal_add] at h1
+    have hexp : ∑ i, eig i * ((e.repr v i : ℂ) + (e.repr w i : ℂ)) ^ 2
+        = (∑ i, eig i * (e.repr v i : ℂ) ^ 2)
+          + (∑ i, eig i * (e.repr w i : ℂ) ^ 2)
+          + 2 * ∑ i, eig i * (e.repr v i : ℂ) * (e.repr w i : ℂ) := by
+      rw [Finset.mul_sum, ← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
+      exact Finset.sum_congr rfl fun i _ => by ring
+    linear_combination h1 / 2 + hexp / 2 - hdiag v / 2 - hdiag w / 2
+      + g.symmetric' v w / 2
+  -- Change of basis: the Gram matrix of `b` factors through the diagonal one,
+  -- so its determinant is `(det P)² · ∏ eig i` with `P` the real base-change matrix.
+  set P : Matrix (Fin (Module.finrank ℝ V)) (Fin (Module.finrank ℝ V)) ℂ :=
+    Complex.ofRealHom.mapMatrix (e.toMatrix b) with hPdef
+  have hM : M = P.transpose * (Matrix.diagonal eig * P) := by
+    ext i j
+    have hMij : M i j = g.toForm (b i) (b j) := rfl
+    rw [hMij, hbil, Matrix.mul_apply]
+    refine Finset.sum_congr rfl fun k _ => ?_
+    simp only [Matrix.transpose_apply, Matrix.diagonal_mul, hPdef,
+      RingHom.mapMatrix_apply, Matrix.map_apply, Module.Basis.toMatrix_apply,
+      Complex.ofRealHom_eq_coe]
+    ring
+  have hdetP : P.det = ((e.toMatrix b).det : ℂ) := by
+    rw [hPdef, ← RingHom.map_det, Complex.ofRealHom_eq_coe]
+  have hPdetne : (e.toMatrix b).det ≠ 0 := by
+    have h1 : e.toMatrix b * b.toMatrix e = 1 := by
+      rw [Module.Basis.toMatrix_mul_toMatrix, Module.Basis.toMatrix_self]
+    exact left_ne_zero_of_mul_eq_one
+      (by rw [← Matrix.det_mul, h1, Matrix.det_one])
+  have hdetM : M.det = (((e.toMatrix b).det ^ 2 : ℝ) : ℂ) * ∏ i, eig i := by
+    rw [hM, Matrix.det_mul, Matrix.det_mul, Matrix.det_transpose,
+      Matrix.det_diagonal, hdetP]
+    push_cast
+    ring
+  -- Polar form of the determinant: `det M = r · exp(iS)` with `r > 0` and
+  -- `S = ∑ arg(eig i) ∈ (-π, π)` by the angle condition.
+  set S : ℝ := ∑ i, Complex.arg (eig i) with hSdef
+  have hSlt : |S| < Real.pi :=
+    lt_of_le_of_lt (Finset.abs_sum_le_sum_abs _ _) hAC.sum_arg_lt_pi
+  obtain ⟨hSlo, hShi⟩ := abs_lt.mp hSlt
+  set r : ℝ := (e.toMatrix b).det ^ 2 * ∏ i, ‖eig i‖ with hrdef
+  have hrpos : 0 < r := by
+    rw [hrdef]
+    exact mul_pos (sq_pos_of_ne_zero hPdetne)
+      (Finset.prod_pos fun i _ => norm_pos_iff.mpr (hAC.nonzero i))
+  have hexpsum : ∑ i, (Complex.arg (eig i) : ℂ) * Complex.I
+      = (S : ℂ) * Complex.I := by
+    rw [hSdef]
+    push_cast
+    rw [Finset.sum_mul]
+  have hpolar : M.det = (r : ℂ) * Complex.exp ((S : ℂ) * Complex.I) := by
+    have hprod : ∏ i, eig i
+        = ((∏ i, ‖eig i‖ : ℝ) : ℂ) * Complex.exp ((S : ℂ) * Complex.I) := by
+      calc ∏ i, eig i
+          = ∏ i, ((‖eig i‖ : ℂ)
+              * Complex.exp ((Complex.arg (eig i) : ℂ) * Complex.I)) :=
+            Finset.prod_congr rfl fun i _ =>
+              (Complex.norm_mul_exp_arg_mul_I _).symm
+        _ = (∏ i, (‖eig i‖ : ℂ))
+              * ∏ i, Complex.exp ((Complex.arg (eig i) : ℂ) * Complex.I) :=
+            Finset.prod_mul_distrib
+        _ = ((∏ i, ‖eig i‖ : ℝ) : ℂ) * Complex.exp ((S : ℂ) * Complex.I) := by
+            rw [← Complex.exp_sum, hexpsum, Complex.ofReal_prod]
+    rw [hdetM, hprod, hrdef]
+    push_cast
+    ring
+  refine ⟨?_, ?_⟩
+  · -- `det M` is not real and negative: `sin S = 0` forces `S = 0` on `(-π, π)`,
+    -- and then `det M = r > 0`.
+    rintro ⟨him, hre⟩
+    rw [hpolar] at him hre
+    simp only [Complex.mul_im, Complex.mul_re, Complex.ofReal_re,
+      Complex.ofReal_im, Complex.exp_ofReal_mul_I_re, Complex.exp_ofReal_mul_I_im,
+      zero_mul, add_zero, sub_zero] at him hre
+    have hsin : Real.sin S = 0 := by
+      rcases mul_eq_zero.mp him with h | h
+      · exact absurd h hrpos.ne'
+      · exact h
+    have hS0 : S = 0 := (Real.sin_eq_zero_iff_of_lt_of_lt hSlo hShi).mp hsin
+    rw [hS0, Real.cos_zero, mul_one] at hre
+    exact absurd hre (not_lt.mpr hrpos.le)
+  · -- Principal square root: `w = √r · exp(iS/2)` has `|arg w| = |S|/2 < π/2`,
+    -- hence positive real part.
+    refine ⟨(Real.sqrt r : ℂ) * Complex.exp ((↑(S / 2) : ℂ) * Complex.I), ?_, ?_⟩
+    · rw [hpolar, mul_pow, ← Complex.ofReal_pow, Real.sq_sqrt hrpos.le, pow_two,
+        ← Complex.exp_add]
+      congr 2
+      push_cast
+      ring
+    · simp only [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
+        Complex.exp_ofReal_mul_I_re, Complex.exp_ofReal_mul_I_im,
+        zero_mul, sub_zero]
+      refine mul_pos (Real.sqrt_pos.mpr hrpos)
+        (Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩)

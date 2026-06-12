@@ -4,7 +4,9 @@
       "mcp__lean-lsp__lean_diagnostic_messages",
       "PowerShell(\\(Get-Content docs\\\\KSTeX.tex | Measure-Object -Line\\).Lines)",
       "PowerShell(lake build *)",
-      "mcp__lean-lsp__lean_local_search"
+      "mcp__lean-lsp__lean_local_search",
+      "mcp__lean-lsp__lean_run_code",
+      "mcp__lean-lsp__lean_verify"
     ]
   },
   "model": "claude-fable-5",
