@@ -6,7 +6,8 @@
       "PowerShell(lake build *)",
       "mcp__lean-lsp__lean_local_search",
       "mcp__lean-lsp__lean_run_code",
-      "mcp__lean-lsp__lean_verify"
+      "mcp__lean-lsp__lean_verify",
+      "mcp__lean-lsp__lean_loogle"
     ]
   },
   "model": "claude-fable-5",

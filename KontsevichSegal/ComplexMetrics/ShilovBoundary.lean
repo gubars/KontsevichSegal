@@ -73,7 +73,210 @@ theorem lorentzian_on_boundary {V : Type*} [AddCommGroup V] [Module ℝ V]
         ∃ g : AllowableComplexMetric V,
           ∀ i j, ‖g.toForm (b i) (b j) - ↑(φ (b i) (b j))‖ < ε) ∧
     (∀ g : AllowableComplexMetric V, ∃ v, g.toForm v v ≠ ↑(φ v v)) := by
-  sorry
+  classical
+  obtain ⟨b, sign, hsign, hone, hφ⟩ := hL
+  obtain ⟨i₀, hi₀, huniq⟩ := hone
+  have hsign_iff : ∀ i, sign i = -1 ↔ i = i₀ :=
+    fun i => ⟨huniq i, fun h => h ▸ hi₀⟩
+  -- Coordinates of basis vectors are Kronecker deltas.
+  have hreprbR : ∀ i k, b.repr (b i) k = if i = k then (1 : ℝ) else 0 := by
+    intro i k
+    rw [Module.Basis.repr_self]
+    simp [Finsupp.single_apply]
+  have hreprbC : ∀ i k, ((b.repr (b i) k : ℝ) : ℂ) = if i = k then (1 : ℂ) else 0 := by
+    intro i k
+    rw [hreprbR]
+    split_ifs <;> simp
+  -- φ on pairs of basis vectors.
+  have hφb : ∀ i j, φ (b i) (b j) = if i = j then sign i else 0 := by
+    intro i j
+    rw [hφ]
+    calc ∑ k, sign k * b.repr (b i) k * b.repr (b j) k
+        = ∑ k, if i = k then (if j = k then sign k else 0) else 0 := by
+          refine Finset.sum_congr rfl fun k _ => ?_
+          rw [hreprbR, hreprbR]
+          split_ifs <;> ring
+      _ = if i ∈ Finset.univ then (if j = i then sign i else 0) else 0 :=
+          Finset.sum_ite_eq _ _ _
+      _ = if j = i then sign i else 0 := if_pos (Finset.mem_univ i)
+      _ = if i = j then sign i else 0 := if_congr eq_comm rfl rfl
+  constructor
+  · -- φ is an entry-wise limit of allowable metrics on the basis `b`.
+    refine ⟨b, fun ε hε => ?_⟩
+    -- The perturbation parameter.
+    set δ : ℝ := min 1 (ε / 4) with hδdef
+    have hδpos : 0 < δ := lt_min one_pos (by linarith)
+    have hδ1 : δ ≤ 1 := min_le_left _ _
+    have hδπ : δ < Real.pi := by linarith [Real.two_le_pi]
+    have hδε : 2 * δ < ε := by
+      have h4 : δ ≤ ε / 4 := min_le_right _ _
+      linarith
+    -- Perturbed eigenvalues: the timelike direction moves to exp(i(π-δ)).
+    set eig : Fin (Module.finrank ℝ V) → ℂ := fun i =>
+      if i = i₀ then Complex.exp (((Real.pi - δ : ℝ) : ℂ) * Complex.I) else 1
+      with heig
+    have heignz : ∀ i, eig i ≠ 0 := by
+      intro i
+      simp only [heig]
+      split_ifs
+      · exact Complex.exp_ne_zero _
+      · exact one_ne_zero
+    -- The angle condition for the perturbed eigenvalues.
+    have hAC : AngleCondition eig := by
+      refine ⟨heignz, ?_, ?_⟩
+      · intro i
+        by_cases h : i = i₀
+        · refine Or.inr ?_
+          simp only [heig, h, if_true]
+          rw [Complex.exp_ofReal_mul_I_im, Real.sin_pi_sub]
+          exact (Real.sin_pos_of_pos_of_lt_pi hδpos hδπ).ne'
+        · refine Or.inl ?_
+          simp [heig, h]
+      · have hargeig : ∀ i, |Complex.arg (eig i)|
+            = if i = i₀ then Real.pi - δ else 0 := by
+          intro i
+          by_cases h : i = i₀
+          · simp only [heig, h, if_true]
+            have harg : Complex.arg (Complex.exp (((Real.pi - δ : ℝ) : ℂ) * Complex.I))
+                = Real.pi - δ := by
+              rw [Complex.exp_mul_I]
+              exact Complex.arg_cos_add_sin_mul_I
+                ⟨by linarith [Real.pi_pos], by linarith⟩
+            rw [harg, abs_of_pos (by linarith [Real.two_le_pi])]
+          · simp [heig, h, Complex.arg_one]
+        calc ∑ i, |Complex.arg (eig i)|
+            = ∑ i, if i = i₀ then Real.pi - δ else 0 :=
+              Finset.sum_congr rfl fun i _ => hargeig i
+          _ = if i₀ ∈ Finset.univ then Real.pi - δ else 0 :=
+              Finset.sum_ite_eq' _ _ _
+          _ = Real.pi - δ := if_pos (Finset.mem_univ i₀)
+          _ < Real.pi := by linarith
+    -- Bilinearity of the perturbed form.
+    have hadd₁ : ∀ (m₁ m₂ n : V),
+        (∑ i, eig i * (b.repr (m₁ + m₂) i : ℂ) * (b.repr n i : ℂ))
+          = (∑ i, eig i * (b.repr m₁ i : ℂ) * (b.repr n i : ℂ))
+            + ∑ i, eig i * (b.repr m₂ i : ℂ) * (b.repr n i : ℂ) := by
+      intro m₁ m₂ n
+      rw [← Finset.sum_add_distrib]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [map_add, Finsupp.add_apply, Complex.ofReal_add]
+      ring
+    have hsmul₁ : ∀ (c : ℝ) (m n : V),
+        (∑ i, eig i * (b.repr (c • m) i : ℂ) * (b.repr n i : ℂ))
+          = c • ∑ i, eig i * (b.repr m i : ℂ) * (b.repr n i : ℂ) := by
+      intro c m n
+      rw [Complex.real_smul, Finset.mul_sum]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [map_smul, Finsupp.smul_apply, smul_eq_mul, Complex.ofReal_mul]
+      ring
+    have hadd₂ : ∀ (m n₁ n₂ : V),
+        (∑ i, eig i * (b.repr m i : ℂ) * (b.repr (n₁ + n₂) i : ℂ))
+          = (∑ i, eig i * (b.repr m i : ℂ) * (b.repr n₁ i : ℂ))
+            + ∑ i, eig i * (b.repr m i : ℂ) * (b.repr n₂ i : ℂ) := by
+      intro m n₁ n₂
+      rw [← Finset.sum_add_distrib]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [map_add, Finsupp.add_apply, Complex.ofReal_add]
+      ring
+    have hsmul₂ : ∀ (c : ℝ) (m n : V),
+        (∑ i, eig i * (b.repr m i : ℂ) * (b.repr (c • n) i : ℂ))
+          = c • ∑ i, eig i * (b.repr m i : ℂ) * (b.repr n i : ℂ) := by
+      intro c m n
+      rw [Complex.real_smul, Finset.mul_sum]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      rw [map_smul, Finsupp.smul_apply, smul_eq_mul, Complex.ofReal_mul]
+      ring
+    -- Assemble the allowable complex metric.
+    refine ⟨⟨LinearMap.mk₂ ℝ
+        (fun v w => ∑ i, eig i * (b.repr v i : ℂ) * (b.repr w i : ℂ))
+        hadd₁ hsmul₁ hadd₂ hsmul₂, ?_, ?_, ?_⟩, ?_⟩
+    · -- Symmetry.
+      intro v w
+      simp only [LinearMap.mk₂_apply]
+      exact Finset.sum_congr rfl fun i _ => by ring
+    · -- Nondegeneracy: pair with the basis vector of a nonzero coordinate.
+      intro v hv
+      have hrepr : b.repr v ≠ 0 := fun h => hv (b.repr.map_eq_zero_iff.mp h)
+      obtain ⟨j, hj⟩ := Finsupp.ne_iff.mp hrepr
+      simp only [Finsupp.coe_zero, Pi.zero_apply] at hj
+      refine ⟨b j, ?_⟩
+      simp only [LinearMap.mk₂_apply]
+      have hval : (∑ k, eig k * (b.repr v k : ℂ) * (b.repr (b j) k : ℂ))
+          = eig j * (b.repr v j : ℂ) := by
+        calc ∑ k, eig k * (b.repr v k : ℂ) * (b.repr (b j) k : ℂ)
+            = ∑ k, if j = k then eig k * (b.repr v k : ℂ) else 0 := by
+              refine Finset.sum_congr rfl fun k _ => ?_
+              rw [hreprbC]
+              split_ifs <;> ring
+          _ = if j ∈ Finset.univ then eig j * (b.repr v j : ℂ) else 0 :=
+              Finset.sum_ite_eq _ _ _
+          _ = eig j * (b.repr v j : ℂ) := if_pos (Finset.mem_univ j)
+      rw [hval]
+      exact mul_ne_zero (heignz j) (Complex.ofReal_ne_zero.mpr hj)
+    · -- The angle condition, witnessed by `b` and `eig` themselves.
+      refine ⟨b, eig, hAC, fun v => ?_⟩
+      simp only [LinearMap.mk₂_apply]
+      exact Finset.sum_congr rfl fun i _ => by ring
+    · -- Entry-wise closeness to φ on the basis `b`.
+      intro i j
+      simp only [LinearMap.mk₂_apply]
+      have hentry : (∑ k, eig k * (b.repr (b i) k : ℂ) * (b.repr (b j) k : ℂ))
+          = if i = j then eig i else 0 := by
+        calc ∑ k, eig k * (b.repr (b i) k : ℂ) * (b.repr (b j) k : ℂ)
+            = ∑ k, if i = k then (if j = k then eig k else 0) else 0 := by
+              refine Finset.sum_congr rfl fun k _ => ?_
+              rw [hreprbC, hreprbC]
+              split_ifs <;> ring
+          _ = if i ∈ Finset.univ then (if j = i then eig i else 0) else 0 :=
+              Finset.sum_ite_eq _ _ _
+          _ = if j = i then eig i else 0 := if_pos (Finset.mem_univ i)
+          _ = if i = j then eig i else 0 := if_congr eq_comm rfl rfl
+      rw [hentry, hφb]
+      by_cases hij : i = j
+      · subst hij
+        rw [if_pos rfl, if_pos rfl]
+        by_cases h0 : i = i₀
+        · subst h0
+          rw [hi₀]
+          simp only [heig, if_true]
+          -- ‖exp(i(π-δ)) - (-1)‖ = ‖exp(-iδ) - 1‖ ≤ 2δ < ε.
+          have hexpval : Complex.exp (((Real.pi - δ : ℝ) : ℂ) * Complex.I)
+              = -Complex.exp (((-δ : ℝ) : ℂ) * Complex.I) := by
+            rw [show ((Real.pi - δ : ℝ) : ℂ) * Complex.I
+                  = (Real.pi : ℂ) * Complex.I + ((-δ : ℝ) : ℂ) * Complex.I by
+                push_cast; ring,
+              Complex.exp_add, Complex.exp_pi_mul_I]
+            ring
+          rw [hexpval,
+            show -Complex.exp (((-δ : ℝ) : ℂ) * Complex.I) - (((-1 : ℝ)) : ℂ)
+                = -(Complex.exp (((-δ : ℝ) : ℂ) * Complex.I) - 1) by push_cast; ring,
+            norm_neg]
+          have hnorm : ‖((-δ : ℝ) : ℂ) * Complex.I‖ = δ := by
+            rw [norm_mul, Complex.norm_I, Complex.norm_real]
+            simp [abs_of_pos hδpos]
+          calc ‖Complex.exp (((-δ : ℝ) : ℂ) * Complex.I) - 1‖
+              ≤ 2 * ‖((-δ : ℝ) : ℂ) * Complex.I‖ :=
+                Complex.norm_exp_sub_one_le (by rw [hnorm]; exact hδ1)
+            _ = 2 * δ := by rw [hnorm]
+            _ < ε := hδε
+        · -- Spacelike direction: the entry is unchanged.
+          have hs1 : sign i = 1 := by
+            rcases hsign i with h | h
+            · exact h
+            · exact absurd ((hsign_iff i).mp h) h0
+          simp only [heig, if_neg h0, hs1]
+          simpa using hε
+      · rw [if_neg hij, if_neg hij]
+        simpa using hε
+  · -- φ itself is not allowable: it is real and negative on the timelike vector.
+    intro g
+    refine ⟨b i₀, fun hgφ => ?_⟩
+    have hφneg : φ (b i₀) (b i₀) = -1 := by
+      rw [hφb, if_pos rfl, hi₀]
+    refine not_neg_real_axis g (b i₀) (b.ne_zero i₀) ⟨?_, ?_⟩
+    · rw [hgφ, Complex.ofReal_im]
+    · rw [hgφ, hφneg, Complex.ofReal_re]
+      norm_num
 
 /-- **KS paper Section 2, page 9 — only Lorentzian on the boundary.**
 If a real nondegenerate bilinear form lies on the boundary of QC(V) — it is a
