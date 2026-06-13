@@ -7,10 +7,11 @@
       "mcp__lean-lsp__lean_local_search",
       "mcp__lean-lsp__lean_run_code",
       "mcp__lean-lsp__lean_verify",
-      "mcp__lean-lsp__lean_loogle"
+      "mcp__lean-lsp__lean_loogle",
+      "mcp__lean-lsp__lean_hover_info"
     ]
   },
-  "model": "claude-fable-5",
+  "model": "claude-opus-4-8",
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "lean-lsp"
