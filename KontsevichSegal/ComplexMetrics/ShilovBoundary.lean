@@ -23,6 +23,8 @@ the current formalization; see `two_copies_on_boundary` below.)
 -/
 
 import KontsevichSegal.ComplexMetrics.Defs
+import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.Basis.SMul
 
 variable {d : ℕ}
 
@@ -306,6 +308,148 @@ theorem only_lorentzian_on_boundary {V : Type*} [AddCommGroup V] [Module ℝ V]
        QC(V), not on the boundary). -/
     (hnotpos : ¬ ∀ v, v ≠ 0 → 0 < φ v v) :
     IsLorentzian φ := by
+  classical
+  -- STEP 1: φ is symmetric. Each entry `φ(bᵢ,bⱼ)` is within `2ε` of the
+  -- symmetric entry `φ(bⱼ,bᵢ)` (via a symmetric allowable `g` close to both),
+  -- for every `ε`, hence they are equal; extend bilinearly through `φ = φ.flip`.
+  have hsymm : ∀ v w, φ v w = φ w v := by
+    have hbasis : ∀ i j, φ (b i) (b j) = φ (b j) (b i) := by
+      intro i j
+      by_contra hne
+      set cst : ℝ := |φ (b i) (b j) - φ (b j) (b i)| with hcst
+      have hcpos : 0 < cst := abs_pos.mpr (sub_ne_zero.mpr hne)
+      obtain ⟨g, hg⟩ := hbdy (cst / 2) (by linarith)
+      have h1 := hg i j
+      have h2 := hg j i
+      have hsg : g.toForm (b i) (b j) = g.toForm (b j) (b i) := g.symmetric' _ _
+      have hrw : ((φ (b i) (b j) : ℂ)) - (φ (b j) (b i) : ℂ)
+          = ((φ (b i) (b j) : ℂ) - g.toForm (b i) (b j))
+            + (g.toForm (b j) (b i) - (φ (b j) (b i) : ℂ)) := by
+        rw [hsg]; ring
+      have key : ‖((φ (b i) (b j) : ℂ)) - (φ (b j) (b i) : ℂ)‖ < cst := by
+        calc ‖((φ (b i) (b j) : ℂ)) - (φ (b j) (b i) : ℂ)‖
+            = ‖((φ (b i) (b j) : ℂ) - g.toForm (b i) (b j))
+                + (g.toForm (b j) (b i) - (φ (b j) (b i) : ℂ))‖ := by rw [hrw]
+          _ ≤ ‖(φ (b i) (b j) : ℂ) - g.toForm (b i) (b j)‖
+                + ‖g.toForm (b j) (b i) - (φ (b j) (b i) : ℂ)‖ := norm_add_le _ _
+          _ < cst / 2 + cst / 2 := by
+              apply add_lt_add
+              · rw [norm_sub_rev]; exact h1
+              · exact h2
+          _ = cst := by ring
+      have heq : ‖((φ (b i) (b j) : ℂ)) - (φ (b j) (b i) : ℂ)‖ = cst := by
+        rw [hcst, ← Complex.ofReal_sub, Complex.norm_real, Real.norm_eq_abs]
+      rw [heq] at key
+      exact lt_irrefl cst key
+    have hflip : φ = φ.flip := by
+      apply b.ext; intro i; apply b.ext; intro j
+      simp only [LinearMap.flip_apply]
+      exact hbasis i j
+    intro v w
+    have h := LinearMap.congr_fun (LinearMap.congr_fun hflip v) w
+    rw [LinearMap.flip_apply] at h
+    exact h
+  -- General double-sum expansion of `φ` in any basis.
+  have expand : ∀ (e : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V) (v w : V),
+      φ v w = ∑ i, ∑ j, (e.repr v i) * (e.repr w j) * φ (e i) (e j) := by
+    intro e v w
+    conv_lhs => rw [← e.sum_repr v, ← e.sum_repr w]
+    simp_rw [map_sum, LinearMap.sum_apply, map_smul, LinearMap.smul_apply, smul_eq_mul]
+    rw [Finset.sum_comm]
+    exact Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => by ring
+  -- STEP 2: diagonalize φ over ℝ with ±1 signs.
+  -- Orthogonal basis `c` for the symmetric form (Mathlib; char ≠ 2).
+  obtain ⟨c, hcortho⟩ :=
+    LinearMap.BilinForm.exists_orthogonal_basis (B := φ) ⟨fun v w => hsymm v w⟩
+  have hoff : ∀ i j, i ≠ j → φ (c i) (c j) = 0 := fun i j hij => hcortho hij
+  -- Each diagonal entry is nonzero, else `c i` is undetected by `φ`,
+  -- contradicting nondegeneracy.
+  have hdne : ∀ i, φ (c i) (c i) ≠ 0 := by
+    intro i hdi
+    obtain ⟨w, hw⟩ := hnd (c i) (c.ne_zero i)
+    apply hw
+    have hexp : φ (c i) w = ∑ j, (c.repr w j) * φ (c i) (c j) := by
+      conv_lhs => rw [← c.sum_repr w]
+      rw [map_sum]
+      exact Finset.sum_congr rfl fun j _ => by rw [map_smul, smul_eq_mul]
+    rw [hexp, Finset.sum_eq_single_of_mem i (Finset.mem_univ i)
+        (fun j _ hji => by rw [hoff i j (Ne.symm hji), mul_zero]), hdi, mul_zero]
+  -- Rescale each `c i` by `(√|φ(cᵢ,cᵢ)|)⁻¹` to normalize the diagonal to ±1.
+  have hrpos : ∀ i, 0 < (Real.sqrt |φ (c i) (c i)|)⁻¹ :=
+    fun i => inv_pos.mpr (Real.sqrt_pos.mpr (abs_pos.mpr (hdne i)))
+  set r : Fin (Module.finrank ℝ V) → ℝ := fun i => (Real.sqrt |φ (c i) (c i)|)⁻¹ with hr
+  set e : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V :=
+    c.unitsSMul (fun i => Units.mk0 (r i) (hrpos i).ne') with he_def
+  have he : ∀ i, e i = r i • c i := by
+    intro i
+    simp only [he_def, Module.Basis.unitsSMul_apply, Units.smul_def, Units.val_mk0]
+  have hephi : ∀ i j, φ (e i) (e j) = r i * r j * φ (c i) (c j) := by
+    intro i j
+    simp only [he, map_smul, LinearMap.smul_apply, smul_eq_mul]
+    ring
+  -- The signs, and the diagonal value of `φ` in the rescaled basis.
+  set sign : Fin (Module.finrank ℝ V) → ℝ :=
+    fun i => φ (c i) (c i) / |φ (c i) (c i)| with hsign_def
+  have hdiag_val : ∀ i, φ (e i) (e i) = sign i := by
+    intro i
+    have hx : (0 : ℝ) < |φ (c i) (c i)| := abs_pos.mpr (hdne i)
+    have hsq : r i * r i = |φ (c i) (c i)|⁻¹ := by
+      simp only [hr]
+      rw [← mul_inv, Real.mul_self_sqrt hx.le]
+    rw [hephi i i, hsq]
+    simp only [hsign_def]
+    rw [div_eq_inv_mul]
+  have hsign_pm : ∀ i, sign i = 1 ∨ sign i = -1 := by
+    intro i
+    simp only [hsign_def]
+    rcases lt_or_gt_of_ne (hdne i) with h | h
+    · right; rw [abs_of_neg h, div_neg, div_self (hdne i)]
+    · left; rw [abs_of_pos h, div_self (hdne i)]
+  have heoff : ∀ i j, i ≠ j → φ (e i) (e j) = 0 :=
+    fun i j hij => by rw [hephi i j, hoff i j hij, mul_zero]
+  -- The bilinear diagonalization required by `IsLorentzian`.
+  have hdiag : ∀ v w, φ v w = ∑ i, sign i * (e.repr v i) * (e.repr w i) := by
+    intro v w
+    rw [expand e v w]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ i)
+        (fun j _ hji => by rw [heoff i j (Ne.symm hji), mul_zero]), hdiag_val i]
+    ring
+  -- STEP 3: at least one sign is negative. If all signs were +1 then
+  -- `φ v v = ∑ (e.repr v i)² > 0` for `v ≠ 0`, i.e. φ is positive-definite,
+  -- contradicting `hnotpos`.
+  have hneg : ∃ i, sign i = -1 := by
+    by_contra hcon
+    push_neg at hcon
+    have hallpos : ∀ i, sign i = 1 := fun i => (hsign_pm i).resolve_right (hcon i)
+    apply hnotpos
+    intro v hv
+    rw [hdiag v v]
+    have hterm : ∀ i, sign i * (e.repr v i) * (e.repr v i) = (e.repr v i) ^ 2 :=
+      fun i => by rw [hallpos i]; ring
+    rw [Finset.sum_congr rfl (fun i _ => hterm i)]
+    have hrepr : e.repr v ≠ 0 := fun h => hv (e.repr.map_eq_zero_iff.mp h)
+    obtain ⟨i₀, hi₀⟩ := Finsupp.ne_iff.mp hrepr
+    simp only [Finsupp.coe_zero, Pi.zero_apply] at hi₀
+    exact Finset.sum_pos' (fun i _ => sq_nonneg _)
+      ⟨i₀, Finset.mem_univ _, lt_of_le_of_ne (sq_nonneg _) (Ne.symm (pow_ne_zero 2 hi₀))⟩
+  obtain ⟨i₀, hi₀⟩ := hneg
+  refine ⟨e, sign, hsign_pm, ⟨i₀, hi₀, ?_⟩, hdiag⟩
+  -- STEP 4 (remaining): at most one negative sign, i.e. the negative direction
+  -- is unique. PROOF OBLIGATION: given `j` with `sign j = -1` and `j ≠ i₀`,
+  -- derive a contradiction. The intended route (docs/only_lorentzian_plan.md
+  -- step 4): the 2-plane `W = span {e i₀, e j}` is φ-negative-definite
+  -- (`φ v v = -((e.repr v i₀)² + (e.repr v j)²) < 0` for nonzero `v ∈ W`);
+  -- transferring the entry-wise ε-closeness of `hbdy` to a uniform bound on
+  -- `W` gives, for small ε, an allowable `g` with `Re (g.toForm v v) < 0` for
+  -- all nonzero `v ∈ W`; a dimension count of `W` against
+  -- `P = span {c k : 0 ≤ (eigᵧ k).re}` (using
+  -- `Submodule.finrank_sup_add_finrank_inf_eq` and
+  -- `Module.Basis.repr_support_subset_of_mem_span`) produces a nonzero
+  -- `v ∈ W ⊓ P` with `Re (g.toForm v v) ≥ 0`, contradiction; equivalently two
+  -- eigenvalues of `g` with `Re < 0` give, via `Complex.abs_arg_lt_pi_div_two_iff`,
+  -- `∑ |arg| ≥ π`, contradicting `AngleCondition.sum_arg_lt_pi`.
+  intro j hj
   sorry
 
 /-- **KS paper Section 2, page 9 — two copies on the Shilov boundary.**
