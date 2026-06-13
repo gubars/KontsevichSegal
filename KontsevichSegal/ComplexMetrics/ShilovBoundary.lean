@@ -435,22 +435,185 @@ theorem only_lorentzian_on_boundary {V : Type*} [AddCommGroup V] [Module ℝ V]
       ⟨i₀, Finset.mem_univ _, lt_of_le_of_ne (sq_nonneg _) (Ne.symm (pow_ne_zero 2 hi₀))⟩
   obtain ⟨i₀, hi₀⟩ := hneg
   refine ⟨e, sign, hsign_pm, ⟨i₀, hi₀, ?_⟩, hdiag⟩
-  -- STEP 4 (remaining): at most one negative sign, i.e. the negative direction
-  -- is unique. PROOF OBLIGATION: given `j` with `sign j = -1` and `j ≠ i₀`,
-  -- derive a contradiction. The intended route (docs/only_lorentzian_plan.md
-  -- step 4): the 2-plane `W = span {e i₀, e j}` is φ-negative-definite
-  -- (`φ v v = -((e.repr v i₀)² + (e.repr v j)²) < 0` for nonzero `v ∈ W`);
-  -- transferring the entry-wise ε-closeness of `hbdy` to a uniform bound on
-  -- `W` gives, for small ε, an allowable `g` with `Re (g.toForm v v) < 0` for
-  -- all nonzero `v ∈ W`; a dimension count of `W` against
-  -- `P = span {c k : 0 ≤ (eigᵧ k).re}` (using
-  -- `Submodule.finrank_sup_add_finrank_inf_eq` and
-  -- `Module.Basis.repr_support_subset_of_mem_span`) produces a nonzero
-  -- `v ∈ W ⊓ P` with `Re (g.toForm v v) ≥ 0`, contradiction; equivalently two
-  -- eigenvalues of `g` with `Re < 0` give, via `Complex.abs_arg_lt_pi_div_two_iff`,
-  -- `∑ |arg| ≥ π`, contradicting `AngleCondition.sum_arg_lt_pi`.
+  -- STEP 4: at most one negative sign. Suppose `sign j = -1` with `j ≠ i₀`.
+  -- Then `φ` is negative-definite on the 2-plane `W = span {e i₀, e j}`
+  -- (`φ v v = -(x² + y²)`). Approximate φ by an allowable `g` close enough on
+  -- the basis `b` that `Re (g v v) < 0` for every nonzero `v ∈ W`. But `g`
+  -- allowable has at most one eigenvalue with `Re < 0` (two would give
+  -- `∑ |arg λₖ| ≥ π`), so a single linear condition cuts out a nonzero `v ∈ W`
+  -- with `Re (g v v) = ∑_{Re λₖ ≥ 0} (Re λₖ)(bg.repr v k)² ≥ 0`, a contradiction.
   intro j hj
-  sorry
+  by_contra hjne
+  have hij : i₀ ≠ j := fun h => hjne h.symm
+  have hi₀diag : φ (e i₀) (e i₀) = -1 := by rw [hdiag_val i₀, hi₀]
+  have hjdiag : φ (e j) (e j) = -1 := by rw [hdiag_val j, hj]
+  have hcross : φ (e i₀) (e j) = 0 := heoff i₀ j hij
+  -- ℓ¹ sizes of `e i₀, e j` on the basis `b`, and the perturbation scale.
+  set Ni : ℝ := ∑ p, |b.repr (e i₀) p| with hNidef
+  set Nj : ℝ := ∑ p, |b.repr (e j) p| with hNjdef
+  have hNi0 : 0 ≤ Ni := Finset.sum_nonneg fun _ _ => abs_nonneg _
+  have hNj0 : 0 ≤ Nj := Finset.sum_nonneg fun _ _ => abs_nonneg _
+  set K : ℝ := Ni + Nj with hKdef
+  have hKsq0 : (0 : ℝ) < K ^ 2 + 1 := by positivity
+  set ε : ℝ := 1 / (2 * (K ^ 2 + 1)) with hεdef
+  have hεpos : 0 < ε := by rw [hεdef]; positivity
+  have h2t : 2 * (K ^ 2 * ε) < 1 := by
+    rw [hεdef, show 2 * (K ^ 2 * (1 / (2 * (K ^ 2 + 1)))) = K ^ 2 / (K ^ 2 + 1) by
+      field_simp, div_lt_one hKsq0]
+    linarith
+  -- The approximating allowable metric.
+  obtain ⟨g, hgbd⟩ := hbdy ε hεpos
+  have hg_le : ∀ i j, ‖g.toForm (b i) (b j) - (φ (b i) (b j) : ℂ)‖ ≤ ε :=
+    fun i j => (hgbd i j).le
+  -- General entry-difference bound from the basis-`b` closeness.
+  have hbound : ∀ u w : V, ‖g.toForm u w - (φ u w : ℂ)‖
+      ≤ (∑ p, |b.repr u p|) * (∑ q, |b.repr w q|) * ε := by
+    intro u w
+    have gexp : g.toForm u w
+        = ∑ p, ∑ q, (b.repr u p : ℂ) * (b.repr w q : ℂ) * g.toForm (b p) (b q) := by
+      conv_lhs => rw [← b.sum_repr u, ← b.sum_repr w]
+      simp_rw [map_sum, LinearMap.sum_apply, map_smul, LinearMap.smul_apply, Complex.real_smul]
+      rw [Finset.sum_comm]
+      exact Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => by ring
+    have hφc : (φ u w : ℂ)
+        = ∑ p, ∑ q, (b.repr u p : ℂ) * (b.repr w q : ℂ) * (φ (b p) (b q) : ℂ) := by
+      rw [expand b u w]; push_cast; rfl
+    have hexp : g.toForm u w - (φ u w : ℂ)
+        = ∑ p, ∑ q, (b.repr u p : ℂ) * (b.repr w q : ℂ)
+            * (g.toForm (b p) (b q) - (φ (b p) (b q) : ℂ)) := by
+      rw [gexp, hφc, ← Finset.sum_sub_distrib]
+      refine Finset.sum_congr rfl fun p _ => ?_
+      rw [← Finset.sum_sub_distrib]
+      exact Finset.sum_congr rfl fun q _ => by ring
+    rw [hexp]
+    calc ‖∑ p, ∑ q, (b.repr u p : ℂ) * (b.repr w q : ℂ)
+              * (g.toForm (b p) (b q) - (φ (b p) (b q) : ℂ))‖
+        ≤ ∑ p, ‖∑ q, (b.repr u p : ℂ) * (b.repr w q : ℂ)
+              * (g.toForm (b p) (b q) - (φ (b p) (b q) : ℂ))‖ := norm_sum_le _ _
+      _ ≤ ∑ p, ∑ q, |b.repr u p| * |b.repr w q| * ε := by
+          refine Finset.sum_le_sum fun p _ => ?_
+          calc ‖∑ q, (b.repr u p : ℂ) * (b.repr w q : ℂ)
+                  * (g.toForm (b p) (b q) - (φ (b p) (b q) : ℂ))‖
+              ≤ ∑ q, ‖(b.repr u p : ℂ) * (b.repr w q : ℂ)
+                  * (g.toForm (b p) (b q) - (φ (b p) (b q) : ℂ))‖ := norm_sum_le _ _
+            _ ≤ ∑ q, |b.repr u p| * |b.repr w q| * ε := by
+                refine Finset.sum_le_sum fun q _ => ?_
+                rw [norm_mul, norm_mul, Complex.norm_real, Complex.norm_real,
+                  Real.norm_eq_abs, Real.norm_eq_abs]
+                exact mul_le_mul_of_nonneg_left (hg_le p q)
+                  (mul_nonneg (abs_nonneg _) (abs_nonneg _))
+      _ = (∑ p, |b.repr u p|) * (∑ q, |b.repr w q|) * ε := by
+          rw [Finset.sum_mul_sum, Finset.sum_mul]
+          refine Finset.sum_congr rfl fun p _ => ?_
+          rw [Finset.sum_mul]
+  -- The three relevant entries, each bounded by `K² ε`.
+  have hb_ii : ‖g.toForm (e i₀) (e i₀) - (φ (e i₀) (e i₀) : ℂ)‖ ≤ K ^ 2 * ε :=
+    (hbound (e i₀) (e i₀)).trans
+      (mul_le_mul_of_nonneg_right (by nlinarith [hNi0, hNj0]) hεpos.le)
+  have hb_ij : ‖g.toForm (e i₀) (e j) - (φ (e i₀) (e j) : ℂ)‖ ≤ K ^ 2 * ε :=
+    (hbound (e i₀) (e j)).trans
+      (mul_le_mul_of_nonneg_right (by nlinarith [hNi0, hNj0]) hεpos.le)
+  have hb_jj : ‖g.toForm (e j) (e j) - (φ (e j) (e j) : ℂ)‖ ≤ K ^ 2 * ε :=
+    (hbound (e j) (e j)).trans
+      (mul_le_mul_of_nonneg_right (by nlinarith [hNi0, hNj0]) hεpos.le)
+  -- Real-part bounds on the entries.
+  have hA : (g.toForm (e i₀) (e i₀)).re ≤ -1 + K ^ 2 * ε := by
+    have heq : (g.toForm (e i₀) (e i₀)).re - φ (e i₀) (e i₀)
+        = (g.toForm (e i₀) (e i₀) - (φ (e i₀) (e i₀) : ℂ)).re := by
+      rw [Complex.sub_re, Complex.ofReal_re]
+    have key : (g.toForm (e i₀) (e i₀)).re - φ (e i₀) (e i₀) ≤ K ^ 2 * ε := by
+      rw [heq]; exact ((le_abs_self _).trans (Complex.abs_re_le_norm _)).trans hb_ii
+    linarith [key, hi₀diag]
+  have hC : (g.toForm (e j) (e j)).re ≤ -1 + K ^ 2 * ε := by
+    have heq : (g.toForm (e j) (e j)).re - φ (e j) (e j)
+        = (g.toForm (e j) (e j) - (φ (e j) (e j) : ℂ)).re := by
+      rw [Complex.sub_re, Complex.ofReal_re]
+    have key : (g.toForm (e j) (e j)).re - φ (e j) (e j) ≤ K ^ 2 * ε := by
+      rw [heq]; exact ((le_abs_self _).trans (Complex.abs_re_le_norm _)).trans hb_jj
+    linarith [key, hjdiag]
+  have hBabs : |(g.toForm (e i₀) (e j)).re| ≤ K ^ 2 * ε := by
+    have heq : (g.toForm (e i₀) (e j)).re
+        = (g.toForm (e i₀) (e j) - (φ (e i₀) (e j) : ℂ)).re := by
+      rw [Complex.sub_re, Complex.ofReal_re, hcross, sub_zero]
+    rw [heq]; exact (Complex.abs_re_le_norm _).trans hb_ij
+  have hsymm_g : (g.toForm (e j) (e i₀)).re = (g.toForm (e i₀) (e j)).re := by
+    rw [g.symmetric']
+  -- TRANSFER: `Re (g v v) < 0` for every nonzero `v ∈ W`.
+  have htransfer : ∀ x y : ℝ, 0 < x ^ 2 + y ^ 2 →
+      (g.toForm (x • e i₀ + y • e j) (x • e i₀ + y • e j)).re < 0 := by
+    intro x y hxy
+    have hre : (g.toForm (x • e i₀ + y • e j) (x • e i₀ + y • e j)).re
+        = x ^ 2 * (g.toForm (e i₀) (e i₀)).re
+          + x * y * ((g.toForm (e i₀) (e j)).re + (g.toForm (e j) (e i₀)).re)
+          + y ^ 2 * (g.toForm (e j) (e j)).re := by
+      simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply,
+        Complex.real_smul, Complex.add_re, Complex.mul_re, Complex.ofReal_re,
+        Complex.ofReal_im, zero_mul, sub_zero]
+      ring
+    rw [hre, hsymm_g]
+    rcases abs_le.mp hBabs with ⟨hBl, hBu⟩
+    nlinarith [sq_nonneg x, sq_nonneg y, sq_nonneg (x - y), sq_nonneg (x + y),
+      mul_le_mul_of_nonneg_left hA (sq_nonneg x),
+      mul_le_mul_of_nonneg_left hC (sq_nonneg y)]
+  -- `g`'s own diagonalization and the angle condition.
+  obtain ⟨bg, eig, hAC, hgdiag⟩ := g.angle_cond
+  have hgRe : ∀ v, (g.toForm v v).re = ∑ k, (eig k).re * (bg.repr v k) ^ 2 := by
+    intro v
+    rw [hgdiag v, Complex.re_sum]
+    refine Finset.sum_congr rfl fun k _ => ?_
+    rw [← Complex.ofReal_pow, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
+      mul_zero, sub_zero]
+  -- At most one eigenvalue has negative real part.
+  have hatmost : ∀ k₁ k₂, (eig k₁).re < 0 → (eig k₂).re < 0 → k₁ = k₂ := by
+    have hb : ∀ z : ℂ, z.re < 0 → Real.pi / 2 ≤ |z.arg| := by
+      intro z hz
+      by_contra hlt
+      push_neg at hlt
+      rcases Complex.abs_arg_lt_pi_div_two_iff.mp hlt with h | h
+      · linarith
+      · rw [h] at hz; simp at hz
+    intro k₁ k₂ h1 h2
+    by_contra hne
+    have hsub : |Complex.arg (eig k₁)| + |Complex.arg (eig k₂)|
+        ≤ ∑ k, |Complex.arg (eig k)| := by
+      rw [← Finset.sum_pair hne (f := fun k => |Complex.arg (eig k)|)]
+      exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _)
+        (fun k _ _ => abs_nonneg _)
+    linarith [hAC.sum_arg_lt_pi, hb _ h1, hb _ h2]
+  -- Produce a nonzero `v ∈ W` with `Re (g v v) ≥ 0`, contradicting the transfer.
+  have hcontra : ∃ x y : ℝ, 0 < x ^ 2 + y ^ 2 ∧
+      0 ≤ (g.toForm (x • e i₀ + y • e j) (x • e i₀ + y • e j)).re := by
+    by_cases hneg : ∃ k, (eig k).re < 0
+    · obtain ⟨k₀, hk₀neg⟩ := hneg
+      have hnn : ∀ v : V, bg.repr v k₀ = 0 → 0 ≤ (g.toForm v v).re := by
+        intro v hv0
+        rw [hgRe v]
+        refine Finset.sum_nonneg fun k _ => ?_
+        by_cases hk : k = k₀
+        · rw [hk, hv0]; simp
+        · have hkpos : 0 ≤ (eig k).re := by
+            by_contra hlt
+            push_neg at hlt
+            exact hk (hatmost k k₀ hlt hk₀neg)
+          exact mul_nonneg hkpos (sq_nonneg _)
+      by_cases hα : bg.repr (e i₀) k₀ = 0
+      · refine ⟨1, 0, by norm_num, ?_⟩
+        rw [show ((1 : ℝ) • e i₀ + (0 : ℝ) • e j) = e i₀ by simp]
+        exact hnn (e i₀) hα
+      · refine ⟨bg.repr (e j) k₀, -(bg.repr (e i₀) k₀), ?_, ?_⟩
+        · have hα2 : 0 < (bg.repr (e i₀) k₀) ^ 2 :=
+            lt_of_le_of_ne (sq_nonneg _) (Ne.symm (pow_ne_zero 2 hα))
+          nlinarith [sq_nonneg (bg.repr (e j) k₀)]
+        · refine hnn _ ?_
+          rw [map_add, map_smul, map_smul, Finsupp.add_apply, Finsupp.smul_apply,
+            Finsupp.smul_apply, smul_eq_mul, smul_eq_mul]
+          ring
+    · push_neg at hneg
+      refine ⟨1, 0, by norm_num, ?_⟩
+      rw [show ((1 : ℝ) • e i₀ + (0 : ℝ) • e j) = e i₀ by simp, hgRe (e i₀)]
+      exact Finset.sum_nonneg fun k _ => mul_nonneg (hneg k) (sq_nonneg _)
+  obtain ⟨x, y, hxy, hge⟩ := hcontra
+  exact absurd hge (not_le.mpr (htransfer x y hxy))
 
 /-- **KS paper Section 2, page 9 — two copies on the Shilov boundary.**
 PLACEHOLDER (`True` conclusion). The paper's actual claim, quoted:

@@ -378,14 +378,29 @@ other nondegenerate real metrics.
 \end{proposition}
 
 \begin{proof}
-  \uses{def:allowable, prop:restriction}
-  For a real metric each $|\arg \lambda_i|$ is $0$ or $\pi$, and inequality
-  (4) shows at most one $|\arg \lambda_i|$ can become $\pi$ in the limit: a
-  two-dimensional $\varphi$-negative-definite subspace would, after
-  restricting the approximating allowable metrics to it
-  (Proposition~\ref{prop:restriction}), force the angle sum toward $2\pi$.
-  Nondegeneracy and failure of positive-definiteness then force exactly one
-  negative eigenvalue.
+  \leanok
+  \uses{def:allowable, def:lorentzian}
+  Diagonalize $\varphi$ over $\mathbb R$ in an orthogonal basis $e_i$,
+  rescaling so that $\varphi(e_i, e_i) = s_i \in \{+1, -1\}$; nondegeneracy
+  makes every diagonal entry nonzero. Since $\varphi$ is not positive-definite,
+  at least one $s_i = -1$. Suppose two signs were negative, say
+  $s_{i_0} = s_j = -1$ with $i_0 \neq j$. On the plane
+  $W = \langle e_{i_0}, e_j \rangle$ one has $\varphi(v, v) = -(x^2 + y^2)$,
+  so $\varphi$ is negative-definite on $W$. Choose an allowable $g$ whose
+  entries on a fixed basis are within $\varepsilon$ of those of $\varphi$,
+  with $\varepsilon$ small enough that $\operatorname{Re} g(v, v) < 0$ for
+  every nonzero $v \in W$; the entrywise closeness transfers to a uniform
+  bound $|\operatorname{Re} g(v, v) - \varphi(v, v)| \le C \varepsilon
+  (x^2 + y^2)$ on $W$. Writing $g$ in its own diagonalizing basis,
+  $\operatorname{Re} g(v, v) = \sum_k (\operatorname{Re} \lambda_k)
+  \beta_k(v)^2$. If two eigenvalues had $\operatorname{Re} \lambda_k < 0$,
+  then $|\arg \lambda_k| \ge \pi/2$ for each, giving
+  $\sum_k |\arg \lambda_k| \ge \pi$ and contradicting the angle condition;
+  hence at most one $\operatorname{Re} \lambda_k$ is negative. The single
+  linear condition $\beta_{k_0}(v) = 0$ then cuts out a nonzero $v \in W$ on
+  which every surviving term has $\operatorname{Re} \lambda_k \ge 0$, so
+  $\operatorname{Re} g(v, v) \ge 0$, contradicting negative-definiteness on
+  $W$. Therefore exactly one sign is negative and $\varphi$ is Lorentzian.
 \end{proof}
 
 \begin{theorem}[Two copies of the Lorentzian metrics on the Shilov boundary; KS p.~9]
