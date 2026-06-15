@@ -210,3 +210,66 @@ record the structures and properties assumed of each.
   this one. The present node fixes only the underlying functor and its induced
   limit structure.
 \end{definition}
+
+\subsection{The functor axioms}
+
+The definition above defers four conditions to separate nodes. The first three,
+holomorphicity, continuity, and the disjoint-union to tensor-product condition,
+are stated here; the unitarity condition is treated separately.
+
+\begin{definition}[Holomorphicity; KS Section 3]
+  \label{def:holomorphicity}
+  \notready
+  \uses{def:field-theory, def:holomorphic-bundle, def:metc-complex-manifold}
+  The functor of a field theory is \emph{holomorphic} in the following sense.
+  For a fixed smooth manifold-germ $\Sigma \subset U$, the spaces $E_{\Sigma}$
+  form a locally trivial holomorphic vector bundle over the complex manifold
+  $\mathrm{Met}_{\mathbb C}(U)$ of complex metrics on $U$. For a cobordism
+  $M \colon \Sigma_0 \leadsto \Sigma_1$, the maps $Z_M$ form a morphism of
+  holomorphic vector bundles over $\mathrm{Met}_{\mathbb C}(M)$, the bundles
+  $\{E_{\Sigma_0}\}$ and $\{E_{\Sigma_1}\}$ of the two ends being pulled back to
+  $\mathrm{Met}_{\mathbb C}(M)$ along the restriction maps.
+\end{definition}
+
+\begin{definition}[Continuity; KS Section 3]
+  \label{def:continuity}
+  \notready
+  \uses{def:field-theory}
+  A field theory satisfies the \emph{continuity} property if, for every object
+  $\Sigma$, the canonical maps
+  \[
+    \check E_{\Sigma} \;\longrightarrow\; E_{\Sigma} \;\longrightarrow\;
+    \hat E_{\Sigma}
+  \]
+  are each injective with dense image.
+
+  This condition is imposed on the field theory, the functor, not on the
+  cobordism category. It is the true replacement for the identity morphisms that
+  $\mathcal C_d^{\mathbb C}$ lacks: rather than adjoining degenerate zero-length
+  cobordisms, whose operators are not nuclear, one requires the injective dense
+  maps $\check E_{\Sigma} \to \hat E_{\Sigma}$ of the functor.
+\end{definition}
+
+\begin{definition}[Disjoint unions to tensor products; KS Section 3]
+  \label{def:tensor-axiom}
+  \notready
+  \uses{def:field-theory, def:nuclear-frechet}
+  A field theory \emph{takes disjoint unions to tensor products}: it is equipped
+  with a natural isomorphism
+  \[
+    \check E_{\Sigma} \otimes \check E_{\Sigma'} \;\cong\;
+    \check E_{\Sigma \sqcup \Sigma'},
+  \]
+  associative and commutative with respect to the standard isomorphisms of
+  disjoint union and tensor product. The tensor product is unambiguous because
+  the spaces are nuclear, nuclear spaces having a unique natural tensor product,
+  and this isomorphism is equivalent to the corresponding one for the downstream
+  limits, $\hat E_{\Sigma} \otimes \hat E_{\Sigma'} \cong
+  \hat E_{\Sigma \sqcup \Sigma'}$. Functoriality is the assumption that
+  $Z_M \otimes Z_{M'} = Z_{M \sqcup M'}$ for cobordisms $M$ and $M'$.
+
+  This requirement forces $E_{\emptyset} = \mathbb C$ on the empty
+  $(d-1)$-manifold. Hence a closed $d$-manifold $M$, regarded as a cobordism
+  $\emptyset \leadsto \emptyset$, has a \emph{partition function}
+  $Z_M \in \mathrm{End}(E_{\emptyset}) = \mathbb C$.
+\end{definition}
