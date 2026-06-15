@@ -156,3 +156,57 @@ record the structures and properties assumed of each.
   bundles of topological vector spaces over an infinite-dimensional complex
   manifold are not available in Mathlib and are assumed.
 \end{definition}
+
+\section{Field theories as functors}
+
+\begin{definition}[Field theory as a holomorphic functor; KS Section 3]
+  \label{def:field-theory}
+  \notready
+  \uses{def:cobordism-category, def:nuclear-frechet, def:holomorphic-bundle,
+    def:metc-complex-manifold}
+  A \emph{$d$-dimensional field theory} is a holomorphic functor from the
+  cobordism category $\mathcal C_d^{\mathbb C}$ to the category of Fréchet
+  topological vector spaces and nuclear (trace-class) linear maps, which takes
+  disjoint unions to tensor products. Write $E_{\Sigma}$ for the space assigned to an object $\Sigma$ and
+  $Z_M \colon E_{\Sigma_0} \to E_{\Sigma_1}$ for the nuclear (trace-class) map
+  assigned to a cobordism $M \colon \Sigma_0 \leadsto \Sigma_1$. Following the
+  boxed definition, $E_{\Sigma}$ is a Fréchet topological vector space. The
+  paper assigns it no further structure: it plays only a provisional role,
+  serving to construct the fundamental nuclear spaces between which it is
+  sandwiched, and it is not asserted to be nuclear. Those fundamental nuclear
+  spaces are the limit spaces $\check E_{\Sigma}$ and $\hat E_{\Sigma}$
+  introduced below, whose structure differs and is recorded there.
+
+  \emph{Induced limit structure.} Because an object $\Sigma \subset U$ is a germ
+  of a $d$-manifold, it carries a direct system and an inverse system of
+  neighbouring objects. Upstream, the sub-cobordisms $\Sigma' \leadsto \Sigma$
+  contained in $U$, each diffeomorphic to the trivial cobordism
+  $\Sigma \times [0,1]$ with outgoing end $\Sigma$, are ordered by inclusion and
+  form a direct system with cobordisms to $\Sigma$. Downstream, the cobordisms
+  $\Sigma \leadsto \Sigma''$ contained in $U$ form an inverse system to which
+  $\Sigma$ maps. Applying the functor yields canonical maps
+  \[
+    \check E_{\Sigma} \;\longrightarrow\; E_{\Sigma} \;\longrightarrow\;
+    \hat E_{\Sigma},
+  \]
+  where $\check E_{\Sigma} := \varinjlim E_{\Sigma'}$ is the direct limit over
+  the upstream system and $\hat E_{\Sigma} := \varprojlim E_{\Sigma''}$ is the
+  inverse limit over the downstream system. The downstream limit
+  $\hat E_{\Sigma}$, being the inverse limit of a countable sequence of nuclear
+  maps of Fréchet spaces, is a nuclear Fréchet space. The upstream limit
+  $\check E_{\Sigma}$ is also nuclear, but in general not metrizable, so unlike
+  $\hat E_{\Sigma}$ it is not a Fréchet space; the paper further identifies it as
+  the strong dual of the nuclear Fréchet space $\hat E_{\Sigma^*}$, where
+  $\Sigma^*$ is $\Sigma$ with its co-orientation reversed, a result deferred to a
+  later node. These two limit spaces, not $E_{\Sigma}$, are the load-bearing
+  nuclear spaces of the theory; $E_{\Sigma}$ exists only to construct them.
+
+  \emph{Words requiring separate nodes.} As the paper notes, almost every word
+  of this definition requires further explication. The meaning of
+  \emph{holomorphic}, the \emph{continuity} property of the maps
+  $\check E_{\Sigma} \to E_{\Sigma} \to \hat E_{\Sigma}$, the precise sense in
+  which the functor \emph{takes disjoint unions to tensor products}, and the
+  further \emph{unitarity} condition are each stated as separate nodes following
+  this one. The present node fixes only the underlying functor and its induced
+  limit structure.
+\end{definition}
