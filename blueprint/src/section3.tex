@@ -273,3 +273,97 @@ are stated here; the unitarity condition is treated separately.
   $\emptyset \leadsto \emptyset$, has a \emph{partition function}
   $Z_M \in \mathrm{End}(E_{\emptyset}) = \mathbb C$.
 \end{definition}
+
+\subsection{Unitarity}
+
+The remaining condition, unitarity, is built from a dual functor, a conjugate
+functor, a reality condition relating them, and a reflection-positivity
+requirement. The nodes below follow that order.
+
+\begin{definition}[Dual and conjugate functors; KS Section 3]
+  \label{def:dual-conjugate-functors}
+  \notready
+  \uses{def:field-theory, def:cobordism-category}
+  Write $\Sigma^*$ for the object $\Sigma$ with its co-orientation reversed, the
+  incoming and outgoing sides exchanged while the underlying germ and metric are
+  unchanged. A cobordism $M \colon \Sigma_0 \leadsto \Sigma_1$ is equally a
+  cobordism $\Sigma_1^* \leadsto \Sigma_0^*$, and the two induced maps
+  $E_{\Sigma_0} \to E_{\Sigma_1}$ and $E_{\Sigma_1^*} \to E_{\Sigma_0^*}$ are
+  algebraic transposes of one another. Thus $\Sigma \mapsto \Sigma^*$ is a
+  contravariant functor. At the level of the limit spaces,
+  $\check E_{\Sigma^*}$ is the dual topological vector space of $\hat E_{\Sigma}$.
+
+  Write $\bar\Sigma$ for the object $\Sigma$ with its complex metric $g$ replaced
+  by the conjugate metric $\bar g$ and its co-orientation unchanged. Then
+  $\Sigma \mapsto \bar\Sigma$ is a covariant functor. Composing the two gives the
+  contravariant functor $\Sigma \mapsto \bar\Sigma^*$, which reverses the
+  co-orientation and conjugates the metric.
+\end{definition}
+
+\begin{definition}[Conjugate-dual duality; KS Section 3, Appendix]
+  \label{def:conjugate-dual-duality}
+  \notready
+  \uses{def:dual-conjugate-functors, def:nuclear-frechet}
+  For any field theory, with no further hypothesis, the appendix to Section 3 of
+  the paper proves the duality
+  \[
+    (\check E_{\Sigma})^* \;\cong\; \hat E_{\Sigma^*},
+  \]
+  that is, the strong dual of $\check E_{\Sigma}$ is $\hat E_{\Sigma^*}$. The
+  companion form, that the strong dual of $\hat E_{\Sigma}$ is
+  $\check E_{\Sigma^*}$, also holds. Passing between the two forms is not a mere
+  swap of $\Sigma$ and $\Sigma^*$; it dualizes the first and invokes the
+  reflexivity of the nuclear Fréchet space $\hat E_{\Sigma}$, which is among the
+  properties assumed of nuclear spaces. We state these results; their appendix
+  proof is not formalized.
+
+  Separately, a field theory may satisfy the \emph{reality condition}: a natural
+  antilinear involution
+  \[
+    E_{\bar\Sigma} \;\cong\; \overline{E_{\Sigma}}.
+    \tag{5}
+  \]
+  This is an additional hypothesis on the field theory, not part of the duality
+  above.
+
+  Only for a theory satisfying (5) does the \emph{conjugate-dual} identification
+  follow: the conjugate dual of $\check E_{\Sigma}$ is $\hat E_{\bar\Sigma^*}$.
+  This step combines the plain duality with the reality involution (5); unlike
+  the plain duality, it does not hold without (5).
+\end{definition}
+
+\begin{definition}[Unitarity; KS Section 3]
+  \label{def:unitarity}
+  \notready
+  \uses{def:conjugate-dual-duality, def:field-theory, prop:lorentzian-boundary,
+    prop:only-lorentzian}
+  A germ $\Sigma$ is \emph{time-symmetric} if $\Sigma \cong \bar\Sigma^*$, that
+  is, if $\Sigma \subset U$ admits a reflection with fixed-point set $\Sigma$
+  that reverses the co-orientation and replaces the metric by its complex
+  conjugate. The metric of a time-symmetric germ is real, and its restriction to
+  the hypersurface $\Sigma$ is Riemannian.
+
+  A field theory is \emph{unitary} if it satisfies two conditions:
+  \begin{itemize}
+    \item[(i)] the reality condition (5); and
+    \item[(ii)] \emph{reflection-positivity}: for every time-symmetric germ
+      $\Sigma \cong \bar\Sigma^*$, the hermitian duality between
+      $\check E_{\Sigma}$ and $\check E_{\bar\Sigma}$ is positive-definite.
+  \end{itemize}
+
+  For a unitary theory and a time-symmetric germ $\Sigma$, the positive-definite
+  hermitian form makes $\check E_{\Sigma}$ a pre-Hilbert space, which completes
+  to a Hilbert space $E^{\mathrm{Hilb}}_{\Sigma}$ sitting in
+  \[
+    \check E_{\Sigma} \;\longrightarrow\; E^{\mathrm{Hilb}}_{\Sigma}
+    \;\longrightarrow\; \hat E_{\Sigma}.
+  \]
+
+  This is where unitarity meets Section 2. The metric of a time-symmetric germ is
+  real and Riemannian on the hypersurface $\Sigma$, and by
+  Propositions~\ref{prop:lorentzian-boundary} and~\ref{prop:only-lorentzian} the
+  nondegenerate real metrics on the Shilov boundary of $Q_{\mathbb C}(V)$ are
+  exactly the Lorentzian ones. The time-symmetric hypersurfaces on which a
+  unitary theory acquires Hilbert spaces are the functorial counterpart of those
+  Lorentzian metrics on the Shilov boundary.
+\end{definition}
