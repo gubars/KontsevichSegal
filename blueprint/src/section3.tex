@@ -69,3 +69,90 @@ $\mathcal C_d^{\mathbb C}$ of space-time manifolds carrying complex metrics.
   sections of a bundle whose fibre at $x$ is the domain $Q_{\mathbb C}(T_x X)$
   of allowable complex metrics from Section~2.
 \end{definition}
+
+\subsection{Analytic infrastructure}
+
+The field-theory definition of the next section refers to several analytic
+notions that Kontsevich and Segal cite as standard rather than develop: nuclear
+Fréchet spaces and the trace-class maps between them, the complex manifold of
+complex metrics, and holomorphic vector bundles over it. The following nodes
+record the structures and properties assumed of each.
+
+\begin{definition}[Nuclear Fréchet spaces and nuclear maps]
+  \label{def:nuclear-frechet}
+  \notready
+  A \emph{Fréchet space} is a complete metrizable locally convex topological
+  vector space over $\mathbb C$. A continuous linear map $T \colon E \to F$
+  between Fréchet spaces is \emph{nuclear} (or \emph{trace-class}) if it admits
+  a representation $T x = \sum_n \lambda_n\, \phi_n(x)\, y_n$ with
+  $\sum_n |\lambda_n| < \infty$, the functionals $\phi_n$ equicontinuous in the
+  dual $E^*$ and the vectors $y_n$ bounded in $F$. A Fréchet space is
+  \emph{nuclear} if every continuous linear map from it into a Banach space is
+  nuclear.
+
+  The properties assumed of these spaces are:
+  \begin{itemize}
+    \item the inverse limit of a countable sequence of nuclear maps of Fréchet
+      spaces is again a nuclear Fréchet space;
+    \item nuclear spaces have a unique natural tensor product (the projective
+      and injective tensor products coincide), coherently associative and
+      commutative, so that $E \otimes F$ is unambiguous for nuclear $E$ and $F$;
+    \item the strong dual of a nuclear Fréchet space is nuclear, though usually
+      not metrizable, and such spaces are reflexive, so double duality recovers
+      the space;
+    \item a nuclear endomorphism of such a space has a well-defined trace.
+  \end{itemize}
+
+  These are standard results in the theory of nuclear spaces, cited by
+  Kontsevich and Segal and not available in Mathlib. They are assumed, not
+  proved.
+\end{definition}
+
+\begin{definition}[$\mathrm{Met}_{\mathbb C}(M)$ as a complex manifold]
+  \label{def:metc-complex-manifold}
+  \notready
+  \uses{def:allowable, def:cobordism-category}
+  For a smooth $d$-manifold $M$, the space $\mathrm{Met}_{\mathbb C}(M)$ of
+  complex metrics on $M$, the smooth fields
+  $x \mapsto g_x \in Q_{\mathbb C}(T_x M)$, is assumed to carry the structure of
+  a complex manifold, in general infinite-dimensional. The complex structure on
+  each fibre comes from $Q_{\mathbb C}(T_x M)$ being an open domain in the
+  complex vector space of complex-valued quadratic forms on $T_x M$ (Section 2),
+  and these fibrewise structures fit together holomorphically over the smoothly
+  varying point $x$. Restriction of metrics along an inclusion of germs
+  $U' \subset U$, and along the inclusion of a cobordism's boundary germ
+  $\Sigma_i \hookrightarrow M$, are holomorphic maps
+  $\mathrm{Met}_{\mathbb C}(U) \to \mathrm{Met}_{\mathbb C}(U')$ and
+  $\mathrm{Met}_{\mathbb C}(M) \to \mathrm{Met}_{\mathbb C}(\Sigma_i)$.
+
+  The notion of ``holomorphic'' used throughout Section 3 is the one attached to
+  this complex manifold. Its complex-manifold structure, infinite-dimensional in
+  general, is cited by Kontsevich and Segal and not available in Mathlib. It is
+  assumed.
+\end{definition}
+
+\begin{definition}[Holomorphic vector bundles over $\mathrm{Met}_{\mathbb C}(M)$]
+  \label{def:holomorphic-bundle}
+  \notready
+  \uses{def:metc-complex-manifold, def:nuclear-frechet}
+  Over the complex manifold $\mathrm{Met}_{\mathbb C}(M)$ we assume the notion of
+  a \emph{locally trivial holomorphic vector bundle} whose fibres are
+  topological vector spaces, namely Fréchet spaces with nuclear comparison maps,
+  together with:
+  \begin{itemize}
+    \item \emph{morphisms} of such bundles, fibrewise continuous linear maps
+      depending holomorphically on the base point;
+    \item \emph{pullback} of such a bundle along a holomorphic map of complex
+      manifolds, in particular along the restriction maps
+      $\mathrm{Met}_{\mathbb C}(M) \to \mathrm{Met}_{\mathbb C}(\Sigma_i)$ of the
+      previous node.
+  \end{itemize}
+
+  This is the structure that the holomorphicity requirement on a field theory
+  will later invoke: the spaces $E_{\Sigma}$ are to form such a bundle over
+  $\mathrm{Met}_{\mathbb C}(U)$, and a cobordism map $Z_M$ is to be a morphism of
+  such bundles over $\mathrm{Met}_{\mathbb C}(M)$, the bundles for the two ends
+  being pulled back along the restriction maps. Locally trivial holomorphic
+  bundles of topological vector spaces over an infinite-dimensional complex
+  manifold are not available in Mathlib and are assumed.
+\end{definition}
