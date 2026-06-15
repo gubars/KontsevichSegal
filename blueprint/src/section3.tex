@@ -1,0 +1,71 @@
+\chapter{Quantum field theories as functors (KS Section 3)}
+
+This chapter is the blueprint for Section~3 of Kontsevich--Segal,
+\emph{Wick rotation and the positivity of energy in quantum field theory}
+(arXiv:2105.10161), to be formalized in \texttt{KontsevichSegal/Cobordism/}
+and \texttt{KontsevichSegal/FieldTheory/}. The section recasts a
+$d$-dimensional field theory as a holomorphic functor on a category
+$\mathcal C_d^{\mathbb C}$ of space-time manifolds carrying complex metrics.
+
+\section{The cobordism category}
+
+\begin{definition}[The cobordism category $\mathcal C_d^{\mathbb C}$; KS Section 3]
+  \label{def:cobordism-category}
+  \notready
+  \uses{def:allowable}
+  A \emph{complex metric} on a smooth manifold $X$ is a smooth field
+  $x \mapsto g_x$ assigning to each point an allowable complex metric
+  $g_x \in Q_{\mathbb C}(T_x X)$ on the tangent space. Write
+  $\mathrm{Met}_{\mathbb C}(X)$ for the space of such fields.
+
+  The category $\mathcal C_d^{\mathbb C}$ is defined as follows.
+
+  \emph{Objects.} An object is a germ of a $d$-manifold along a closed
+  two-sided $(d-1)$-manifold $\Sigma$. Concretely, $\Sigma$ is a compact
+  $(d-1)$-manifold presented as a closed submanifold of a $d$-manifold $U$,
+  and any two open neighbourhoods of $\Sigma$ in $U$ define the same object.
+  The submanifold $\Sigma$ is two-sided in $U$ and carries a
+  \emph{co-orientation}, a choice of which of its two sides is incoming and
+  which is outgoing. The germ carries a complex metric, that is a germ along
+  $\Sigma$ of an element $g \in \mathrm{Met}_{\mathbb C}(U)$. One usually
+  suppresses the thickening $U$, the co-orientation, and the metric $g$ from
+  the notation.
+
+  \emph{Morphisms.} A morphism $\Sigma_0 \to \Sigma_1$ is a cobordism
+  $M : \Sigma_0 \leadsto \Sigma_1$, a compact $d$-manifold carrying a complex
+  metric $g_M \in \mathrm{Met}_{\mathbb C}(M)$, whose incoming and outgoing
+  boundary germs are the objects $\Sigma_0$ and $\Sigma_1$ with their
+  co-orientations and metric germs. Two cobordisms
+  $M, M' : \Sigma_0 \leadsto \Sigma_1$ represent the same morphism when there
+  is an isometry $M \to M'$ restricting to the identity on the germs
+  $\Sigma_0$ and $\Sigma_1$.
+
+  \emph{Composition.} Composition is concatenation of cobordisms. A cobordism
+  $\Sigma_0 \leadsto \Sigma_1$ followed by a cobordism
+  $\Sigma_1 \leadsto \Sigma_2$ is glued along their common boundary germ
+  $\Sigma_1$ to give a cobordism $\Sigma_0 \leadsto \Sigma_2$. Taking objects
+  to be germs rather than bare $(d-1)$-manifolds is exactly what makes the
+  smooth structure on the concatenation well defined, since there is no
+  canonical smooth structure on the concatenation of two smooth cobordisms.
+
+  \emph{Identity morphisms.} $\mathcal C_d^{\mathbb C}$ is not literally a
+  category, as it has no identity morphisms. The paper records two ways to
+  deal with this, neither resolved here. One may declare an isomorphism
+  $\Sigma_0 \to \Sigma_1$ to be a cobordism of zero length; such degenerate
+  cobordisms exist, but in any field theory they are represented by operators
+  that are not nuclear, so they fall outside the intended class of morphisms.
+  The alternative, which the paper adopts, takes a field theory to be a
+  functor $\Sigma \mapsto E_{\Sigma}$ from $(d-1)$-manifold germs and their
+  isomorphisms to vector spaces, together with a transformation
+  $Z_M : E_{\Sigma_0} \to E_{\Sigma_1}$ for each cobordism. The true
+  replacement for the missing identity operators is then a condition imposed
+  on field theories, namely that the canonical maps
+  $\check E_{\Sigma} \to \hat E_{\Sigma}$ are injective with dense image.
+
+  Stating this in Lean requires smooth-manifold infrastructure not developed
+  here: germs of manifolds along a submanifold, two-sidedness and
+  co-orientation, isometries of manifolds carrying complex metrics, and gluing
+  of cobordisms. It also requires realizing $\mathrm{Met}_{\mathbb C}$ as the
+  sections of a bundle whose fibre at $x$ is the domain $Q_{\mathbb C}(T_x X)$
+  of allowable complex metrics from Section~2.
+\end{definition}

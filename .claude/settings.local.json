@@ -10,7 +10,8 @@
       "mcp__lean-lsp__lean_loogle",
       "mcp__lean-lsp__lean_hover_info",
       "mcp__lean-lsp__lean_multi_attempt",
-      "mcp__lean-lsp__lean_leansearch"
+      "mcp__lean-lsp__lean_leansearch",
+      "Bash(grep -n '\\\\\\\\input\\\\|\\\\\\\\chapter\\\\|^\\\\\\\\section' content.tex)"
     ]
   },
   "model": "claude-opus-4-8",
