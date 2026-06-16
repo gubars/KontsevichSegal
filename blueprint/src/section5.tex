@@ -406,3 +406,108 @@ spaces $\hat E_f$ and $\check E_{\Sigma}$ carry the topological-vector-space lim
 structure that Section~3 deferred (Definition~\ref{def:field-theory}), and the
 coherence of the identifications rests on Principle~5.1 and hence on the
 complexification $M_{\mathbb C}$.
+
+\section{Field operators and spacelike commutativity}
+
+The functorial picture yields local field operators at the points of a space-time, and
+recovers the Wightman axiom that operators at space-like separated points commute.
+
+\begin{definition}[Observables at a point; KS Section 5]
+  \label{def:observables}
+  \notready
+  \uses{def:metc-complex-manifold, prop:real-subspaces, prop:invariance-principle,
+    def:wick-rotation}
+  In Section~3 the space $\mathcal O_x$ of \emph{observables} at a point $x$ of a
+  manifold carrying a complex metric was introduced as the inverse limit of the spaces
+  $E_{\partial D}$ attached to the boundaries of the closed discs $D$ around $x$,
+  equivalently the fibre at the germ of the metric of a bundle on the space
+  $\mathrm{Met}_{\mathbb C}(\hat x)$ of germs of complex metrics at $x$. For a
+  real-analytic Lorentzian manifold $M$ and $x \in M$, the space $\mathcal O_x$ is
+  defined by Wick rotation, as in Definition~\ref{def:wick-rotation}. Embed $M$ in a
+  complexification $M_{\mathbb C}$, with the holomorphic exponential map from a
+  neighbourhood of $0$ in the complexified tangent space
+  $T_x^{\mathbb C} = T_x M \otimes \mathbb C$ to $M_{\mathbb C}$. The $d$-dimensional
+  real subspaces $V \subset T_x^{\mathbb C}$ on which the metric induced by the complex
+  bilinear form is allowable form a contractible open subset
+  $\mathcal U \subset \mathrm{Gr}_d(T_x^{\mathbb C})$ of the real Grassmannian, by
+  Proposition~\ref{prop:real-subspaces}. Exponentiating each $V$ gives a germ of a
+  $d$-manifold with a complex metric, hence a map
+  $\mathcal U \to \mathrm{Met}_{\mathbb C}(\hat x)$; the pullback of the bundle of
+  observables along it is a bundle on $\mathcal U$, trivial by Principle~5.1
+  (Proposition~\ref{prop:invariance-principle}) as in Remark~5.3, since $\mathcal U$ is
+  contractible. Identifying its fibres defines $\mathcal O_x$ for the Lorentzian $M$.
+\end{definition}
+
+\begin{proposition}[Action of observables; KS Section 5]
+  \label{prop:observable-action}
+  \notready
+  \uses{def:observables, def:field-theory, def:tensor-axiom}
+  Let $M \colon \Sigma_0 \leadsto \Sigma_1$ be a Lorentzian cobordism and
+  $x \in \mathring M$. An observable $\psi \in \mathcal O_x$ acts as an operator
+  $E_{\Sigma_0} \to E_{\Sigma_1}$. If $x$ lies on a time-slice $\Sigma$, then $\psi$
+  acts as an element of $\mathrm{Hom}(\check E_{\Sigma}; \hat E_{\Sigma})$, an unbounded
+  operator in $E_{\Sigma}$. For distinct points $x_1, \ldots, x_k$ on $\Sigma$ there is
+  a multilinear map
+  \[ \mathcal O_{x_1} \otimes \cdots \otimes \mathcal O_{x_k} \;\longrightarrow\;
+     \mathrm{Hom}(\check E_{\Sigma}; \hat E_{\Sigma}) \]
+  that does not depend on an ordering of the points.
+\end{proposition}
+
+\begin{proof}
+  \uses{def:field-theory, def:tensor-axiom}
+  Removing a small disc $D$ around $x$ from $M$ leaves a cobordism
+  $M \setminus \mathring D \colon \partial D \sqcup \Sigma_0 \leadsto \Sigma_1$, which by
+  the tensoring property (Definition~\ref{def:tensor-axiom}) gives a map
+  $E_{\partial D} \to \mathrm{Hom}(E_{\Sigma_0}; E_{\Sigma_1})$; passing to the inverse
+  limit over $D$ gives the action of $\mathcal O_x$ as $E_{\Sigma_0} \to E_{\Sigma_1}$.
+  When $x$ lies on a time-slice $\Sigma$, the cobordisms cut out by successively thinner
+  collars of $\Sigma$ give instead an element of
+  $\mathrm{Hom}(\check E_{\Sigma}; \hat E_{\Sigma})$. The same construction applied to
+  disjoint collars of the distinct points $x_1, \ldots, x_k$, with the tensoring
+  property, yields the multilinear map; it is independent of the ordering because
+  disjoint collars may be taken in any order.
+\end{proof}
+
+\begin{proposition}[Spacelike commutativity; KS Section 5]
+  \label{prop:spacelike-commutativity}
+  \notready
+  \uses{prop:observable-action, thm:unitary-gh, def:globally-hyperbolic,
+    def:field-theory}
+  On a real-analytic globally hyperbolic space-time the field operators of observables
+  at space-like separated points commute, which is the Wightman locality axiom.
+  Precisely: by the unitary propagation $Z_{t,t'}$ of Theorem~\ref{thm:unitary-gh}, the
+  rigged Hilbert spaces $\check E_{\Sigma_t} \subset E_{\Sigma_t}^{\mathrm{Hilb}} \subset
+  \hat E_{\Sigma_t}$ for $t_0 \le t \le t_1$ are identified into a single rigged Hilbert
+  space $\check E \subset E^{\mathrm{Hilb}} \subset \hat E$, and an observable
+  $\psi \in \mathcal O_x$ with $x \in \Sigma_t$ defines an unbounded operator
+  \[ \tilde\psi = Z_{t_0,t}^{-1} \circ \psi \circ Z_{t_0,t} \colon \check E \to \hat E, \]
+  independent of the choice of time-function. If $x$ and $x'$ are space-like separated,
+  the operators $\tilde\psi$ and $\tilde\psi'$ are composable and commute.
+\end{proposition}
+
+\begin{proof}
+  \uses{thm:unitary-gh, prop:observable-action, prop:invariance-principle}
+  The identification of the rigged Hilbert spaces along the foliation and the operator
+  $\tilde\psi$ use the unitary propagation of Theorem~\ref{thm:unitary-gh}. That
+  $\tilde\psi$ does not depend on the time-function follows from Principle~5.1
+  (Proposition~\ref{prop:invariance-principle}): changing the time-function moves the
+  time-slice through the complexification, leaving the operators unchanged. If $x$ and
+  $x'$ are space-like separated, a single time-slice $\Sigma_t$ contains both, and the
+  multilinear map of Proposition~\ref{prop:observable-action} writes the composite in
+  either order as $Z_{t_0,t}^{-1} \circ (\psi \otimes \psi') \circ Z_{t_0,t}$, which is
+  symmetric in $\psi$ and $\psi'$; hence $\tilde\psi$ and $\tilde\psi'$ commute.
+\end{proof}
+
+Stating these results in Lean rests on infrastructure not developed here. The space
+$\mathcal O_x$ is a fibre of a bundle on $\mathrm{Met}_{\mathbb C}(\hat x)$, inheriting
+the deferred complex-manifold structure of $\mathrm{Met}_{\mathbb C}$
+(Definition~\ref{def:metc-complex-manifold}); its Lorentzian definition uses the
+complexified tangent space $T_x^{\mathbb C}$, the real Grassmannian
+$\mathrm{Gr}_d(T_x^{\mathbb C})$ and the contractible open set $\mathcal U$ of allowable
+subspaces (Proposition~\ref{prop:real-subspaces}), and the complexification
+$M_{\mathbb C}$ of Principle~5.1. The elements of
+$\mathrm{Hom}(\check E_{\Sigma}; \hat E_{\Sigma})$ are unbounded operators in
+$E_{\Sigma}$, and the rigged Hilbert space
+$\check E \subset E^{\mathrm{Hilb}} \subset \hat E$ inherits the Hilbert completion and
+the topological-vector-space limit structure left deferred in Section~3 and Theorem~5.2.
+Space-like separation is Lorentzian causal geometry, also not in Mathlib.
