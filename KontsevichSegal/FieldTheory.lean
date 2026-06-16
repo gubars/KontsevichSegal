@@ -1,3 +1,4 @@
+import KontsevichSegal.FieldTheory.Continuity
 import KontsevichSegal.FieldTheory.FieldTheory
 import KontsevichSegal.FieldTheory.Holomorphicity
 import KontsevichSegal.FieldTheory.HolomorphicBundle
