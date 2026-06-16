@@ -1,3 +1,4 @@
+import KontsevichSegal.FieldTheory.FieldTheory
 import KontsevichSegal.FieldTheory.HolomorphicBundle
 import KontsevichSegal.FieldTheory.MetCManifold
 import KontsevichSegal.FieldTheory.NuclearFrechet
