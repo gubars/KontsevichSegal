@@ -1,1 +1,2 @@
+import KontsevichSegal.FieldTheory.MetCManifold
 import KontsevichSegal.FieldTheory.NuclearFrechet
