@@ -11,5 +11,6 @@ import KontsevichSegal.ComplexMetrics.ShilovBoundary
 import KontsevichSegal.FieldTheory
 import KontsevichSegal.FieldTheory.FieldTheory
 import KontsevichSegal.FieldTheory.HolomorphicBundle
+import KontsevichSegal.FieldTheory.Holomorphicity
 import KontsevichSegal.FieldTheory.MetCManifold
 import KontsevichSegal.FieldTheory.NuclearFrechet
