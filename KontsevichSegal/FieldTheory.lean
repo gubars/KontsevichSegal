@@ -1,3 +1,4 @@
+import KontsevichSegal.FieldTheory.ConjugateDualDuality
 import KontsevichSegal.FieldTheory.Continuity
 import KontsevichSegal.FieldTheory.DualConjugate
 import KontsevichSegal.FieldTheory.FieldTheory

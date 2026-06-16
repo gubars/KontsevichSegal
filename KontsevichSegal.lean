@@ -9,6 +9,7 @@ import KontsevichSegal.ComplexMetrics.Equivalence
 import KontsevichSegal.ComplexMetrics.Restriction
 import KontsevichSegal.ComplexMetrics.ShilovBoundary
 import KontsevichSegal.FieldTheory
+import KontsevichSegal.FieldTheory.ConjugateDualDuality
 import KontsevichSegal.FieldTheory.Continuity
 import KontsevichSegal.FieldTheory.DualConjugate
 import KontsevichSegal.FieldTheory.FieldTheory
