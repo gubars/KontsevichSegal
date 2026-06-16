@@ -220,3 +220,55 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
   the passage from $h_t = H(t^2)$ to $H(-t^2)$ which realizes the rotated metric as
   real.
 \end{definition}
+
+\section{The invariance principle (Principle 5.1)}
+
+\begin{proposition}[Principle 5.1; KS Section 5]
+  \label{prop:invariance-principle}
+  \notready
+  \uses{def:field-theory, def:holomorphicity, def:allowable,
+    def:lorentzian-cobordism-category}
+  Let $M$ be a $d$-dimensional cobordism that is a real submanifold of a complex
+  $d$-manifold $M_{\mathbb C}$, and suppose the complex metric of $M$ is allowable
+  and is induced from a holomorphic symmetric form $g$ on the tangent bundle
+  $TM_{\mathbb C}$. Then the linear map $Z_M$ does not change when $M$ is moved
+  smoothly inside $M_{\mathbb C}$ with its ends $\partial M$ held fixed, provided the
+  restriction of $g$ to $M$ remains an allowable complex metric throughout the
+  movement.
+\end{proposition}
+
+\begin{proof}
+  \uses{def:holomorphicity, def:field-theory}
+  Any infinitesimal movement of $M$ inside $M_{\mathbb C}$ is given by a complex
+  vector field on $M$, that is by a complexified tangent vector to the group
+  $\mathrm{Diff}(M \ \mathrm{rel}\ \partial M)$ of diffeomorphisms of $M$ fixing the
+  boundary. The operator $Z_M$ is invariant under this group, which only
+  reparametrizes the cobordism, so the derivative of $Z_M$ vanishes in the real
+  directions of the group. By holomorphicity (Definition~\ref{def:holomorphicity})
+  the operator $Z_M$ depends holomorphically on $M$, so its derivative is
+  complex-linear and therefore vanishes in the complexified directions as well.
+  Hence $Z_M$ does not change under the movement. This is the higher-dimensional
+  form of the $d = 1$ argument, in which the operator $Z_f$ of an embedding
+  $f \colon [0,1] \to \mathbb C$ depends only on the endpoint $f(1)$.
+\end{proof}
+
+Principle~5.1 is the technical engine of Section~5. To apply it one needs $M$
+embedded in a complexification $M_{\mathbb C}$, which is available in the
+real-analytic category $\mathcal C_d^{\mathrm{Lor},\omega}$ of
+Definition~\ref{def:lorentzian-cobordism-category}. The forthcoming results use it
+to define the operator $Z_M$ of a Lorentzian cobordism, to prove Theorem~5.2 that a
+unitary theory induces a unitary functor on $\mathcal C_d^{\mathrm{gh},\omega}$, to
+remove the dependence of the Wick rotation of Definition~\ref{def:wick-rotation} on
+the choices made (Remark~5.3), and to define the spaces of observables. These are
+stated as separate nodes and are not assumed here.
+
+Stating Principle~5.1 in Lean requires geometry not developed here: the
+complexification $M_{\mathbb C}$ of a real-analytic cobordism $M$ and the
+realization of $M$ as a totally real submanifold of it, holomorphic symmetric forms
+on the tangent bundle $TM_{\mathbb C}$ and the allowable complex metric they induce
+on $M$, the smooth isotopies of $M$ inside $M_{\mathbb C}$ holding $\partial M$
+fixed, and the group $\mathrm{Diff}(M \ \mathrm{rel}\ \partial M)$ with its
+complexified Lie algebra of complex vector fields on $M$. The complexification
+$M_{\mathbb C}$ is the heaviest assumed piece: it rests on the real-analytic
+structure of $\mathcal C_d^{\mathrm{Lor},\omega}$, and the complexification of a
+real-analytic manifold is not available in Mathlib.
