@@ -163,3 +163,60 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
   $\mathcal C_d^{\mathrm{gh},\omega}$, the real-analytic structure on the manifolds,
   metrics, and time-function together with the complexification $M_{\mathbb C}$.
 \end{definition}
+
+\section{Wick rotation of a time-symmetric germ}
+
+\begin{definition}[Wick rotation of a time-symmetric germ; KS Section 5]
+  \label{def:wick-rotation}
+  \notready
+  \uses{def:lorentzian-cobordism-category, def:unitarity, def:field-theory}
+  For a \emph{time-symmetric} Lorentzian germ the Wick rotation continues the
+  Lorentzian metric to a Riemannian one and uses it to define the Euclidean space
+  $E_{\Sigma}$.
+
+  \emph{The setup.} Let $\Sigma \subset U$ be a Lorentzian germ, with $\Sigma$
+  co-oriented in $U$. Exponentiating the geodesics emanating perpendicularly from
+  $\Sigma$ identifies $U$ with $\Sigma \times (-\varepsilon, \varepsilon)$, and in
+  this identification the Lorentzian metric takes the geodesic-normal form
+  \[ h_t - \mathrm{d}t^2, \]
+  where $t \mapsto h_t$ is a smooth map from $(-\varepsilon, \varepsilon)$ into the
+  manifold of Riemannian metrics on $\Sigma$, as in
+  Definition~\ref{def:lorentzian-cobordism-category}.
+
+  \emph{The Wick rotation.} Suppose the germ is \emph{time-symmetric} in the sense
+  of Definition~\ref{def:unitarity}, that is $\Sigma \cong \bar\Sigma^*$. We define
+  the Euclidean space $E_{\Sigma}$ of the Lorentzian germ by replacing its
+  Lorentzian metric with the \emph{Wick-rotated} Riemannian metric
+  \[ h_{\mathrm{i}t} + \mathrm{d}t^2, \]
+  and taking $E_{\Sigma}$ to be the space that the field theory of
+  Definition~\ref{def:field-theory} assigns to this Riemannian germ.
+
+  \emph{Why time-symmetry licenses the rotation.} For a Lorentzian germ in normal
+  form the time-symmetry condition $\Sigma \cong \bar\Sigma^*$ is the reflection
+  $t \mapsto -t$, which reverses the co-orientation and, the metric being real,
+  leaves it unchanged; invariance under the reflection is the relation
+  $h_t = h_{-t}$. Thus $t \mapsto h_t$ is even, hence a function of $t^2$: there is
+  a smooth $s \mapsto H(s)$ near $0$ with $h_t = H(t^2)$. The rotation
+  $t \mapsto \mathrm{i}t$ replaces $t^2$ by $(\mathrm{i}t)^2 = -t^2$, so
+  $h_{\mathrm{i}t} = H(-t^2)$ is defined and real, a genuine Riemannian metric on
+  $\Sigma$. The rotated metric $h_{\mathrm{i}t} + \mathrm{d}t^2$ is therefore
+  Riemannian, of Euclidean signature, and $E_{\Sigma}$ is well defined. Without
+  time-symmetry the family $t \mapsto h_t$ need not be even, $h_{\mathrm{i}t}$ need
+  not be real, and the construction does not apply.
+
+  \emph{The limitation.} This Wick rotation defines $E_{\Sigma}$ only for
+  time-symmetric germs. For a general hypersurface it does not help, and even where
+  it applies the prescription is rather arbitrary, tied to the chosen normal form.
+  The definition of $E_{\Sigma}$ for a general Lorentzian germ, and the independence
+  of the construction from the choices made, are recovered later by the forthcoming
+  Principle~5.1 and Remark~5.3.
+
+  Stating this in Lean requires Lorentzian-manifold geometry not developed here:
+  the geodesic-normal-form identification
+  $U \cong \Sigma \times (-\varepsilon, \varepsilon)$ of a Lorentzian germ, the
+  manifold of Riemannian metrics on $\Sigma$ together with the smooth family
+  $t \mapsto h_t$, the reflection structure of a time-symmetric germ giving
+  $h_t = h_{-t}$, and the analytic continuation $t \mapsto h_{\mathrm{i}t}$, that is
+  the passage from $h_t = H(t^2)$ to $H(-t^2)$ which realizes the rotated metric as
+  real.
+\end{definition}
