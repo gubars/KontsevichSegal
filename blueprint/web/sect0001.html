@@ -13,6 +13,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The domain of complex metrics (KS Section 2)</title>
+<link rel="next" href="sect0002.html" title="Quantum field theories as functors (KS Section 3)" />
 <link rel="prev" href="index.html" title="Lean 4 formalization of the Kontsevich-Segal axioms" />
 <link rel="up" href="index.html" title="Lean 4 formalization of the Kontsevich-Segal axioms" />
 <link rel="stylesheet" href="styles/theme-white.css" />
@@ -36,16 +37,46 @@
   <span class="expand-toc">▼</span>
   <ul class="sub-toc-1 active">
      <li class="">
-  <a href="sect0001.html#a0000000003"><span class="toc_ref">1.1</span> <span class="toc_entry">Allowable complex metrics</span></a>
+  <a href="sect0001.html#a0000000004"><span class="toc_ref">1.1</span> <span class="toc_entry">Allowable complex metrics</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000011"><span class="toc_ref">1.2</span> <span class="toc_entry">Structure of the domain \(Q_{\mathbb C}(V)\)</span></a>
+  <a href="sect0001.html#a0000000012"><span class="toc_ref">1.2</span> <span class="toc_entry">Structure of the domain \(Q_{\mathbb C}(V)\)</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000018"><span class="toc_ref">1.3</span> <span class="toc_entry">The Shilov boundary: Lorentzian metrics</span></a>
+  <a href="sect0001.html#a0000000019"><span class="toc_ref">1.3</span> <span class="toc_entry">The Shilov boundary: Lorentzian metrics</span></a>
  </li>
 <li class="">
-  <a href="sect0001.html#a0000000021"><span class="toc_ref">1.4</span> <span class="toc_entry">The two-dimensional case</span></a>
+  <a href="sect0001.html#a0000000022"><span class="toc_ref">1.4</span> <span class="toc_entry">The two-dimensional case</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref">2</span> <span class="toc_entry">Quantum field theories as functors (KS Section 3)</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0002.html#a0000000023"><span class="toc_ref">2.1</span> <span class="toc_entry">The cobordism category</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0002.html#a0000000024"><span class="toc_ref">2.1.1</span> <span class="toc_entry">Analytic infrastructure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0002.html#a0000000025"><span class="toc_ref">2.2</span> <span class="toc_entry">Field theories as functors</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0002.html#a0000000026"><span class="toc_ref">2.2.1</span> <span class="toc_entry">The functor axioms</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html#a0000000027"><span class="toc_ref">2.2.2</span> <span class="toc_entry">Unitarity</span></a>
+ </li>
+
+  </ul>
  </li>
 
   </ul>
@@ -61,7 +92,7 @@
 <div class="main-text">
 <h1 id="a0000000002">1 The domain of complex metrics (KS Section 2)</h1>
 <p>This chapter is the blueprint for Section&#160;2 of Kontsevich–Segal, <em>Wick rotation and the positivity of energy in quantum field theory</em> (arXiv:2105.10161), formalized in <span class="ttfamily">KontsevichSegal/ComplexMetrics/</span>. The paper introduces, for a \(d\)-dimensional real vector space \(V\), an open domain \(Q_{\mathbb C}(V)\) of <em>allowable</em> complex-valued quadratic forms (“complex metrics”), generalizing positive-definite inner products. The Shilov boundary of this domain contains the real Lorentzian metrics and no other nondegenerate real metrics. </p>
-<h1 id="a0000000003">1.1 Allowable complex metrics</h1>
+<h1 id="a0000000004">1.1 Allowable complex metrics</h1>
 <div class="definition_thmwrapper theorem-style-definition" id="def:allowable-hodge">
   <div class="definition_thmheading">
     <span class="definition_thmcaption">
@@ -82,7 +113,7 @@
   </div>
   <div class="definition_thmcontent">
   <p>  On a \(d\)-dimensional real vector space \(V\), a quadratic form \(g \colon V \to \mathbb C\) is an <em>allowable complex metric</em> if, for all degrees \(p \geq 0\), the real part of the quadratic form </p>
-<div class="displaymath" id="a0000000004">
+<div class="displaymath" id="a0000000005">
   \[  \Lambda ^p(V^*) \longrightarrow |\Lambda ^d(V^*)|_{\mathbb C}, \qquad \alpha \mapsto \alpha \wedge *_g\,  \alpha  \]
 </div>
 <p> is positive-definite. Here \(*_g\) is the Hodge star operator of the complex metric \(g\), and \(|\Lambda ^d(V^*)|_{\mathbb C}\) is the complexified twisted determinant line, with orientation-reversing automorphisms of \(V\) acting antilinearly. </p>
@@ -135,11 +166,11 @@
   </div>
   <div class="definition_thmcontent">
   <p>   A tuple of complex numbers \((\lambda _1, \dots , \lambda _d)\) satisfies the <em>angle condition</em> if every \(\lambda _i\) is nonzero, no \(\lambda _i\) lies on the non-positive real axis, and </p>
-<div class="displaymath" id="a0000000005">
+<div class="displaymath" id="a0000000006">
   \[  |\arg (\lambda _1)| + |\arg (\lambda _2)| + \dots + |\arg (\lambda _d)| \; {\lt}\;  \pi . \tag {4}  \]
 </div>
 <p> An <em>allowable complex metric</em> on a finite-dimensional real vector space \(V\) is a symmetric nondegenerate \(\mathbb R\)-bilinear form \(g \colon V \times V \to \mathbb C\) for which there exist a basis \((y_i)\) of coordinates on \(V\) and coefficients \((\lambda _i)\) satisfying the angle condition with </p>
-<div class="displaymath" id="a0000000006">
+<div class="displaymath" id="a0000000007">
   \[  g \; =\;  \lambda _1 y_1^2 + \lambda _2 y_2^2 + \dots + \lambda _d y_d^2 .  \]
 </div>
 <p> The collection of allowable complex metrics on \(V\) is denoted \(Q_{\mathbb C}(V)\); in the paper it is an open subset of the complex vector space \(S^2(V^*_{\mathbb C})\). This diagonal characterization serves as the definition of allowability throughout the formalization, since Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> requires the Hodge star operator. </p>
@@ -160,7 +191,7 @@
 
     <a class="icon proof" href="sect0001.html#thm:angle-equiv">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000007"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000008"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -218,7 +249,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000007">
+<div class="proof_wrapper" id="a0000000008">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -246,7 +277,7 @@
 
     <a class="icon proof" href="sect0001.html#lem:convex-cone">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000008"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000009"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -299,7 +330,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000008">
+<div class="proof_wrapper" id="a0000000009">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -320,12 +351,14 @@
     <span class="lemma_thmtitle">The volume element; KS p.&#160;7</span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
     <a class="icon proof" href="sect0001.html#lem:volume-element">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000009"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000010"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -378,7 +411,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000009">
+<div class="proof_wrapper" id="a0000000010">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -404,7 +437,7 @@
 
     <a class="icon proof" href="sect0001.html#prop:conf-envelope">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000010"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000011"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -439,7 +472,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000010">
+<div class="proof_wrapper" id="a0000000011">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -451,7 +484,7 @@
 
   </div>
 </div>
-<h1 id="a0000000011">1.2 Structure of the domain \(Q_{\mathbb C}(V)\)</h1>
+<h1 id="a0000000012">1.2 Structure of the domain \(Q_{\mathbb C}(V)\)</h1>
 <div class="definition_thmwrapper theorem-style-definition" id="def:trace-norm-fiber">
   <div class="definition_thmheading">
     <span class="definition_thmcaption">
@@ -510,7 +543,7 @@
 
     <a class="icon proof" href="sect0001.html#prop:parametrization">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000012"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000013"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -564,7 +597,7 @@
   </div>
   <div class="proposition_thmcontent">
   <p>    \(Q_{\mathbb C}(V)\) is a fibre bundle over the space of positive-definite inner products on \(V\) whose fibre at \(g_0\) is \(\Pi (V, g_0)\). Equivalently, choosing a reference inner product, </p>
-<div class="displaymath" id="a0000000013">
+<div class="displaymath" id="a0000000014">
   \[  Q_{\mathbb C}(V) \; \cong \;  \mathrm{GL}(V) \times _{\mathrm{O}(V)} \Pi (V).  \]
 </div>
 <p> In particular, \(Q_{\mathbb C}(V)\) is contractible. </p>
@@ -572,7 +605,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000012">
+<div class="proof_wrapper" id="a0000000013">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -664,7 +697,7 @@
 
     <a class="icon proof" href="sect0001.html#prop:restriction">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000014"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000015"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -719,7 +752,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000014">
+<div class="proof_wrapper" id="a0000000015">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -745,7 +778,7 @@
 
     <a class="icon proof" href="sect0001.html#prop:real-subspaces">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000015"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000016"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -778,14 +811,14 @@
   </div>
   <div class="proposition_thmcontent">
   <p>   Let \(Z\) be a \(d\)-dimensional complex vector space with a nondegenerate quadratic form \(g\), and let \(\mathcal R(Z)\) be the space of \(d\)-dimensional real subspaces \(A \subset Z\) such that \(g|_A\) belongs to \(Q_{\mathbb C}(A)\) (an open subset of the real Grassmannian). Then \(\mathcal R(Z)\) is contractible, and </p>
-<div class="displaymath" id="a0000000016">
+<div class="displaymath" id="a0000000017">
   \[  \mathcal R(Z) \; \cong \;  \mathrm{O}_{\mathbb C}(Z) \times _{\mathrm{O}(Z_{\mathbb R})} \Pi (Z_{\mathbb R}).  \]
 </div>
 <p>Formalization requires the Grassmannian of real subspaces, \(\mathrm{O}_{\mathbb C}(Z)\)-actions, and the same associated-bundle machinery as Proposition&#160;<a href="sect0001.html#prop:parametrization">8</a>. The result is needed for the Wick rotation of field operators in Section&#160;5 of the paper and is deferred to <span class="ttfamily">WickRotation/FieldOperators</span>. </p>
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000015">
+<div class="proof_wrapper" id="a0000000016">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -811,7 +844,7 @@
 
     <a class="icon proof" href="sect0001.html#prop:domain-holomorphy">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000017"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000018"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -865,7 +898,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000017">
+<div class="proof_wrapper" id="a0000000018">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -901,7 +934,7 @@
 
   </div>
 </div>
-<h1 id="a0000000018">1.3 The Shilov boundary: Lorentzian metrics</h1>
+<h1 id="a0000000019">1.3 The Shilov boundary: Lorentzian metrics</h1>
 <div class="definition_thmwrapper theorem-style-definition" id="def:lorentzian">
   <div class="definition_thmheading">
     <span class="definition_thmcaption">
@@ -955,12 +988,14 @@
     <span class="proposition_thmtitle">Lorentzian metrics lie on the boundary; KS p.&#160;9</span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
     <a class="icon proof" href="sect0001.html#prop:lorentzian-boundary">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000019"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000020"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -1017,7 +1052,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000019">
+<div class="proof_wrapper" id="a0000000020">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -1038,12 +1073,14 @@
     <span class="proposition_thmtitle">Only Lorentzian metrics lie on the boundary; KS p.&#160;9</span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
     <a class="icon proof" href="sect0001.html#prop:only-lorentzian">#</a>
     
-    <a class="icon proof" href="sect0001.html#a0000000020"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+    <a class="icon proof" href="sect0001.html#a0000000021"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
 </a>
     
     
@@ -1065,7 +1102,7 @@
           
           <li><a href="sect0001.html#def:allowable">Definition 2</a></li>
           
-          <li><a href="sect0001.html#prop:restriction">Proposition 10</a></li>
+          <li><a href="sect0001.html#def:lorentzian">Definition 14</a></li>
           
         </ul>
     
@@ -1100,7 +1137,7 @@
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000020">
+<div class="proof_wrapper" id="a0000000021">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -1108,7 +1145,7 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p> For a real metric each \(|\arg \lambda _i|\) is \(0\) or \(\pi \), and inequality (4) shows at most one \(|\arg \lambda _i|\) can become \(\pi \) in the limit: a two-dimensional \(\varphi \)-negative-definite subspace would, after restricting the approximating allowable metrics to it (Proposition&#160;<a href="sect0001.html#prop:restriction">10</a>), force the angle sum toward \(2\pi \). Nondegeneracy and failure of positive-definiteness then force exactly one negative eigenvalue. </p>
+  <p> Diagonalize \(\varphi \) over \(\mathbb R\) in an orthogonal basis \(e_i\), rescaling so that \(\varphi (e_i, e_i) = s_i \in \{ +1, -1\} \); nondegeneracy makes every diagonal entry nonzero. Since \(\varphi \) is not positive-definite, at least one \(s_i = -1\). Suppose two signs were negative, say \(s_{i_0} = s_j = -1\) with \(i_0 \neq j\). On the plane \(W = \langle e_{i_0}, e_j \rangle \) one has \(\varphi (v, v) = -(x^2 + y^2)\), so \(\varphi \) is negative-definite on \(W\). Choose an allowable \(g\) whose entries on a fixed basis are within \(\varepsilon \) of those of \(\varphi \), with \(\varepsilon \) small enough that \(\operatorname {Re} g(v, v) {\lt} 0\) for every nonzero \(v \in W\); the entrywise closeness transfers to a uniform bound \(|\operatorname {Re} g(v, v) - \varphi (v, v)| \le C \varepsilon (x^2 + y^2)\) on \(W\). Writing \(g\) in its own diagonalizing basis, \(\operatorname {Re} g(v, v) = \sum _k (\operatorname {Re} \lambda _k) \beta _k(v)^2\). If two eigenvalues had \(\operatorname {Re} \lambda _k {\lt} 0\), then \(|\arg \lambda _k| \ge \pi /2\) for each, giving \(\sum _k |\arg \lambda _k| \ge \pi \) and contradicting the angle condition; hence at most one \(\operatorname {Re} \lambda _k\) is negative. The single linear condition \(\beta _{k_0}(v) = 0\) then cuts out a nonzero \(v \in W\) on which every surviving term has \(\operatorname {Re} \lambda _k \ge 0\), so \(\operatorname {Re} g(v, v) \ge 0\), contradicting negative-definiteness on \(W\). Therefore exactly one sign is negative and \(\varphi \) is Lorentzian. </p>
 
   </div>
 </div>
@@ -1179,7 +1216,7 @@
 
   </div>
 </div>
-<h1 id="a0000000021">1.4 The two-dimensional case</h1>
+<h1 id="a0000000022">1.4 The two-dimensional case</h1>
 <div class="proposition_thmwrapper theorem-style-plain" id="prop:two-dim-polydisc">
   <div class="proposition_thmheading">
     <span class="proposition_thmcaption">
@@ -1257,6 +1294,8 @@
   <a href="index.html" title="Lean 4 formalization of the Kontsevich-Segal axioms"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
 </a>
   <a href="index.html" title="Lean 4 formalization of the Kontsevich-Segal axioms"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sect0002.html" title="Quantum field theories as functors (KS Section 3)"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 

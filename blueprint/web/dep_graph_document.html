@@ -76,11 +76,11 @@
       </span>
       <span class="definition_thmlabel">2</span><span class="definition_thmtitle">Allowable complex metric, working definition: the angle condition</span></div>
     <div class="thm_thmcontent"><p>   A tuple of complex numbers \((\lambda _1, \dots , \lambda _d)\) satisfies the <em>angle condition</em> if every \(\lambda _i\) is nonzero, no \(\lambda _i\) lies on the non-positive real axis, and </p>
-<div class="displaymath" id="a0000000005">
+<div class="displaymath" id="a0000000006">
   \[  |\arg (\lambda _1)| + |\arg (\lambda _2)| + \dots + |\arg (\lambda _d)| \; {\lt}\;  \pi . \tag {4}  \]
 </div>
 <p> An <em>allowable complex metric</em> on a finite-dimensional real vector space \(V\) is a symmetric nondegenerate \(\mathbb R\)-bilinear form \(g \colon V \times V \to \mathbb C\) for which there exist a basis \((y_i)\) of coordinates on \(V\) and coefficients \((\lambda _i)\) satisfying the angle condition with </p>
-<div class="displaymath" id="a0000000006">
+<div class="displaymath" id="a0000000007">
   \[  g \; =\;  \lambda _1 y_1^2 + \lambda _2 y_2^2 + \dots + \lambda _d y_d^2 .  \]
 </div>
 <p> The collection of allowable complex metrics on \(V\) is denoted \(Q_{\mathbb C}(V)\); in the paper it is an open subset of the complex vector space \(S^2(V^*_{\mathbb C})\). This diagonal characterization serves as the definition of allowability throughout the formalization, since Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> requires the Hodge star operator. </p>
@@ -125,7 +125,7 @@
       </span>
       <span class="definition_thmlabel">1</span><span class="definition_thmtitle">Allowable complex metric, Hodge-star form; KS Definition 2.1</span></div>
     <div class="thm_thmcontent"><p>  On a \(d\)-dimensional real vector space \(V\), a quadratic form \(g \colon V \to \mathbb C\) is an <em>allowable complex metric</em> if, for all degrees \(p \geq 0\), the real part of the quadratic form </p>
-<div class="displaymath" id="a0000000004">
+<div class="displaymath" id="a0000000005">
   \[  \Lambda ^p(V^*) \longrightarrow |\Lambda ^d(V^*)|_{\mathbb C}, \qquad \alpha \mapsto \alpha \wedge *_g\,  \alpha  \]
 </div>
 <p> is positive-definite. Here \(*_g\) is the Hodge star operator of the complex metric \(g\), and \(|\Lambda ^d(V^*)|_{\mathbb C}\) is the complexified twisted determinant line, with orientation-reversing automorphisms of \(V\) acting antilinearly. </p>
@@ -133,6 +133,251 @@
 </div>
 
     <a class="latex_link" href="sect0001.html#def:allowable-hodge">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:cobordism-category_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:cobordism-category" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">19</span><span class="definition_thmtitle">The cobordism category \(\mathcal C_d^{\mathbb C}\); KS Section 3</span></div>
+    <div class="thm_thmcontent"><p>   A <em>complex metric</em> on a smooth manifold \(X\) is a smooth field \(x \mapsto g_x\) assigning to each point an allowable complex metric \(g_x \in Q_{\mathbb C}(T_x X)\) on the tangent space. Write \(\mathrm{Met}_{\mathbb C}(X)\) for the space of such fields. </p>
+<p>The category \(\mathcal C_d^{\mathbb C}\) is defined as follows. </p>
+<p><em>Objects.</em> An object is a germ of a \(d\)-manifold along a closed two-sided \((d-1)\)-manifold \(\Sigma \). Concretely, \(\Sigma \) is a compact \((d-1)\)-manifold presented as a closed submanifold of a \(d\)-manifold \(U\), and any two open neighbourhoods of \(\Sigma \) in \(U\) define the same object. The submanifold \(\Sigma \) is two-sided in \(U\) and carries a <em>co-orientation</em>, a choice of which of its two sides is incoming and which is outgoing. The germ carries a complex metric, that is a germ along \(\Sigma \) of an element \(g \in \mathrm{Met}_{\mathbb C}(U)\). One usually suppresses the thickening \(U\), the co-orientation, and the metric \(g\) from the notation. </p>
+<p><em>Morphisms.</em> A morphism \(\Sigma _0 \to \Sigma _1\) is a cobordism \(M : \Sigma _0 \leadsto \Sigma _1\), a compact \(d\)-manifold carrying a complex metric \(g_M \in \mathrm{Met}_{\mathbb C}(M)\), whose incoming and outgoing boundary germs are the objects \(\Sigma _0\) and \(\Sigma _1\) with their co-orientations and metric germs. Two cobordisms \(M, M' : \Sigma _0 \leadsto \Sigma _1\) represent the same morphism when there is an isometry \(M \to M'\) restricting to the identity on the germs \(\Sigma _0\) and \(\Sigma _1\). </p>
+<p><em>Composition.</em> Composition is concatenation of cobordisms. A cobordism \(\Sigma _0 \leadsto \Sigma _1\) followed by a cobordism \(\Sigma _1 \leadsto \Sigma _2\) is glued along their common boundary germ \(\Sigma _1\) to give a cobordism \(\Sigma _0 \leadsto \Sigma _2\). Taking objects to be germs rather than bare \((d-1)\)-manifolds is exactly what makes the smooth structure on the concatenation well defined, since there is no canonical smooth structure on the concatenation of two smooth cobordisms. </p>
+<p><em>Identity morphisms.</em> \(\mathcal C_d^{\mathbb C}\) is not literally a category, as it has no identity morphisms. The paper records two ways to deal with this, neither resolved here. One may declare an isomorphism \(\Sigma _0 \to \Sigma _1\) to be a cobordism of zero length; such degenerate cobordisms exist, but in any field theory they are represented by operators that are not nuclear, so they fall outside the intended class of morphisms. The alternative, which the paper adopts, takes a field theory to be a functor \(\Sigma \mapsto E_{\Sigma }\) from \((d-1)\)-manifold germs and their isomorphisms to vector spaces, together with a transformation \(Z_M : E_{\Sigma _0} \to E_{\Sigma _1}\) for each cobordism. The true replacement for the missing identity operators is then a condition imposed on field theories, namely that the canonical maps \(\check E_{\Sigma } \to \hat E_{\Sigma }\) are injective with dense image. </p>
+<p>Stating this in Lean requires smooth-manifold infrastructure not developed here: germs of manifolds along a submanifold, two-sidedness and co-orientation, isometries of manifolds carrying complex metrics, and gluing of cobordisms. It also requires realizing \(\mathrm{Met}_{\mathbb C}\) as the sections of a bundle whose fibre at \(x\) is the domain \(Q_{\mathbb C}(T_x X)\) of allowable complex metrics from Section&#160;2. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:cobordism-category">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:conjugate-dual-duality_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:conjugate-dual-duality" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">28</span><span class="definition_thmtitle">Conjugate-dual duality; KS Section 3, Appendix</span></div>
+    <div class="thm_thmcontent"><p>   For any field theory, with no further hypothesis, the appendix to Section 3 of the paper proves the duality </p>
+<div class="displaymath" id="a0000000031">
+  \[  (\check E_{\Sigma })^* \; \cong \;  \hat E_{\Sigma ^*},  \]
+</div>
+<p> that is, the strong dual of \(\check E_{\Sigma }\) is \(\hat E_{\Sigma ^*}\). The companion form, that the strong dual of \(\hat E_{\Sigma }\) is \(\check E_{\Sigma ^*}\), also holds. Passing between the two forms is not a mere swap of \(\Sigma \) and \(\Sigma ^*\); it dualizes the first and invokes the reflexivity of the nuclear Fréchet space \(\hat E_{\Sigma }\), which is among the properties assumed of nuclear spaces. We state these results; their appendix proof is not formalized. </p>
+<p>Separately, a field theory may satisfy the <em>reality condition</em>: a natural antilinear involution </p>
+<div class="displaymath" id="a0000000032">
+  \[  E_{\bar\Sigma } \; \cong \;  \overline{E_{\Sigma }}. \tag {5}  \]
+</div>
+<p> This is an additional hypothesis on the field theory, not part of the duality above. </p>
+<p>Only for a theory satisfying (5) does the <em>conjugate-dual</em> identification follow: the conjugate dual of \(\check E_{\Sigma }\) is \(\hat E_{\bar\Sigma ^*}\). This step combines the plain duality with the reality involution (5); unlike the plain duality, it does not hold without (5). </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:conjugate-dual-duality">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:continuity_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:continuity" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">25</span><span class="definition_thmtitle">Continuity; KS Section 3</span></div>
+    <div class="thm_thmcontent"><p>   A field theory satisfies the <em>continuity</em> property if, for every object \(\Sigma \), the canonical maps </p>
+<div class="displaymath" id="a0000000029">
+  \[  \check E_{\Sigma } \; \longrightarrow \;  E_{\Sigma } \; \longrightarrow \;  \hat E_{\Sigma }  \]
+</div>
+<p> are each injective with dense image. </p>
+<p>This condition is imposed on the field theory, the functor, not on the cobordism category. It is the true replacement for the identity morphisms that \(\mathcal C_d^{\mathbb C}\) lacks: rather than adjoining degenerate zero-length cobordisms, whose operators are not nuclear, one requires the injective dense maps \(\check E_{\Sigma } \to \hat E_{\Sigma }\) of the functor. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:continuity">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:dual-conjugate-functors_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:dual-conjugate-functors" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">27</span><span class="definition_thmtitle">Dual and conjugate functors; KS Section 3</span></div>
+    <div class="thm_thmcontent"><p>   Write \(\Sigma ^*\) for the object \(\Sigma \) with its co-orientation reversed, the incoming and outgoing sides exchanged while the underlying germ and metric are unchanged. A cobordism \(M \colon \Sigma _0 \leadsto \Sigma _1\) is equally a cobordism \(\Sigma _1^* \leadsto \Sigma _0^*\), and the two induced maps \(E_{\Sigma _0} \to E_{\Sigma _1}\) and \(E_{\Sigma _1^*} \to E_{\Sigma _0^*}\) are algebraic transposes of one another. Thus \(\Sigma \mapsto \Sigma ^*\) is a contravariant functor. At the level of the limit spaces, \(\check E_{\Sigma ^*}\) is the dual topological vector space of \(\hat E_{\Sigma }\). </p>
+<p>Write \(\bar\Sigma \) for the object \(\Sigma \) with its complex metric \(g\) replaced by the conjugate metric \(\bar g\) and its co-orientation unchanged. Then \(\Sigma \mapsto \bar\Sigma \) is a covariant functor. Composing the two gives the contravariant functor \(\Sigma \mapsto \bar\Sigma ^*\), which reverses the co-orientation and conjugates the metric. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:dual-conjugate-functors">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:field-theory_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:field-theory" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">23</span><span class="definition_thmtitle">Field theory as a holomorphic functor; KS Section 3</span></div>
+    <div class="thm_thmcontent"><p>   A <em>\(d\)-dimensional field theory</em> is a holomorphic functor from the cobordism category \(\mathcal C_d^{\mathbb C}\) to the category of Fréchet topological vector spaces and nuclear (trace-class) linear maps, which takes disjoint unions to tensor products. Write \(E_{\Sigma }\) for the space assigned to an object \(\Sigma \) and \(Z_M \colon E_{\Sigma _0} \to E_{\Sigma _1}\) for the nuclear (trace-class) map assigned to a cobordism \(M \colon \Sigma _0 \leadsto \Sigma _1\). Following the boxed definition, \(E_{\Sigma }\) is a Fréchet topological vector space. The paper assigns it no further structure: it plays only a provisional role, serving to construct the fundamental nuclear spaces between which it is sandwiched, and it is not asserted to be nuclear. Those fundamental nuclear spaces are the limit spaces \(\check E_{\Sigma }\) and \(\hat E_{\Sigma }\) introduced below, whose structure differs and is recorded there. </p>
+<p><em>Induced limit structure.</em> Because an object \(\Sigma \subset U\) is a germ of a \(d\)-manifold, it carries a direct system and an inverse system of neighbouring objects. Upstream, the sub-cobordisms \(\Sigma ' \leadsto \Sigma \) contained in \(U\), each diffeomorphic to the trivial cobordism \(\Sigma \times [0,1]\) with outgoing end \(\Sigma \), are ordered by inclusion and form a direct system with cobordisms to \(\Sigma \). Downstream, the cobordisms \(\Sigma \leadsto \Sigma ''\) contained in \(U\) form an inverse system to which \(\Sigma \) maps. Applying the functor yields canonical maps </p>
+<div class="displaymath" id="a0000000028">
+  \[  \check E_{\Sigma } \; \longrightarrow \;  E_{\Sigma } \; \longrightarrow \;  \hat E_{\Sigma },  \]
+</div>
+<p> where \(\check E_{\Sigma } := \varinjlim E_{\Sigma '}\) is the direct limit over the upstream system and \(\hat E_{\Sigma } := \varprojlim E_{\Sigma ''}\) is the inverse limit over the downstream system. The downstream limit \(\hat E_{\Sigma }\), being the inverse limit of a countable sequence of nuclear maps of Fréchet spaces, is a nuclear Fréchet space. The upstream limit \(\check E_{\Sigma }\) is also nuclear, but in general not metrizable, so unlike \(\hat E_{\Sigma }\) it is not a Fréchet space; the paper further identifies it as the strong dual of the nuclear Fréchet space \(\hat E_{\Sigma ^*}\), where \(\Sigma ^*\) is \(\Sigma \) with its co-orientation reversed, a result deferred to a later node. These two limit spaces, not \(E_{\Sigma }\), are the load-bearing nuclear spaces of the theory; \(E_{\Sigma }\) exists only to construct them. </p>
+<p><em>Words requiring separate nodes.</em> As the paper notes, almost every word of this definition requires further explication. The meaning of <em>holomorphic</em>, the <em>continuity</em> property of the maps \(\check E_{\Sigma } \to E_{\Sigma } \to \hat E_{\Sigma }\), the precise sense in which the functor <em>takes disjoint unions to tensor products</em>, and the further <em>unitarity</em> condition are each stated as separate nodes following this one. The present node fixes only the underlying functor and its induced limit structure. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:field-theory">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:holomorphic-bundle_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:holomorphic-bundle" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">22</span><span class="definition_thmtitle">Holomorphic vector bundles over \(\mathrm{Met}_{\mathbb C}(M)\)</span></div>
+    <div class="thm_thmcontent"><p>   Over the complex manifold \(\mathrm{Met}_{\mathbb C}(M)\) we assume the notion of a <em>locally trivial holomorphic vector bundle</em> whose fibres are topological vector spaces, namely Fréchet spaces with nuclear comparison maps, together with: </p>
+<ul class="itemize">
+  <li><p><em>morphisms</em> of such bundles, fibrewise continuous linear maps depending holomorphically on the base point; </p>
+</li>
+  <li><p><em>pullback</em> of such a bundle along a holomorphic map of complex manifolds, in particular along the restriction maps \(\mathrm{Met}_{\mathbb C}(M) \to \mathrm{Met}_{\mathbb C}(\Sigma _i)\) of the previous node. </p>
+</li>
+</ul>
+<p>This is the structure that the holomorphicity requirement on a field theory will later invoke: the spaces \(E_{\Sigma }\) are to form such a bundle over \(\mathrm{Met}_{\mathbb C}(U)\), and a cobordism map \(Z_M\) is to be a morphism of such bundles over \(\mathrm{Met}_{\mathbb C}(M)\), the bundles for the two ends being pulled back along the restriction maps. Locally trivial holomorphic bundles of topological vector spaces over an infinite-dimensional complex manifold are not available in Mathlib and are assumed. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:holomorphic-bundle">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:holomorphicity_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:holomorphicity" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">24</span><span class="definition_thmtitle">Holomorphicity; KS Section 3</span></div>
+    <div class="thm_thmcontent"><p>   The functor of a field theory is <em>holomorphic</em> in the following sense. For a fixed smooth manifold-germ \(\Sigma \subset U\), the spaces \(E_{\Sigma }\) form a locally trivial holomorphic vector bundle over the complex manifold \(\mathrm{Met}_{\mathbb C}(U)\) of complex metrics on \(U\). For a cobordism \(M \colon \Sigma _0 \leadsto \Sigma _1\), the maps \(Z_M\) form a morphism of holomorphic vector bundles over \(\mathrm{Met}_{\mathbb C}(M)\), the bundles \(\{ E_{\Sigma _0}\} \) and \(\{ E_{\Sigma _1}\} \) of the two ends being pulled back to \(\mathrm{Met}_{\mathbb C}(M)\) along the restriction maps. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:holomorphicity">LaTeX</a>
     
     
   
@@ -166,6 +411,79 @@
     
     
   <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/IsLorentzian">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:metc-complex-manifold_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:metc-complex-manifold" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">21</span><span class="definition_thmtitle">\(\mathrm{Met}_{\mathbb C}(M)\) as a complex manifold</span></div>
+    <div class="thm_thmcontent"><p>   For a smooth \(d\)-manifold \(M\), the space \(\mathrm{Met}_{\mathbb C}(M)\) of complex metrics on \(M\), the smooth fields \(x \mapsto g_x \in Q_{\mathbb C}(T_x M)\), is assumed to carry the structure of a complex manifold, in general infinite-dimensional. The complex structure on each fibre comes from \(Q_{\mathbb C}(T_x M)\) being an open domain in the complex vector space of complex-valued quadratic forms on \(T_x M\) (Section 2), and these fibrewise structures fit together holomorphically over the smoothly varying point \(x\). Restriction of metrics along an inclusion of germs \(U' \subset U\), and along the inclusion of a cobordism’s boundary germ \(\Sigma _i \hookrightarrow M\), are holomorphic maps \(\mathrm{Met}_{\mathbb C}(U) \to \mathrm{Met}_{\mathbb C}(U')\) and \(\mathrm{Met}_{\mathbb C}(M) \to \mathrm{Met}_{\mathbb C}(\Sigma _i)\). </p>
+<p>The notion of “holomorphic” used throughout Section 3 is the one attached to this complex manifold. Its complex-manifold structure, infinite-dimensional in general, is cited by Kontsevich and Segal and not available in Mathlib. It is assumed. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:metc-complex-manifold">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:nuclear-frechet_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:nuclear-frechet" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">20</span><span class="definition_thmtitle">Nuclear Fréchet spaces and nuclear maps</span></div>
+    <div class="thm_thmcontent"><p>  A <em>Fréchet space</em> is a complete metrizable locally convex topological vector space over \(\mathbb C\). A continuous linear map \(T \colon E \to F\) between Fréchet spaces is <em>nuclear</em> (or <em>trace-class</em>) if it admits a representation \(T x = \sum _n \lambda _n\,  \phi _n(x)\,  y_n\) with \(\sum _n |\lambda _n| {\lt} \infty \), the functionals \(\phi _n\) equicontinuous in the dual \(E^*\) and the vectors \(y_n\) bounded in \(F\). A Fréchet space is <em>nuclear</em> if every continuous linear map from it into a Banach space is nuclear. </p>
+<p>The properties assumed of these spaces are: </p>
+<ul class="itemize">
+  <li><p>the inverse limit of a countable sequence of nuclear maps of Fréchet spaces is again a nuclear Fréchet space; </p>
+</li>
+  <li><p>nuclear spaces have a unique natural tensor product (the projective and injective tensor products coincide), coherently associative and commutative, so that \(E \otimes F\) is unambiguous for nuclear \(E\) and \(F\); </p>
+</li>
+  <li><p>the strong dual of a nuclear Fréchet space is nuclear, though usually not metrizable, and such spaces are reflexive, so double duality recovers the space; </p>
+</li>
+  <li><p>a nuclear endomorphism of such a space has a well-defined trace. </p>
+</li>
+</ul>
+<p>These are standard results in the theory of nuclear spaces, cited by Kontsevich and Segal and not available in Mathlib. They are assumed, not proved. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:nuclear-frechet">LaTeX</a>
+    
+    
+  
     
     
   
@@ -216,6 +534,41 @@
 
 
     
+    <div class="dep-modal-container" id="def:tensor-axiom_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:tensor-axiom" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">26</span><span class="definition_thmtitle">Disjoint unions to tensor products; KS Section 3</span></div>
+    <div class="thm_thmcontent"><p>   A field theory <em>takes disjoint unions to tensor products</em>: it is equipped with a natural isomorphism </p>
+<div class="displaymath" id="a0000000030">
+  \[  \check E_{\Sigma } \otimes \check E_{\Sigma '} \; \cong \;  \check E_{\Sigma \sqcup \Sigma '},  \]
+</div>
+<p> associative and commutative with respect to the standard isomorphisms of disjoint union and tensor product. The tensor product is unambiguous because the spaces are nuclear, nuclear spaces having a unique natural tensor product, and this isomorphism is equivalent to the corresponding one for the downstream limits, \(\hat E_{\Sigma } \otimes \hat E_{\Sigma '} \cong \hat E_{\Sigma \sqcup \Sigma '}\). Functoriality is the assumption that \(Z_M \otimes Z_{M'} = Z_{M \sqcup M'}\) for cobordisms \(M\) and \(M'\). </p>
+<p>This requirement forces \(E_{\emptyset } = \mathbb C\) on the empty \((d-1)\)-manifold. Hence a closed \(d\)-manifold \(M\), regarded as a cobordism \(\emptyset \leadsto \emptyset \), has a <em>partition function</em> \(Z_M \in \mathrm{End}(E_{\emptyset }) = \mathbb C\). </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:tensor-axiom">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
     <div class="dep-modal-container" id="def:trace-norm-fiber_modal">
       <div class="dep-modal-content">
           <button class="dep-closebtn">
@@ -235,6 +588,48 @@
     
     
   <a class="lean_link lean_decl" href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/TraceNormLtOne">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="def:unitarity_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="def:unitarity" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">29</span><span class="definition_thmtitle">Unitarity; KS Section 3</span></div>
+    <div class="thm_thmcontent"><p>   A germ \(\Sigma \) is <em>time-symmetric</em> if \(\Sigma \cong \bar\Sigma ^*\), that is, if \(\Sigma \subset U\) admits a reflection with fixed-point set \(\Sigma \) that reverses the co-orientation and replaces the metric by its complex conjugate. The metric of a time-symmetric germ is real, and its restriction to the hypersurface \(\Sigma \) is Riemannian. </p>
+<p>A field theory is <em>unitary</em> if it satisfies two conditions: </p>
+<ul class="itemize">
+  <li><p>the reality condition (5); and </p>
+</li>
+  <li><p><em>reflection-positivity</em>: for every time-symmetric germ \(\Sigma \cong \bar\Sigma ^*\), the hermitian duality between \(\check E_{\Sigma }\) and \(\check E_{\bar\Sigma }\) is positive-definite. </p>
+</li>
+</ul>
+<p>For a unitary theory and a time-symmetric germ \(\Sigma \), the positive-definite hermitian form makes \(\check E_{\Sigma }\) a pre-Hilbert space, which completes to a Hilbert space \(E^{\mathrm{Hilb}}_{\Sigma }\) sitting in </p>
+<div class="displaymath" id="a0000000033">
+  \[  \check E_{\Sigma } \; \longrightarrow \;  E^{\mathrm{Hilb}}_{\Sigma } \; \longrightarrow \;  \hat E_{\Sigma }.  \]
+</div>
+<p>This is where unitarity meets Section 2. The metric of a time-symmetric germ is real and Riemannian on the hypersurface \(\Sigma \), and by Propositions&#160;<a href="sect0001.html#prop:lorentzian-boundary">15</a> and&#160;<a href="sect0001.html#prop:only-lorentzian">16</a> the nondegenerate real metrics on the Shilov boundary of \(Q_{\mathbb C}(V)\) are exactly the Lorentzian ones. The time-symmetric hypersurfaces on which a unitary theory acquires Hilbert spaces are the functorial counterpart of those Lorentzian metrics on the Shilov boundary. </p>
+</div>
+
+    <a class="latex_link" href="sect0002.html#def:unitarity">LaTeX</a>
+    
+    
+  
     
     
   
@@ -472,7 +867,7 @@
       </span>
       <span class="proposition_thmlabel">8</span><span class="proposition_thmtitle">Parametrization and contractibility; KS Proposition 2.4</span></div>
     <div class="thm_thmcontent"><p>    \(Q_{\mathbb C}(V)\) is a fibre bundle over the space of positive-definite inner products on \(V\) whose fibre at \(g_0\) is \(\Pi (V, g_0)\). Equivalently, choosing a reference inner product, </p>
-<div class="displaymath" id="a0000000013">
+<div class="displaymath" id="a0000000014">
   \[  Q_{\mathbb C}(V) \; \cong \;  \mathrm{GL}(V) \times _{\mathrm{O}(V)} \Pi (V).  \]
 </div>
 <p> In particular, \(Q_{\mathbb C}(V)\) is contractible. </p>
@@ -516,7 +911,7 @@
       </span>
       <span class="proposition_thmlabel">11</span><span class="proposition_thmtitle">Real allowable subspaces of a complex quadratic space; KS Proposition 2.6</span></div>
     <div class="thm_thmcontent"><p>   Let \(Z\) be a \(d\)-dimensional complex vector space with a nondegenerate quadratic form \(g\), and let \(\mathcal R(Z)\) be the space of \(d\)-dimensional real subspaces \(A \subset Z\) such that \(g|_A\) belongs to \(Q_{\mathbb C}(A)\) (an open subset of the real Grassmannian). Then \(\mathcal R(Z)\) is contractible, and </p>
-<div class="displaymath" id="a0000000016">
+<div class="displaymath" id="a0000000017">
   \[  \mathcal R(Z) \; \cong \;  \mathrm{O}_{\mathbb C}(Z) \times _{\mathrm{O}(Z_{\mathbb R})} \Pi (Z_{\mathbb R}).  \]
 </div>
 <p>Formalization requires the Grassmannian of real subspaces, \(\mathrm{O}_{\mathbb C}(Z)\)-actions, and the same associated-bundle machinery as Proposition&#160;<a href="sect0001.html#prop:parametrization">8</a>. The result is needed for the Wick rotation of field operators in Section&#160;5 of the paper and is deferred to <span class="ttfamily">WickRotation/FieldOperators</span>. </p>
@@ -676,7 +1071,7 @@ graphContainer.graphviz({useWorker: true})
     .width(width)
     .height(height)
     .fit(true)
-    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:allowable-hodge"	[color="#FFAA33",		label="allowable-hodge",		shape=box];	"thm:angle-equiv"	[color="#FFAA33",		label="angle-equiv",		shape=ellipse];	"def:allowable-hodge" -> "thm:angle-equiv"	[style=dashed];	"prop:domain-holomorphy"	[color="#FFAA33",		label="domain-holomorphy",		shape=ellipse];	"def:allowable-hodge" -> "prop:domain-holomorphy";	"thm:two-copies"	[color="#FFAA33",		label="two-copies",		shape=ellipse];	"prop:domain-holomorphy" -> "thm:two-copies"	[style=dashed];	"lem:l-shape"	[color="#FFAA33",		label="l-shape",		shape=ellipse];	"prop:conf-envelope"	[color="#FFAA33",		label="conf-envelope",		shape=ellipse];	"lem:l-shape" -> "prop:conf-envelope";	"prop:restriction"	[color=green,		fillcolor="#A3D6FF",		label=restriction,		shape=ellipse,		style=filled];	"prop:only-lorentzian"	[color=green,		fillcolor="#A3D6FF",		label="only-lorentzian",		shape=ellipse,		style=filled];	"prop:restriction" -> "prop:only-lorentzian";	"prop:lorentzian-boundary"	[color=green,		fillcolor="#A3D6FF",		label="lorentzian-boundary",		shape=ellipse,		style=filled];	"prop:two-dim-polydisc"	[color="#FFAA33",		label="two-dim-polydisc",		shape=ellipse];	"def:lorentzian"	[color=green,		fillcolor="#B0ECA3",		label=lorentzian,		shape=box,		style=filled];	"def:lorentzian" -> "thm:two-copies"	[style=dashed];	"def:lorentzian" -> "prop:only-lorentzian"	[style=dashed];	"def:lorentzian" -> "prop:lorentzian-boundary"	[style=dashed];	"def:allowable"	[color=green,		fillcolor="#B0ECA3",		label=allowable,		shape=box,		style=filled];	"def:allowable" -> "thm:angle-equiv"	[style=dashed];	"def:allowable" -> "prop:domain-holomorphy"	[style=dashed];	"def:allowable" -> "prop:conf-envelope"	[style=dashed];	"def:allowable" -> "prop:two-dim-polydisc"	[style=dashed];	"def:restrict-form"	[color=green,		fillcolor="#B0ECA3",		label="restrict-form",		shape=box,		style=filled];	"def:allowable" -> "def:restrict-form"	[style=dashed];	"lem:convex-cone"	[color=green,		fillcolor="#1CAC78",		label="convex-cone",		shape=ellipse,		style=filled];	"def:allowable" -> "lem:convex-cone"	[style=dashed];	"lem:volume-element"	[color=green,		fillcolor="#A3D6FF",		label="volume-element",		shape=ellipse,		style=filled];	"def:allowable" -> "lem:volume-element"	[style=dashed];	"prop:parametrization"	[color="#FFAA33",		label=parametrization,		shape=ellipse];	"def:allowable" -> "prop:parametrization"	[style=dashed];	"def:restrict-form" -> "prop:restriction"	[style=dashed];	"lem:convex-cone" -> "prop:lorentzian-boundary";	"prop:real-subspaces"	[color="#FFAA33",		label="real-subspaces",		shape=ellipse];	"prop:parametrization" -> "prop:real-subspaces";	"def:trace-norm-fiber"	[color=green,		fillcolor="#B0ECA3",		label="trace-norm-fiber",		shape=box,		style=filled];	"def:trace-norm-fiber" -> "prop:parametrization"	[style=dashed];}`)
+    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:trace-norm-fiber"	[color=green,		fillcolor="#B0ECA3",		label="trace-norm-fiber",		shape=box,		style=filled];	"prop:parametrization"	[color="#FFAA33",		label=parametrization,		shape=ellipse];	"def:trace-norm-fiber" -> "prop:parametrization"	[style=dashed];	"prop:real-subspaces"	[color="#FFAA33",		label="real-subspaces",		shape=ellipse];	"prop:parametrization" -> "prop:real-subspaces";	"def:field-theory"	[color="#FFAA33",		label="field-theory",		shape=box];	"def:dual-conjugate-functors"	[color="#FFAA33",		label="dual-conjugate-functors",		shape=box];	"def:field-theory" -> "def:dual-conjugate-functors"	[style=dashed];	"def:continuity"	[color="#FFAA33",		label=continuity,		shape=box];	"def:field-theory" -> "def:continuity"	[style=dashed];	"def:tensor-axiom"	[color="#FFAA33",		label="tensor-axiom",		shape=box];	"def:field-theory" -> "def:tensor-axiom"	[style=dashed];	"def:holomorphicity"	[color="#FFAA33",		label=holomorphicity,		shape=box];	"def:field-theory" -> "def:holomorphicity"	[style=dashed];	"def:conjugate-dual-duality"	[color="#FFAA33",		label="conjugate-dual-duality",		shape=box];	"def:dual-conjugate-functors" -> "def:conjugate-dual-duality"	[style=dashed];	"def:unitarity"	[color="#FFAA33",		label=unitarity,		shape=box];	"def:conjugate-dual-duality" -> "def:unitarity"	[style=dashed];	"thm:angle-equiv"	[color="#FFAA33",		label="angle-equiv",		shape=ellipse];	"lem:volume-element"	[color=green,		fillcolor="#1CAC78",		label="volume-element",		shape=ellipse,		style=filled];	"def:holomorphic-bundle"	[color="#FFAA33",		label="holomorphic-bundle",		shape=box];	"def:holomorphic-bundle" -> "def:field-theory"	[style=dashed];	"def:nuclear-frechet"	[color="#FFAA33",		label="nuclear-frechet",		shape=box];	"def:nuclear-frechet" -> "def:holomorphic-bundle"	[style=dashed];	"lem:l-shape"	[color="#FFAA33",		label="l-shape",		shape=ellipse];	"prop:conf-envelope"	[color="#FFAA33",		label="conf-envelope",		shape=ellipse];	"lem:l-shape" -> "prop:conf-envelope";	"prop:restriction"	[color=green,		fillcolor="#A3D6FF",		label=restriction,		shape=ellipse,		style=filled];	"def:allowable"	[color=green,		fillcolor="#B0ECA3",		label=allowable,		shape=box,		style=filled];	"def:allowable" -> "prop:parametrization"	[style=dashed];	"def:allowable" -> "thm:angle-equiv"	[style=dashed];	"def:allowable" -> "lem:volume-element"	[style=dashed];	"def:allowable" -> "prop:conf-envelope"	[style=dashed];	"def:restrict-form"	[color=green,		fillcolor="#B0ECA3",		label="restrict-form",		shape=box,		style=filled];	"def:allowable" -> "def:restrict-form"	[style=dashed];	"def:cobordism-category"	[color="#FFAA33",		label="cobordism-category",		shape=box];	"def:allowable" -> "def:cobordism-category"	[style=dashed];	"prop:domain-holomorphy"	[color="#FFAA33",		label="domain-holomorphy",		shape=ellipse];	"def:allowable" -> "prop:domain-holomorphy"	[style=dashed];	"prop:two-dim-polydisc"	[color="#FFAA33",		label="two-dim-polydisc",		shape=ellipse];	"def:allowable" -> "prop:two-dim-polydisc"	[style=dashed];	"lem:convex-cone"	[color=green,		fillcolor="#1CAC78",		label="convex-cone",		shape=ellipse,		style=filled];	"def:allowable" -> "lem:convex-cone"	[style=dashed];	"prop:only-lorentzian"	[color=green,		fillcolor="#1CAC78",		label="only-lorentzian",		shape=ellipse,		style=filled];	"def:allowable" -> "prop:only-lorentzian"	[style=dashed];	"def:restrict-form" -> "prop:restriction"	[style=dashed];	"def:metc-complex-manifold"	[color="#FFAA33",		label="metc-complex-manifold",		shape=box];	"def:cobordism-category" -> "def:metc-complex-manifold"	[style=dashed];	"thm:two-copies"	[color="#FFAA33",		label="two-copies",		shape=ellipse];	"prop:domain-holomorphy" -> "thm:two-copies"	[style=dashed];	"prop:lorentzian-boundary"	[color=green,		fillcolor="#1CAC78",		label="lorentzian-boundary",		shape=ellipse,		style=filled];	"lem:convex-cone" -> "prop:lorentzian-boundary";	"prop:only-lorentzian" -> "def:unitarity"	[style=dashed];	"def:metc-complex-manifold" -> "def:holomorphic-bundle"	[style=dashed];	"prop:lorentzian-boundary" -> "def:unitarity"	[style=dashed];	"def:lorentzian"	[color=green,		fillcolor="#B0ECA3",		label=lorentzian,		shape=box,		style=filled];	"def:lorentzian" -> "prop:only-lorentzian"	[style=dashed];	"def:lorentzian" -> "thm:two-copies"	[style=dashed];	"def:lorentzian" -> "prop:lorentzian-boundary"	[style=dashed];	"def:allowable-hodge"	[color="#FFAA33",		label="allowable-hodge",		shape=box];	"def:allowable-hodge" -> "thm:angle-equiv"	[style=dashed];	"def:allowable-hodge" -> "prop:domain-holomorphy";}`)
     .on("end", interactive);
 
 latexLabelEscaper = function(label) {

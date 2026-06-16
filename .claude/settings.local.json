@@ -11,7 +11,8 @@
       "mcp__lean-lsp__lean_hover_info",
       "mcp__lean-lsp__lean_multi_attempt",
       "mcp__lean-lsp__lean_leansearch",
-      "Bash(grep -n '\\\\\\\\input\\\\|\\\\\\\\chapter\\\\|^\\\\\\\\section' content.tex)"
+      "Bash(grep -n '\\\\\\\\input\\\\|\\\\\\\\chapter\\\\|^\\\\\\\\section' content.tex)",
+      "PowerShell(lake exe *)"
     ]
   },
   "model": "claude-opus-4-8",
