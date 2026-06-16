@@ -348,3 +348,61 @@ pre-Hilbert form on $\check E_{\Sigma}$ is statable, but its completion and the 
 into $\hat E_{\Sigma}$ need the limit relation between $\check E_{\Sigma}$,
 $E_{\Sigma}$, and $\hat E_{\Sigma}$ that Section~3 left deferred. The unitary operator
 $Z_M$ rests on Principle~5.1 and hence on the same complexification.
+
+\section{Remark 5.3: well-definedness of the Lorentzian space}
+
+Principle~5.1 resolves the arbitrariness left open by the Wick rotation of
+Definition~\ref{def:wick-rotation}: the Lorentzian space $\hat E_{\Sigma}$ does not
+depend on the path used to define it. Suppose the Lorentzian metric on $U$ is
+real-analytic. The complex theory then gives a holomorphic bundle $\{\hat E_f\}$ over
+the space $\mathcal J$ of germs of embeddings
+$f \colon (-\varepsilon, \varepsilon) \to \mathbb C$ with $f(0) = 0$ and
+$\mathrm{Re}\, f'(t) > 0$ for all $t$. For $\lambda \in \mathbb C_+$ the radial path
+$f_{\lambda}(t) = \lambda t$ lies in $\mathcal J$, and $\hat E_f$ is the inverse limit
+of the spaces attached to the germs of $f$ at the points $f(t_k)$, for any sequence
+$t_k \downarrow 0$.
+
+\begin{proposition}[Remark 5.3; KS Section 5]
+  \label{prop:lorentzian-E-welldefined}
+  \notready
+  \uses{prop:invariance-principle, def:wick-rotation, def:field-theory, def:unitarity,
+    def:lorentzian-cobordism-category}
+  Any smooth path $f \in \mathcal J$ defines the same space $\hat E_{\Sigma}$: for any
+  two paths there is a canonical isomorphism between the corresponding inverse limits,
+  and these isomorphisms are coherent. The family is compatible with conjugation:
+  $\hat E_{\bar f}$ is the complex-conjugate space to $\hat E_f$, so reversing the
+  complex time-direction conjugates the identification of $\hat E_{\Sigma}$ with the
+  Euclidean choice $\hat E_{f_1}$. If the germ $\Sigma \subset U$ is time-symmetric,
+  and only then, this yields a hermitian inner product on $\check E_{\Sigma}$, the
+  reflection-positivity pairing of Definition~\ref{def:unitarity}.
+\end{proposition}
+
+\begin{proof}
+  \uses{prop:invariance-principle, def:unitarity}
+  For path-independence it suffices to identify $\hat E_{f_{\lambda}}$ with
+  $\hat E_{f_{\lambda'}}$ for two neighbouring radial rays with
+  $|\lambda| = |\lambda'|$. Choose a sequence $t'_k \downarrow 0$ interleaving $t_k$,
+  with $t_k > t'_k > t_{k+1}$, and a path $f \in \mathcal J$ in the sector between
+  $f_{\lambda}$ and $f_{\lambda'}$ coinciding with them alternately near the points
+  $\lambda t_k$ and $\lambda' t'_k$. This $f$ provides cobordisms from the germ at
+  $\lambda' t'_k$ to the germ at $\lambda t_k$, and from the germ at $\lambda t_{k+1}$
+  to the germ at $\lambda' t'_k$; composed along the two interleaved cofinal sequences
+  they give mutually inverse canonical isomorphisms between the inverse limits
+  $\hat E_{f_{\lambda}}$ and $\hat E_{f_{\lambda'}}$. Their coherence for three nearby
+  rays follows from Principle~5.1 (Proposition~\ref{prop:invariance-principle}), the
+  two routes between rays differing by a movement of the connecting path inside the
+  complexification. The conjugate-space property holds because $\bar f$ corresponds to
+  the complex-conjugate metric; combined with the duality of
+  Definition~\ref{def:unitarity} it gives the hermitian inner product on
+  $\check E_{\Sigma}$ when $\Sigma$ is time-symmetric.
+\end{proof}
+
+Stating Remark~5.3 in Lean rests on infrastructure not developed here: the space
+$\mathcal J$ of embedding-germs $f \colon (-\varepsilon, \varepsilon) \to \mathbb C$
+with $f(0) = 0$ and $\mathrm{Re}\, f'(t) > 0$, the holomorphic bundle $\{\hat E_f\}$
+over it, the interleaving-sequence construction of the connecting cobordisms, and the
+complex-conjugate-space functor $\hat E_f \mapsto \hat E_{\bar f}$. The inverse-limit
+spaces $\hat E_f$ and $\check E_{\Sigma}$ carry the topological-vector-space limit
+structure that Section~3 deferred (Definition~\ref{def:field-theory}), and the
+coherence of the identifications rests on Principle~5.1 and hence on the
+complexification $M_{\mathbb C}$.
