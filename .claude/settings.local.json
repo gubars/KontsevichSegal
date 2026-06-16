@@ -14,7 +14,9 @@
       "Bash(grep -n '\\\\\\\\input\\\\|\\\\\\\\chapter\\\\|^\\\\\\\\section' content.tex)",
       "PowerShell(lake exe *)",
       "Bash(grep -n '\\\\\\\\input' content.tex)",
-      "Bash(grep -n '\\\\\\\\chapter' content.tex section3.tex)"
+      "Bash(grep -n '\\\\\\\\chapter' content.tex section3.tex)",
+      "Bash(lake build *)",
+      "Bash(lake exe *)"
     ]
   },
   "model": "claude-opus-4-8",
