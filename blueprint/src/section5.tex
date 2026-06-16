@@ -272,3 +272,79 @@ complexified Lie algebra of complex vector fields on $M$. The complexification
 $M_{\mathbb C}$ is the heaviest assumed piece: it rests on the real-analytic
 structure of $\mathcal C_d^{\mathrm{Lor},\omega}$, and the complexification of a
 real-analytic manifold is not available in Mathlib.
+
+\section{Theorem 5.2: the unitary functor on the globally hyperbolic category}
+
+\begin{theorem}[Theorem 5.2; KS Section 5]
+  \label{thm:unitary-gh}
+  \notready
+  \uses{def:unitarity, def:field-theory, def:continuity, def:globally-hyperbolic,
+    prop:invariance-principle, def:wick-rotation}
+  A unitary quantum field theory on $\mathcal C_d^{\mathbb C}$, in the sense of
+  Definition~\ref{def:unitarity}, induces a functor from the real-analytic globally
+  hyperbolic category $\mathcal C_d^{\mathrm{gh},\omega}$ of
+  Definition~\ref{def:globally-hyperbolic} to topological vector spaces. The functor
+  takes time-symmetric objects to Hilbert spaces and globally hyperbolic cobordisms
+  between them to unitary operators.
+
+  More precisely: for a time-symmetric $(d-1)$-germ $\Sigma$ there is a Hilbert space
+  $E_{\Sigma}^{\mathrm{Hilb}}$ with
+  \[ \check E_{\Sigma} \;\subset\; E_{\Sigma}^{\mathrm{Hilb}} \;\subset\; \hat E_{\Sigma}, \]
+  the completion of the pre-Hilbert space $\check E_{\Sigma}$ of
+  Definition~\ref{def:unitarity}, sitting between the limit spaces $\check E_{\Sigma}$
+  and $\hat E_{\Sigma}$ of Definition~\ref{def:field-theory} through the injective
+  dense maps of Definition~\ref{def:continuity}. A real-analytic globally hyperbolic
+  cobordism $\Sigma_0 \leadsto \Sigma_1$ between time-symmetric hypersurfaces induces
+  a unitary isomorphism
+  $E_{\Sigma_0}^{\mathrm{Hilb}} \to E_{\Sigma_1}^{\mathrm{Hilb}}$ which also carries
+  $\check E_{\Sigma_0}$ to $\check E_{\Sigma_1}$ and $\hat E_{\Sigma_0}$ to
+  $\hat E_{\Sigma_1}$.
+\end{theorem}
+
+\begin{proof}
+  \uses{prop:invariance-principle, def:globally-hyperbolic, def:wick-rotation,
+    def:unitarity}
+  On a time-symmetric object $\Sigma$ the reflection-positivity of
+  Definition~\ref{def:unitarity} makes $\check E_{\Sigma}$ a pre-Hilbert space, whose
+  completion is the Hilbert space $E_{\Sigma}^{\mathrm{Hilb}}$ of the statement.
+
+  For a cobordism, let $M \colon \Sigma_0 \leadsto \Sigma_1$ be real-analytic and
+  globally hyperbolic. Choose a time-function $t \colon M \to [0,1]$ whose level
+  surfaces foliate $M$ by Riemannian hypersurfaces, and identify $M$ with
+  $\Sigma_0 \times [0,1]$ by the orthogonal trajectories, as in
+  Definition~\ref{def:globally-hyperbolic}. Using real-analyticity, extend $t$ and
+  the metric holomorphically to a complexification $M_{\mathbb C}$, so that
+  $\tau = \mathrm{i}t \colon M_{\mathbb C} \to U$ is a holomorphic fibre bundle over a
+  neighbourhood $U$ of $\mathrm{i}[0,1]$, with the identification
+  $\Sigma_0 \times [0,1] \to M$ extending to a holomorphic trivialization. For a
+  smooth curve $f \colon [0,1] \to U$ with $f(0) = 0$ and $\mathrm{Re}\, f'(s) > 0$
+  this yields a totally real submanifold $M_f$ of $M_{\mathbb C}$ lying over the
+  curve and carrying an allowable complex metric, the higher-dimensional form of the
+  Wick rotation of Definition~\ref{def:wick-rotation}. Using the morphism of $M_f$ as
+  the operator $Z_f$ was used in the $d = 1$ contour argument gives a unitary
+  operator $Z_M$ for the Lorentzian cobordism, its unitarity coming from the
+  reflection-positivity of Definition~\ref{def:unitarity} as in that case.
+
+  The operator $Z_M$ is independent of the choices. By Principle~5.1
+  (Proposition~\ref{prop:invariance-principle}) it does not depend on the curve $f$,
+  two curves with the same endpoints being joined by a movement of $M_f$ inside
+  $M_{\mathbb C}$; and it does not depend on the time-function, since two
+  time-functions are linearly homotopic and passing between them deforms the totally
+  real embedding $\Sigma_0 \times [0,1] \to M_{\mathbb C}$ by a real-analytic
+  diffeomorphism of $\Sigma_0 \times [0,1]$, again covered by Principle~5.1.
+\end{proof}
+
+Stating Theorem~5.2 in Lean rests on infrastructure deferred elsewhere. The source
+category $\mathcal C_d^{\mathrm{gh},\omega}$ carries the real-analytic and
+complexification geometry assumed in
+Definitions~\ref{def:lorentzian-cobordism-category} and~\ref{def:globally-hyperbolic}
+and Proposition~\ref{prop:invariance-principle}: the complexification $M_{\mathbb C}$,
+the totally real submanifolds $M_f$, and the holomorphic trivialization, with
+$M_{\mathbb C}$ the heaviest assumed piece. The Hilbert space
+$E_{\Sigma}^{\mathrm{Hilb}}$ and the inclusions
+$\check E_{\Sigma} \subset E_{\Sigma}^{\mathrm{Hilb}} \subset \hat E_{\Sigma}$ inherit
+the completion that Section~3 deferred at Definition~\ref{def:unitarity}: the
+pre-Hilbert form on $\check E_{\Sigma}$ is statable, but its completion and the maps
+into $\hat E_{\Sigma}$ need the limit relation between $\check E_{\Sigma}$,
+$E_{\Sigma}$, and $\hat E_{\Sigma}$ that Section~3 left deferred. The unitary operator
+$Z_M$ rests on Principle~5.1 and hence on the same complexification.
