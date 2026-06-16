@@ -81,3 +81,85 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
   real-analytic structure together with the complexification $M_{\mathbb C}$ into
   which a real-analytic cobordism embeds.
 \end{definition}
+
+\section{Global hyperbolicity}
+
+\begin{definition}[Global hyperbolicity and the subcategory $\mathcal C_d^{\mathrm{gh}}$; KS Section 5]
+  \label{def:globally-hyperbolic}
+  \notready
+  \uses{def:lorentzian-cobordism-category, def:allowable}
+  Among the Lorentzian cobordisms of $\mathcal C_d^{\mathrm{Lor}}$ we single out the
+  \emph{globally hyperbolic} ones.
+
+  \emph{The general-relativity definition.} In general relativity a Lorentzian
+  cobordism $M \colon \Sigma_0 \leadsto \Sigma_1$ between Riemannian manifolds is
+  \emph{globally hyperbolic} if every maximally extended timelike geodesic in $M$
+  travels from $\Sigma_0$ to $\Sigma_1$. Such an $M$ is necessarily diffeomorphic to
+  $\Sigma_0 \times [0,1]$. It is exactly for globally hyperbolic $M$ that the Cauchy
+  problem for the wave equation on $M$ is soluble.
+
+  \emph{The compact definition adopted here.} Kontsevich and Segal consider only
+  \emph{compact} cobordisms, which are not the usual setting of relativity theory.
+  In the compact case they take global hyperbolicity to be the existence of a smooth
+  \emph{time-function} $t \colon M \to [0,1]$ whose gradient, with respect to the
+  Lorentzian metric, lies everywhere in the positive light-cone. Such a $t$ is then a
+  fibration with Riemannian fibres, the time-slices $t^{-1}(s)$, and following the
+  orthogonal trajectories to the time-slices produces a diffeomorphism
+  $M \to \Sigma_0 \times [0,1]$. The two characterizations agree in the compact
+  setting in which the paper works: each yields the product structure
+  $M \cong \Sigma_0 \times [0,1]$, and the time-function form is the definition
+  adopted.
+
+  \emph{The globally hyperbolic subcategory.} The globally hyperbolic cobordisms are
+  closed under concatenation, so the objects of $\mathcal C_d^{\mathrm{Lor}}$ together
+  with the globally hyperbolic cobordisms between them form a subcategory
+  $\mathcal C_d^{\mathrm{gh}} \subseteq \mathcal C_d^{\mathrm{Lor}}$. The existence of
+  a time-function on a compact Lorentzian cobordism is an \emph{open} condition, so
+  $\mathcal C_d^{\mathrm{gh}}$ is an \emph{open} subcategory of
+  $\mathcal C_d^{\mathrm{Lor}}$. It is the analogue of the dense open subgroup of the
+  Shilov boundary of a complex semigroup, the real Lie group to which the holomorphic
+  contraction representations of Section~4 extend as genuine unitary operators. It
+  should play that role here, although the theorem obtained below, Theorem~5.2, is
+  weaker.
+
+  \emph{The real-analytic version.} Inside the real-analytic Lorentzian category
+  $\mathcal C_d^{\mathrm{Lor},\omega}$ there is the subcategory
+  $\mathcal C_d^{\mathrm{gh},\omega} \subseteq \mathcal C_d^{\mathrm{Lor},\omega}$ of
+  globally hyperbolic cobordisms, in which the manifolds, their Lorentzian metrics,
+  and the time-function are all real-analytic. The real-analyticity of the
+  time-function can be dropped, since any smooth function can be approximated
+  real-analytically. This is the category required for the operator assignment of
+  Section~5: the forthcoming Principle~5.1 and Theorem~5.2 move a cobordism inside a
+  complexification $M_{\mathbb C}$, a holomorphic thickening that exists only when the
+  cobordism and its metric are real-analytic.
+
+  \emph{The metric normal form and the deformation into allowable metrics.} For a
+  globally hyperbolic cobordism equipped with a time-function, the metric, written
+  through the diffeomorphism $M \cong \Sigma_0 \times [0,1]$, takes the form
+  \[ h_t + c^2 \, \mathrm{d}t^2, \qquad c \colon \Sigma_0 \times [0,1] \to \mathrm{i}\mathbb R, \]
+  where $t \mapsto h_t$ is a family of Riemannian metrics on the time-slices. The
+  factor $c$ is purely imaginary, recording the Lorentzian signature: $c^2$ is real
+  and negative, so $h_t + c^2\,\mathrm{d}t^2 = h_t - |c|^2\,\mathrm{d}t^2$. A small
+  deformation $\delta c$ pushing $c$ into the open right half-plane
+  $\mathbb C_+ = \{z \in \mathbb C : \mathrm{Re}\,z > 0\}$ turns the Lorentzian metric
+  into an \emph{allowable} complex metric in the sense of Section~2
+  (Definition~\ref{def:allowable}): the single eigenvalue $c^2$, which for the
+  Lorentzian metric sat on the negative real axis, moves off it into the complex
+  plane, while the $h_t$ eigenvalues stay positive, so the angle condition holds for
+  small $\delta c$. This is the deformation picture connecting
+  $\mathcal C_d^{\mathrm{gh}}$ to the interior $\mathcal C_d^{\mathbb C}$. One would
+  like to define the operator $Z_M$ of a Lorentzian cobordism as a limit of the
+  operators attached to such deformations, but the deformed metric depends on the
+  choice of time-function, which should be irrelevant to $Z_M$. Resolving this is the
+  purpose of the forthcoming Principle~5.1 and Theorem~5.2.
+
+  Stating this in Lean requires Lorentzian-manifold geometry not developed here:
+  timelike geodesics and their maximal extension, the light-cone structure of a
+  Lorentzian metric and the notion of the positive light-cone, smooth time-functions
+  and their gradients, the condition that a gradient lie in the positive light-cone,
+  fibrations with Riemannian fibres and the orthogonal trajectories giving
+  $M \cong \Sigma_0 \times [0,1]$, the metric normal forms $h_t - \mathrm{d}t^2$ and
+  $h_t + c^2\,\mathrm{d}t^2$, the openness of the time-function condition, and, for
+  $\mathcal C_d^{\mathrm{gh},\omega}$, the real-analytic structure on the manifolds,
+  metrics, and time-function together with the complexification $M_{\mathbb C}$.
+\end{definition}
