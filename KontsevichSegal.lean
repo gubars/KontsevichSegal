@@ -10,6 +10,7 @@ import KontsevichSegal.ComplexMetrics.Restriction
 import KontsevichSegal.ComplexMetrics.ShilovBoundary
 import KontsevichSegal.FieldTheory
 import KontsevichSegal.FieldTheory.Continuity
+import KontsevichSegal.FieldTheory.DualConjugate
 import KontsevichSegal.FieldTheory.FieldTheory
 import KontsevichSegal.FieldTheory.HolomorphicBundle
 import KontsevichSegal.FieldTheory.Holomorphicity
