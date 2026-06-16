@@ -12,7 +12,9 @@
       "mcp__lean-lsp__lean_multi_attempt",
       "mcp__lean-lsp__lean_leansearch",
       "Bash(grep -n '\\\\\\\\input\\\\|\\\\\\\\chapter\\\\|^\\\\\\\\section' content.tex)",
-      "PowerShell(lake exe *)"
+      "PowerShell(lake exe *)",
+      "Bash(grep -n '\\\\\\\\input' content.tex)",
+      "Bash(grep -n '\\\\\\\\chapter' content.tex section3.tex)"
     ]
   },
   "model": "claude-opus-4-8",

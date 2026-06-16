@@ -1,0 +1,83 @@
+\chapter{Unitarity and global hyperbolicity (KS Section 5)}
+
+This chapter is the blueprint for Section~5 of Kontsevich--Segal,
+\emph{Wick rotation and the positivity of energy in quantum field theory}
+(arXiv:2105.10161), the Lorentzian and Wick-rotation capstone, planned for
+\texttt{KontsevichSegal/WickRotation/}. The Lorentzian cobordism category
+$\mathcal C_d^{\mathrm{Lor}}$ lies on the boundary of the complex category
+$\mathcal C_d^{\mathbb C}$, in the same sense in which the real Lorentzian metrics
+lie on the Shilov boundary of $Q_{\mathbb C}(V)$. On passing to this boundary, a
+unitary field theory on $\mathcal C_d^{\mathbb C}$ extends to the globally
+hyperbolic Lorentzian cobordisms, where it becomes a genuine unitary theory:
+time-symmetric hypersurfaces acquire Hilbert spaces, and globally hyperbolic
+cobordisms between them act by unitary operators. The globally hyperbolic
+cobordisms play the role that the dense open subgroup of the Shilov boundary
+plays in the representation theory of a complex semigroup.
+
+Section~4 of the paper, ``Some analogies from representation theory'', is
+expository. It motivates the framework by analogy with the representation theory
+of $\mathrm{PSL}_2(\mathbb R)$, of the symplectic group with its oscillator
+semigroup and metaplectic representation, and of $\mathrm{Diff}^+(S^1)$, in each
+of which a distinguished class of unitary representations arises as the boundary
+values of holomorphic representations of a complex semigroup by contraction
+operators. It states no definitions, axioms, or theorems of its own, so there is
+nothing to formalize from it. Within Section~5 itself, the two-dimensional
+light-line discussion, including the ``black hole'' closed light-cycle, and the
+$d=1$ quantum-mechanics walkthrough are worked illustrations of the proof
+technique behind Theorem~5.2; they are not separate statements to formalize.
+
+\section{The Lorentzian cobordism category}
+
+\begin{definition}[The Lorentzian cobordism category $\mathcal C_d^{\mathrm{Lor}}$ and $\mathcal C_d^{\mathrm{Lor},\omega}$; KS Section 5]
+  \label{def:lorentzian-cobordism-category}
+  \notready
+  \uses{def:cobordism-category, prop:lorentzian-boundary, prop:only-lorentzian}
+  The \emph{Lorentzian cobordism category} $\mathcal C_d^{\mathrm{Lor}}$ is the
+  Lorentzian analogue of the complex cobordism category
+  $\mathcal C_d^{\mathbb C}$.
+
+  \emph{Objects.} An object is a \emph{Lorentzian germ}: a germ of a $d$-manifold
+  along a closed co-oriented $(d-1)$-manifold $\Sigma$, carrying a Lorentzian
+  metric of signature $(d-1,1)$. Exponentiating the geodesics emanating
+  perpendicularly from $\Sigma$ identifies a neighbourhood with
+  $\Sigma \times (-\varepsilon, \varepsilon)$, in which the metric takes the form
+  $h_t - \mathrm{d}t^2$, where $t \mapsto h_t$ is a smooth family of Riemannian
+  metrics on $\Sigma$.
+
+  \emph{Morphisms.} A morphism $\Sigma_0 \to \Sigma_1$ is a \emph{Lorentzian
+  cobordism} $M \colon \Sigma_0 \leadsto \Sigma_1$, a compact $d$-manifold
+  carrying a Lorentzian metric whose incoming and outgoing boundary germs are the
+  objects $\Sigma_0$ and $\Sigma_1$. Two cobordisms represent the same morphism
+  when there is an isometry between them restricting to the identity on the
+  boundary germs, exactly as for $\mathcal C_d^{\mathbb C}$.
+
+  \emph{Composition.} Composition is concatenation of cobordisms, glued along the
+  common boundary germ. As for $\mathcal C_d^{\mathbb C}$, this is not literally a
+  category: there are no identity morphisms.
+
+  \emph{The boundary relation.} $\mathcal C_d^{\mathrm{Lor}}$ lies on the boundary
+  of $\mathcal C_d^{\mathbb C}$. At each point the Lorentzian metric is a real
+  bilinear form of signature $(d-1,1)$, and by
+  Propositions~\ref{prop:lorentzian-boundary} and~\ref{prop:only-lorentzian} the
+  real Lorentzian metrics are exactly the nondegenerate real metrics on the
+  Shilov boundary of $Q_{\mathbb C}(V)$. The Lorentzian germs and cobordisms are
+  therefore the boundary points of the complex germs and cobordisms of
+  $\mathcal C_d^{\mathbb C}$, and $\mathcal C_d^{\mathrm{Lor}}$ is the Lorentzian
+  Shilov boundary of the complex cobordism category.
+
+  \emph{The real-analytic version.} $\mathcal C_d^{\mathrm{Lor},\omega}$ is the
+  subcategory in which both the manifolds and their Lorentzian metrics are
+  real-analytic. This restriction is required by the operator assignment of
+  Section~5: the forthcoming Principle~5.1 and Theorem~5.2 move a cobordism $M$
+  inside a complexification $M_{\mathbb C}$, a holomorphic $d$-manifold
+  containing $M$ as a totally real submanifold with the metric induced from a
+  holomorphic symmetric form on $TM_{\mathbb C}$, and such a complexification
+  exists only when $M$ and its metric are real-analytic.
+
+  Stating this in Lean requires Lorentzian-manifold geometry not developed here:
+  Lorentzian metrics of signature $(d-1,1)$ and their light-cone structure, the
+  geodesic-normal form $h_t - \mathrm{d}t^2$ of a germ, isometries of Lorentzian
+  cobordisms and their gluing, and, for $\mathcal C_d^{\mathrm{Lor},\omega}$, the
+  real-analytic structure together with the complexification $M_{\mathbb C}$ into
+  which a real-analytic cobordism embeds.
+\end{definition}
