@@ -511,3 +511,102 @@ $E_{\Sigma}$, and the rigged Hilbert space
 $\check E \subset E^{\mathrm{Hilb}} \subset \hat E$ inherits the Hilbert completion and
 the topological-vector-space limit structure left deferred in Section~3 and Theorem~5.2.
 Space-like separation is Lorentzian causal geometry, also not in Mathlib.
+
+\section{The vacuum-expectation domain and Proposition 5.4}
+
+The final question of the paper concerns the analytic continuation of vacuum
+expectation values in the traditional treatment over Minkowski space
+$\mathbb M = \mathbb R^{d-1,1}$. The Wightman axioms make the $k$-point functions the
+boundary values of holomorphic functions on the \emph{permuted extended tube}
+$\mathcal U_k \subset (\mathbb M_{\mathbb C})^k$, the Wightman domain defined in
+Section~2; for example $\mathcal U_2$ is the set of pairs $(x,y)$ for which
+$\|x-y\|^2$ is not a real number $\le 0$. For $k > 2$ the domain $\mathcal U_k$ is
+known not to be holomorphically convex, so it is not the largest manifold to which the
+expectation values continue, and describing that largest manifold $\mathcal V_k$, or
+even the holomorphic envelope of $\mathcal U_k$, is an old open problem.
+
+\begin{definition}[The vacuum-expectation domain $\mathcal V_k$; KS Section 5]
+  \label{def:vacuum-domain}
+  \notready
+  \uses{def:allowable, prop:invariance-principle, def:observables}
+  The framework of this paper suggests a candidate for $\mathcal V_k$. It sits over the
+  open subset $\check{\mathcal V}_k$ of those $k$-tuples
+  $\mathbf x = \{x_1, \ldots, x_k\}$ of distinct points of $\mathbb M_{\mathbb C}$ that
+  lie on some totally real submanifold $M$ with
+  \begin{itemize}
+    \item[(i)] the metric induced on $M$ from $\mathbb M_{\mathbb C}$ allowable, and
+    \item[(ii)] $M$ projecting surjectively onto the real Euclidean subspace
+      $\mathbb E = \mathbb R^d$ of
+      $\mathbb M_{\mathbb C} = \mathbb E \oplus \mathrm i \mathbb E$.
+  \end{itemize}
+  When the metric of $M$ is allowable the projection $M \to \mathbb E$ is a local
+  diffeomorphism, so (ii) makes $M$ the graph of a smooth map
+  $\mathbb E \to \mathrm i \mathbb E$. Let $\mathcal F_k$ be the space of pairs
+  $(M, \mathbf x)$ satisfying (i) and (ii), an infinite-dimensional complex manifold
+  with an open projection
+  $\pi \colon \mathcal F_k \to \check{\mathcal V}_k \subset
+  \mathrm{Conf}_k(\mathbb M_{\mathbb C})$. Then $\mathcal V_k$ is the largest Hausdorff
+  quotient manifold of $\mathcal F_k$ through which $\pi$ factorizes and which maps to
+  $\check{\mathcal V}_k$ by a local diffeomorphism: two pairs $(M, \mathbf x)$ and
+  $(M', \mathbf x)$ in a fibre have the same image when they lie in one connected
+  component of the fibre, and more generally when they are joined to a common third
+  pair by paths covering the same path in $\check{\mathcal V}_k$, the further
+  identifications making the quotient Hausdorff.
+
+  A field theory holomorphic on the enlarged cobordism category of allowable
+  submanifolds of $\mathbb M_{\mathbb C}$ cut between time-symmetric hypersurfaces, with
+  a Lorentz-invariant vacuum, has vacuum expectation values forming a holomorphic
+  section of a bundle on $\mathcal F_k$; trivializing by the local diffeomorphism
+  $M \to \mathbb E$ gives a holomorphic function
+  \[ \mathcal E_k \colon \mathcal F_k \;\longrightarrow\;
+     \mathrm{Hom}(\mathcal O^{\otimes k}; \mathbb C), \]
+  where $\mathcal O$ is the space of observables at a point of $\mathbb E$. By
+  Principle~5.1 (Proposition~\ref{prop:invariance-principle}) the value of
+  $\mathcal E_k$ is unchanged when the marked points $\mathbf x$ are held fixed and $M$
+  is moved smoothly within the allowable class, so $\mathcal E_k$ is constant on the
+  connected components of the fibres of $\pi$, the isotopy classes of allowable
+  manifolds through $\mathbf x$.
+\end{definition}
+
+Whether $\mathcal V_k$ is a domain of holomorphy is left open: Kontsevich and Segal
+state that they have no proof of it. This is a conjecture, not a theorem of the paper.
+What is proved is the following inclusion.
+
+\begin{proposition}[Proposition 5.4; KS Section 5]
+  \label{prop:Vk-contains-Uk}
+  \notready
+  \uses{def:vacuum-domain, def:allowable}
+  The domain $\mathcal V_k$ contains the Wightman domain $\mathcal U_k$.
+\end{proposition}
+
+\begin{proof}
+  \uses{def:allowable}
+  The domain $\mathcal V_k$ is invariant under the complex orthogonal group of
+  $\mathbb M_{\mathbb C}$ and under reorderings of the points $\mathbf x$, so it
+  suffices to treat $\mathbf x$ with $\mathrm{Im}(x_{i+1} - x_i)$ in the forward
+  light-cone $C \subset \mathbb M$ for each $i$. Smoothing the polygonal path through
+  the points, assume the $x_i$ lie on a curve
+  $x \colon \mathbb R \to \mathbb M_{\mathbb C}$ with $\mathrm{Im}(x'(t)) \in C$ for all
+  $t$. Choose, smoothly in $t$, orthonormal vectors
+  $e_1(t), \ldots, e_{d-1}(t)$ in $\mathbb M_{\mathbb C}$ orthogonal to $x'(t)$, and let
+  $M_t$ be the real subspace they span. The points $\mathbf x$ lie on the
+  $d$-dimensional real ruled manifold $M$ swept out by the affine $(d-1)$-planes
+  $x(t) + M_t$, whose induced metric is allowable; hence $\mathbf x \in \mathcal V_k$.
+\end{proof}
+
+In the other direction, Proposition~\ref{prop:conf-envelope} (Proposition 2.3 of
+Section~2) shows that the holomorphic envelope of $\mathcal U_k$ contains
+$\mathcal V_k^{\mathrm{flat}}$, the part of $\mathcal V_k$ represented by flat affine
+submanifolds $M \subset \mathbb M_{\mathbb C}$.
+
+Stating these results in Lean rests on infrastructure not developed here, most of it
+deferred already in Section~2. The Wightman permuted extended tube $\mathcal U_k$ and
+the notions of holomorphic envelope and domain of holomorphy in
+$(\mathbb M_{\mathbb C})^k$ are the tube-domain material that Section~2 deferred;
+Proposition~\ref{prop:conf-envelope} is itself not yet formalized. The candidate
+$\mathcal V_k$ uses totally real submanifolds of $\mathbb M_{\mathbb C}$ with allowable
+induced metric, the configuration space $\mathrm{Conf}_k(\mathbb M_{\mathbb C})$, and
+the infinite-dimensional complex manifold $\mathcal F_k$ with its quotient
+construction; the map $\mathcal E_k$ rests on the observables $\mathcal O$
+(Definition~\ref{def:observables}) and on Principle~5.1. That $\mathcal V_k$ is a
+domain of holomorphy remains, in the paper itself, a conjecture.
