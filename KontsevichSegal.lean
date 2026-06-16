@@ -1,5 +1,7 @@
 import KontsevichSegal.All
 import KontsevichSegal.Basic
+import KontsevichSegal.Cobordism
+import KontsevichSegal.Cobordism.Category
 import KontsevichSegal.ComplexMetrics
 import KontsevichSegal.ComplexMetrics.Defs
 import KontsevichSegal.ComplexMetrics.Domain
