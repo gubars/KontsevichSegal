@@ -22,5 +22,6 @@ import KontsevichSegal.FieldTheory.Unitarity
 import KontsevichSegal.WickRotation
 import KontsevichSegal.WickRotation.Complexification
 import KontsevichSegal.WickRotation.GloballyHyperbolic
+import KontsevichSegal.WickRotation.InvariancePrinciple
 import KontsevichSegal.WickRotation.LorentzianCategory
 import KontsevichSegal.WickRotation.TimeSymmetricRotation
