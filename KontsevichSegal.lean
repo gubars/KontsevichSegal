@@ -19,3 +19,5 @@ import KontsevichSegal.FieldTheory.MetCManifold
 import KontsevichSegal.FieldTheory.NuclearFrechet
 import KontsevichSegal.FieldTheory.TensorAxiom
 import KontsevichSegal.FieldTheory.Unitarity
+import KontsevichSegal.WickRotation
+import KontsevichSegal.WickRotation.LorentzianCategory
