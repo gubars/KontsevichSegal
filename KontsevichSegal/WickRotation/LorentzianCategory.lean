@@ -184,15 +184,28 @@ genuine real-analytic and complex structure (see the module comment). -/
 real-analytic structure on a manifold `M`, in the spirit of `TangentStructure` (an
 assumed datum): the designation of which real functions and which vector fields are
 real-analytic (global sections of the structure sheaf `O^ω`), with the real-analytic
-functions forming an ℝ-subalgebra. This is STRICTLY MORE than the smooth
-`TangentStructure`: a smooth-but-not-real-analytic `M` cannot supply it.
+functions forming an ℝ-subalgebra (`analytic_const`/`add`/`mul`) that is PROPER
+(`not_all_analytic`: some smooth function is NOT analytic).
 
-Real-analytic manifold theory at this generality is not in Mathlib; the deeper
-real-analytic axioms (the identity theorem / local convergence of Taylor series) need
-an atlas/topology not carried here and are deferred. What is recorded is the operative
-designation that the real-analytic metric (`IsRealAnalytic.metric_analytic`) and the
-holomorphic extension (forthcoming) reference. Assumed infrastructure; not constructed
-for any concrete manifold. -/
+The subalgebra axioms ALONE are satisfied by the DEGENERATE designation
+`IsAnalyticFun := fun _ => True` ("everything analytic"), which a smooth-only manifold
+could declare — so they do not by themselves encode "strictly more than smooth".
+`not_all_analytic` rules out that designation (it is false when every function is
+analytic, and true in any positive dimension, where smooth-non-analytic functions such
+as bump functions exist).
+
+KNOWN LIMITATION (honest). `not_all_analytic` excludes only the FULLY degenerate
+"everything analytic"; it does not exclude every near-degenerate designation. Likewise
+`IsAnalyticVF` carries no non-triviality, so a degenerate empty designation
+(`fun _ => False`) would make `IsRealAnalytic.metric_analytic` vacuous (its `IsAnalyticVF`
+hypotheses never hold); genuinely pinning it (a spanning set of analytic vector fields, so
+`metric_analytic` bites on all of `g.metric`) needs a local frame. The full
+characterization of real-analyticity — the identity theorem / determined-by-germs / local
+convergence of Taylor series, which alone pins it down — needs an atlas/topology not in
+Mathlib at this generality and is deferred, to be added when that infrastructure exists.
+What is recorded is the operative subalgebra designation that the real-analytic metric
+(`IsRealAnalytic.metric_analytic`) and the holomorphic extension (forthcoming) reference.
+Assumed infrastructure; not constructed for any concrete manifold. -/
 class RealAnalyticStructure (M : Type*) [TangentStructure M] where
   /-- The assumed designation of real-analytic real-valued functions on `M`. -/
   IsAnalyticFun : (M → ℝ) → Prop
@@ -205,6 +218,10 @@ class RealAnalyticStructure (M : Type*) [TangentStructure M] where
   analytic_add : ∀ f₁ f₂, IsAnalyticFun f₁ → IsAnalyticFun f₂ → IsAnalyticFun (f₁ + f₂)
   /-- Real-analytic functions are closed under multiplication. -/
   analytic_mul : ∀ f₁ f₂, IsAnalyticFun f₁ → IsAnalyticFun f₂ → IsAnalyticFun (f₁ * f₂)
+  /-- Real-analyticity is a PROPER subalgebra: some (smooth) function is NOT analytic.
+  Rules out the degenerate designation `IsAnalyticFun := fun _ => True`; true in any
+  positive dimension (smooth-non-analytic functions, e.g. bump functions, exist). -/
+  not_all_analytic : ∃ f : M → ℝ, ¬ IsAnalyticFun f
 
 /-- **LAYER B — Assumed complex-manifold structure (KS Section 5).** The assumed
 holomorphic tangent datum of a complex manifold `N`: a finite-dimensional COMPLEX
@@ -233,14 +250,16 @@ attribute [instance] ComplexManifoldStructure.addCommGroup
 /-- **LAYER C — the `C_d^{Lor,ω}` condition (KS Section 5), NON-VACUOUS.** A
 `LorentzianCobordismGeometry` is real-analytic and complexification-ready when:
 
-* `realAnalytic o` — each ambient manifold carries a `RealAnalyticStructure` (Layer A);
-  already strictly more than the smooth `TangentStructure`.
+* `realAnalytic o` — each ambient manifold carries a `RealAnalyticStructure` (Layer A; a
+  PROPER analytic subalgebra via `not_all_analytic`, the full identity-theorem
+  characterization deferred — see Layer A).
 * `metric_analytic` — the Lorentzian metric is real-analytic: it pairs real-analytic
   vector fields to real-analytic functions. A smooth-but-not-real-analytic metric
   FAILS this (it references the real metric `g.metric` and the analytic designations).
-* `Complexification o` with `complexStructure o` (Layer B), `realEmbed o`, its
-  differential `tangentMap o x`, the dimension relationship `complexDim_eq`, and the
-  TOTALLY-REAL condition `totallyReal`.
+* `Complexification o` with `complexStructure o` (Layer B), `realEmbed o`, its differential
+  `tangentMap o x` (TIED to `realEmbed` by `tangentMap_eq` via the assumed `pushforward`,
+  CHECK-1, so `totallyReal` constrains the real embedding's differential), the dimension
+  relationship `complexDim_eq`, and the TOTALLY-REAL condition `totallyReal`.
 
 NON-VACUOUS (discriminating test). `Complexification o := g.Ambient o`,
 `realEmbed := id` does NOT satisfy this: instantiating requires a
@@ -272,11 +291,27 @@ class IsRealAnalytic [g : LorentzianCobordismGeometry] where
   [complexStructure : ∀ o, ComplexManifoldStructure (Complexification o)]
   /-- The embedding `M ↪ M_ℂ`. -/
   realEmbed : ∀ o, g.Ambient o → Complexification o
-  /-- The differential of `realEmbed` at each point, `T_x M → T_{f(x)} M_ℂ` (ℝ-linear
-  into the complex tangent viewed as a real vector space). -/
+  /-- **Assumed differential (pushforward)** for maps `M → M_ℂ` (CHECK-1 tie). The tangent
+  map of `f : g.Ambient o → Complexification o` at `x`: `df_x : T_x M →ₗ[ℝ] T_{f(x)} M_ℂ`.
+  Assumed (the smooth differential is deferred germ geometry, not built from Mathlib); it
+  is what ties `tangentMap` to the actual embedding `realEmbed`. -/
+  pushforward : ∀ (o : g.Obj) (f : g.Ambient o → Complexification o) (x : g.Ambient o),
+    TangentStructure.Tangent x →ₗ[ℝ] ComplexManifoldStructure.ComplexTangent (f x)
+  /-- The pushforward of a constant map is `0` (a faithful property of the differential):
+  a constant embedding then has zero `tangentMap`, failing `totallyReal`. -/
+  pushforward_const : ∀ (o : g.Obj) (y₀ : Complexification o) (x : g.Ambient o),
+    pushforward o (fun _ => y₀) x = 0
+  /-- The differential of `realEmbed` at each point, `T_x M → T_{f(x)} M_ℂ` (ℝ-linear into
+  the complex tangent viewed as a real vector space), TIED to `realEmbed` by
+  `tangentMap_eq`. -/
   tangentMap : ∀ (o : g.Obj) (x : g.Ambient o),
     TangentStructure.Tangent x →ₗ[ℝ]
       ComplexManifoldStructure.ComplexTangent (realEmbed o x)
+  /-- CHECK-1 TIE: `tangentMap` IS the differential (pushforward) of `realEmbed`. This pins
+  `tangentMap` to the actual embedding, so `totallyReal` and `complexDim_eq` constrain
+  `realEmbed`'s real differential, not a free linear map. -/
+  tangentMap_eq : ∀ (o : g.Obj) (x : g.Ambient o),
+    tangentMap o x = pushforward o (realEmbed o) x
   /-- DIMENSION RELATIONSHIP `dim_ℂ M_ℂ = dim_ℝ M`: the genuine-complexification count
   that distinguishes it from the identity embedding. -/
   complexDim_eq : ∀ (o : g.Obj) (x : g.Ambient o),

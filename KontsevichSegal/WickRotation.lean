@@ -1,1 +1,2 @@
+import KontsevichSegal.WickRotation.GloballyHyperbolic
 import KontsevichSegal.WickRotation.LorentzianCategory
