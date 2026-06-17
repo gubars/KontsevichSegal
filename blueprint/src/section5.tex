@@ -30,6 +30,10 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
 
 \begin{definition}[The Lorentzian cobordism category $\mathcal C_d^{\mathrm{Lor}}$ and $\mathcal C_d^{\mathrm{Lor},\omega}$; KS Section 5]
   \label{def:lorentzian-cobordism-category}
+  \lean{WickRotation.LorentzianField, WickRotation.LorentzianCobordismGeometry,
+    WickRotation.instSemicategory, WickRotation.metric_on_shilov_boundary,
+    WickRotation.RealAnalyticStructure, WickRotation.ComplexManifoldStructure,
+    WickRotation.IsRealAnalytic}
   \notready
   \uses{def:cobordism-category, prop:lorentzian-boundary, prop:only-lorentzian}
   The \emph{Lorentzian cobordism category} $\mathcal C_d^{\mathrm{Lor}}$ is the
@@ -86,6 +90,10 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
 
 \begin{definition}[Global hyperbolicity and the subcategory $\mathcal C_d^{\mathrm{gh}}$; KS Section 5]
   \label{def:globally-hyperbolic}
+  \lean{WickRotation.LightConeGeometry, WickRotation.TimeFunction,
+    WickRotation.IsGloballyHyperbolic, WickRotation.GhCategory,
+    WickRotation.ghSemicategory, WickRotation.IsGloballyHyperbolicOmega,
+    WickRotation.cob_metric_deformable_to_allowable}
   \notready
   \uses{def:lorentzian-cobordism-category, def:allowable}
   Among the Lorentzian cobordisms of $\mathcal C_d^{\mathrm{Lor}}$ we single out the
@@ -168,6 +176,11 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
 
 \begin{definition}[Wick rotation of a time-symmetric germ; KS Section 5]
   \label{def:wick-rotation}
+  \lean{WickRotation.RiemannianField, WickRotation.assembleNormalForm,
+    WickRotation.GeodesicNormalForm, WickRotation.TimeSymmetricRotation,
+    WickRotation.TimeSymmetricRotation.wickRotatedFamily,
+    WickRotation.TimeSymmetricRotation.wickMetric, WickRotation.IsEuclideanObject,
+    WickRotation.EuclideanSpace}
   \notready
   \uses{def:lorentzian-cobordism-category, def:unitarity, def:field-theory}
   For a \emph{time-symmetric} Lorentzian germ the Wick rotation continues the

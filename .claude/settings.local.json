@@ -16,7 +16,8 @@
       "Bash(grep -n '\\\\\\\\input' content.tex)",
       "Bash(grep -n '\\\\\\\\chapter' content.tex section3.tex)",
       "Bash(lake build *)",
-      "Bash(lake exe *)"
+      "Bash(lake exe *)",
+      "PowerShell(leanblueprint checkdecls *)"
     ]
   },
   "model": "claude-opus-4-8",
