@@ -222,10 +222,27 @@ def Observables.pulledBack [gl : LorentzianCobordismGeometry] [HolomorphicComple
 /-- **`𝒪_x` for Lorentzian `M` (KS Section 5, blueprint `def:observables`).** The common fibre of
 the trivial pullback bundle on `𝒰`: the fibre `Obs (expMap base)` over the basepoint, which
 `Observables.triv` canonically identifies with every other fibre ("identifying its fibres gives us
-our definition of `𝒪_x`"). Inherits the bundle's nuclear-Fréchet structure. -/
+our definition of `𝒪_x`"). Inherits the bundle's nuclear-Fréchet structure (see the
+`AddCommGroup`/`Module ℂ` instances below). -/
 def Observables.Ox [gl : LorentzianCobordismGeometry] [HolomorphicComplexification]
     {o : gl.Obj} [MetCManifold (gl.Ambient o)] {x : gl.Ambient o}
     (O : Observables o x) : Type _ :=
   O.Obs (O.expMap O.base)
+
+/-- `𝒪_x` is a complex vector space: it is the fibre `Obs (expMap base)`, which carries the
+bundle's nuclear-Fréchet `AddCommGroup` (`obsFibres`). Stated as an explicit instance keyed under
+`Observables.Ox` so that typeclass search finds it without unfolding the `def` (needed by node 9,
+where `𝒪_x` is the linear/multilinear domain of the observable action). -/
+instance Observables.instAddCommGroupOx [gl : LorentzianCobordismGeometry]
+    [HolomorphicComplexification] {o : gl.Obj} [MetCManifold (gl.Ambient o)] {x : gl.Ambient o}
+    (O : Observables o x) : AddCommGroup O.Ox :=
+  inferInstanceAs (AddCommGroup (O.Obs (O.expMap O.base)))
+
+/-- `𝒪_x` is a `ℂ`-module (the bundle's nuclear-Fréchet `Module ℂ`, `obsFibres`). Explicit
+instance keyed under `Observables.Ox`; see `Observables.instAddCommGroupOx`. -/
+instance Observables.instModuleComplexOx [gl : LorentzianCobordismGeometry]
+    [HolomorphicComplexification] {o : gl.Obj} [MetCManifold (gl.Ambient o)] {x : gl.Ambient o}
+    (O : Observables o x) : Module ℂ O.Ox :=
+  inferInstanceAs (Module ℂ (O.Obs (O.expMap O.base)))
 
 end WickRotation
