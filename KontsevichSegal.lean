@@ -27,5 +27,6 @@ import KontsevichSegal.WickRotation.LorentzianCategory
 import KontsevichSegal.WickRotation.LorentzianEWelldefined
 import KontsevichSegal.WickRotation.ObservableAction
 import KontsevichSegal.WickRotation.Observables
+import KontsevichSegal.WickRotation.SpacelikeCommutativity
 import KontsevichSegal.WickRotation.TimeSymmetricRotation
 import KontsevichSegal.WickRotation.UnitaryGH
