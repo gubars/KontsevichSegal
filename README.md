@@ -55,7 +55,7 @@ or stated-but-deferred).
 | `ComplexMetrics/` | Section 2 | **Substantially proven.** The consequences and Shilov-boundary results are proven; 2 `sorry`s remain in `restrict_allowable` (Prop 2.5), deferred under scope (a); plus documented `True`-placeholders for results blocked on Mathlib gaps. |
 | `Cobordism/` | Section 3 | **Encoded.** The cobordism category C_d^ℂ as an identity-free `Semicategory` (it genuinely has no identity morphisms). |
 | `FieldTheory/` | Section 3 | **Encoded.** All of Section 3's analytic infrastructure, the field-theory functor, and the six functor-condition/axiom nodes (together, all 11 Section 3 blueprint nodes). Stated faithfully; deep analytic content deferred to the Mathlib gaps above. |
-| `WickRotation/` | Section 5 | Planned — not yet started. |
+| `WickRotation/` | Section 5 | **Encoded.** Nodes 1–10 of 11 stated faithfully (scope (a)): the real-analytic Lorentzian / globally-hyperbolic cobordism category, the invariance principle (Principle 5.1), Theorem 5.2 (the gh unitary functor and the rigged triple Ě ⊂ E^Hilb ⊂ Ê), observables and their ordering-independent action, and spacelike commutativity. Node 11 (`VacuumDomain`, V_k ⊇ U_k) is the last remaining node. No `sorry` and no `axiom` — deferrals are documented prose, the same character as the Section 3 rows. |
 
 - **`ComplexMetrics`** (Section 2) — the domain QC(V) of allowable complex
   metrics: the angle condition ∑ᵢ |arg(λᵢ)| < π (working definition, Theorem 2.2),
@@ -68,10 +68,22 @@ or stated-but-deferred).
   conditions: holomorphicity, continuity (the injective/dense-image replacement
   for the missing identity morphisms), the disjoint-union/tensor axiom, the dual
   and conjugate functors, the conjugate-dual duality, and unitarity.
+- **`WickRotation`** (Section 5) — Wick rotation and the unitary functor on the
+  globally hyperbolic category: the real-analytic Lorentzian cobordism category and
+  its globally-hyperbolic subcategory; the Wick rotation of time-symmetric metrics
+  (geodesic normal form); the invariance principle (Principle 5.1); Theorem 5.2 (a
+  unitary QFT induces a functor sending time-symmetric germs to Hilbert spaces and
+  gh cobordisms to unitary operators, with the rigged triple Ě_Σ ⊂ E_Σ^Hilb ⊂ Ê_Σ);
+  the well-definedness of the Lorentzian Ê_Σ; the observable spaces 𝒪_x with their
+  action and the ordering-independent multilinear map
+  𝒪_{x₁} ⊗ … ⊗ 𝒪_{x_k} → Hom(Ě_Σ; Ê_Σ); spacelike commutativity (the Wightman
+  locality axiom); and the vacuum-expectation domain V_k (the last node, not yet
+  started).
 
 Section 4 ("Some analogies from representation theory") is expository analogy with
-no KS definitions/axioms/theorems to formalize, so the remaining formalizable work
-is **Section 5** only.
+no KS definitions/axioms/theorems to formalize. Section 5 is now nearly complete:
+10 of its 11 nodes are encoded, leaving only the vacuum-expectation domain V_k
+(`WickRotation/VacuumDomain.lean`) still to do.
 
 ## Project Status
 
@@ -81,7 +93,7 @@ axiomatized as property-classes (never the `axiom` keyword). Proof gaps are
 explicit `sorry`s; statements not yet expressible use documented `True`
 placeholders.
 
-Snapshot (2026-06-16):
+Snapshot (2026-06-22):
 
 | Metric | Count |
 |--------|-------|
@@ -103,8 +115,8 @@ or are `True` placeholders (Defn 2.1 equivalence, Props 2.4/2.7, the two-copies
 Shilov statement) blocked on the Hodge star, topology on QC(V), or Stein/Siegel
 domain theory.
 
-The **Section 3 files contain no `sorry`s and no `axiom` keyword**: each node is
-stated faithfully as `structure`/`class`/`def` declarations, with the
+The **Section 3 and Section 5 files contain no `sorry`s and no `axiom` keyword**:
+each node is stated faithfully as `structure`/`class`/`def` declarations, with the
 not-yet-constructible analytic content deferred via documented comments rather
 than sorrys or stand-ins.
 
@@ -141,12 +153,25 @@ KontsevichSegal/
 │   ├── DualConjugate.lean         -- dual (Σ*) and conjugate (Σ̄) functors
 │   ├── ConjugateDualDuality.lean  -- plain duality, reality condition (5), conjugate-dual
 │   └── Unitarity.lean             -- time-symmetric germs; unitarity
+├── WickRotation.lean              -- umbrella for WickRotation/
+├── WickRotation/                  -- Section 5: Wick rotation and the gh unitary functor
+│   ├── LorentzianCategory.lean      -- node 1: real-analytic Lorentzian cobordism category
+│   ├── GloballyHyperbolic.lean      -- node 2: the globally hyperbolic subcategory C_d^gh
+│   ├── TimeSymmetricRotation.lean   -- node 3: Wick rotation (geodesic normal form, time-symmetric)
+│   ├── Complexification.lean        -- node 4: the complexification hub (infrastructure)
+│   ├── InvariancePrinciple.lean     -- node 5: Principle 5.1 (the invariance principle)
+│   ├── UnitaryGH.lean               -- node 6: Theorem 5.2 — gh unitary functor + rigged triple
+│   ├── LorentzianEWelldefined.lean  -- node 7: Remark 5.3 — Lorentzian Ê_Σ well-defined
+│   ├── Observables.lean             -- node 8: the observable spaces 𝒪_x
+│   ├── ObservableAction.lean        -- node 9: observable action + ordering-independent map
+│   └── SpacelikeCommutativity.lean  -- node 10: spacelike commutativity (Wightman locality)
 └── All.lean                       -- full umbrella
 KontsevichSegal.lean               -- root entry point
 blueprint/
 └── src/
     ├── content.tex                -- Section 2 blueprint nodes
-    └── section3.tex               -- Section 3 blueprint nodes
+    ├── section3.tex               -- Section 3 blueprint nodes
+    └── section5.tex               -- Section 5 blueprint nodes
 docs/
 ├── project_status.md              -- authoritative per-result status
 ├── development_plan.md            -- overall phasing
