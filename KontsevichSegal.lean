@@ -30,3 +30,4 @@ import KontsevichSegal.WickRotation.Observables
 import KontsevichSegal.WickRotation.SpacelikeCommutativity
 import KontsevichSegal.WickRotation.TimeSymmetricRotation
 import KontsevichSegal.WickRotation.UnitaryGH
+import KontsevichSegal.WickRotation.VacuumDomain
