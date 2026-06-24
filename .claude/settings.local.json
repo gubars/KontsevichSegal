@@ -18,7 +18,9 @@
       "Bash(lake build *)",
       "Bash(lake exe *)",
       "PowerShell(leanblueprint checkdecls *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(awk NR>=158 && NR<=168 {n=index\\($0,\"--\"\\); printf \"%d: dashcol=%d\\\\n\", NR, n} *)",
+      "Bash(awk NR>=165 && NR<=169 {n=index\\($0,\"--\"\\); printf \"%d: dashcol=%d  %s\\\\n\", NR, n, $0} *)"
     ]
   },
   "model": "claude-opus-4-8",
