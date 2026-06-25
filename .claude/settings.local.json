@@ -20,7 +20,11 @@
       "PowerShell(leanblueprint checkdecls *)",
       "Bash(git *)",
       "Bash(awk NR>=158 && NR<=168 {n=index\\($0,\"--\"\\); printf \"%d: dashcol=%d\\\\n\", NR, n} *)",
-      "Bash(awk NR>=165 && NR<=169 {n=index\\($0,\"--\"\\); printf \"%d: dashcol=%d  %s\\\\n\", NR, n, $0} *)"
+      "Bash(awk NR>=165 && NR<=169 {n=index\\($0,\"--\"\\); printf \"%d: dashcol=%d  %s\\\\n\", NR, n, $0} *)",
+      "Bash(command -v leanblueprint)",
+      "Bash(leanblueprint --version)",
+      "Bash(leanblueprint checkdecls *)",
+      "Bash(grep -roE '\\(prop:spacelike-commutativity|prop:Vk-contains-Uk|def:vacuum-domain|prop:invariance-principle|def:field-theory\\)\"?[^;{}]{0,120}\\(color|fill\\)[^;{}]{0,80}' .)"
     ]
   },
   "model": "claude-opus-4-8",

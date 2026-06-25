@@ -34,7 +34,7 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
     WickRotation.instSemicategory, WickRotation.metric_on_shilov_boundary,
     WickRotation.RealAnalyticStructure, WickRotation.ComplexManifoldStructure,
     WickRotation.IsRealAnalytic}
-  \notready
+  \leanok
   \uses{def:cobordism-category, prop:lorentzian-boundary, prop:only-lorentzian}
   The \emph{Lorentzian cobordism category} $\mathcal C_d^{\mathrm{Lor}}$ is the
   Lorentzian analogue of the complex cobordism category
@@ -94,7 +94,7 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
     WickRotation.IsGloballyHyperbolic, WickRotation.GhCategory,
     WickRotation.ghSemicategory, WickRotation.IsGloballyHyperbolicOmega,
     WickRotation.cob_metric_deformable_to_allowable}
-  \notready
+  \leanok
   \uses{def:lorentzian-cobordism-category, def:allowable}
   Among the Lorentzian cobordisms of $\mathcal C_d^{\mathrm{Lor}}$ we single out the
   \emph{globally hyperbolic} ones.
@@ -181,7 +181,7 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
     WickRotation.TimeSymmetricRotation.wickRotatedFamily,
     WickRotation.TimeSymmetricRotation.wickMetric, WickRotation.IsEuclideanObject,
     WickRotation.EuclideanSpace}
-  \notready
+  \leanok
   \uses{def:lorentzian-cobordism-category, def:unitarity, def:field-theory}
   For a \emph{time-symmetric} Lorentzian germ the Wick rotation continues the
   Lorentzian metric to a Riemannian one and uses it to define the Euclidean space
@@ -238,7 +238,10 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
 
 \begin{proposition}[Principle 5.1; KS Section 5]
   \label{prop:invariance-principle}
-  \notready
+  \lean{WickRotation.IsInvariant, WickRotation.Movement, WickRotation.CobordismRealization,
+    WickRotation.HolomorphicComplexification, WickRotation.Isotopy,
+    WickRotation.CurveSubmanifold, WickRotation.ComplexAnalyticStructure}
+  \leanok
   \uses{def:field-theory, def:holomorphicity, def:allowable,
     def:lorentzian-cobordism-category}
   Let $M$ be a $d$-dimensional cobordism that is a real submanifold of a complex
@@ -290,7 +293,10 @@ real-analytic manifold is not available in Mathlib.
 
 \begin{theorem}[Theorem 5.2; KS Section 5]
   \label{thm:unitary-gh}
-  \notready
+  \lean{WickRotation.InducesUnitaryGH, WickRotation.TimeSymmetricGerm,
+    WickRotation.WickObjectCorrespondence, WickRotation.HilbertFibres,
+    WickRotation.InducesUnitaryGH.pairing_reflectionPositive}
+  \leanok
   \uses{def:unitarity, def:field-theory, def:continuity, def:globally-hyperbolic,
     prop:invariance-principle, def:wick-rotation}
   A unitary quantum field theory on $\mathcal C_d^{\mathbb C}$, in the sense of
@@ -377,7 +383,9 @@ $t_k \downarrow 0$.
 
 \begin{proposition}[Remark 5.3; KS Section 5]
   \label{prop:lorentzian-E-welldefined}
-  \notready
+  \lean{WickRotation.LorentzianEWelldefined, WickRotation.PathGerm,
+    WickRotation.timeSymmetricHermitianInner}
+  \leanok
   \uses{prop:invariance-principle, def:wick-rotation, def:field-theory, def:unitarity,
     def:lorentzian-cobordism-category}
   Any smooth path $f \in \mathcal J$ defines the same space $\hat E_{\Sigma}$: for any
@@ -427,7 +435,10 @@ recovers the Wightman axiom that operators at space-like separated points commut
 
 \begin{definition}[Observables at a point; KS Section 5]
   \label{def:observables}
-  \notready
+  \lean{WickRotation.Observables, WickRotation.Observables.Ox,
+    WickRotation.IsAllowableSubspace, WickRotation.AllowableSubspaces,
+    WickRotation.ComplexTangentAt}
+  \leanok
   \uses{def:metc-complex-manifold, prop:real-subspaces, prop:invariance-principle,
     def:wick-rotation}
   In Section~3 the space $\mathcal O_x$ of \emph{observables} at a point $x$ of a
@@ -453,7 +464,9 @@ recovers the Wightman axiom that operators at space-like separated points commut
 
 \begin{proposition}[Action of observables; KS Section 5]
   \label{prop:observable-action}
-  \notready
+  \lean{WickRotation.ObservableAction, WickRotation.ObservableMultilinear,
+    WickRotation.ObservableMultilinear.eval_orderIndep}
+  \leanok
   \uses{def:observables, def:field-theory, def:tensor-axiom}
   Let $M \colon \Sigma_0 \leadsto \Sigma_1$ be a Lorentzian cobordism and
   $x \in \mathring M$. An observable $\psi \in \mathcal O_x$ acts as an operator
@@ -483,7 +496,10 @@ recovers the Wightman axiom that operators at space-like separated points commut
 
 \begin{proposition}[Spacelike commutativity; KS Section 5]
   \label{prop:spacelike-commutativity}
-  \notready
+  \lean{WickRotation.RiggedPropagation, WickRotation.RiggedPropagation.tildePsi,
+    WickRotation.RiggedPropagation.spacelike_commute,
+    WickRotation.RiggedPropagation.propCheck_eq, WickRotation.RiggedPropagation.propHat_eq}
+  \leanok
   \uses{prop:observable-action, thm:unitary-gh, def:globally-hyperbolic,
     def:field-theory}
   On a real-analytic globally hyperbolic space-time the field operators of observables
@@ -499,6 +515,7 @@ recovers the Wightman axiom that operators at space-like separated points commut
 \end{proposition}
 
 \begin{proof}
+  \leanok
   \uses{thm:unitary-gh, prop:observable-action, prop:invariance-principle}
   The identification of the rigged Hilbert spaces along the foliation and the operator
   $\tilde\psi$ use the unitary propagation of Theorem~\ref{thm:unitary-gh}. That
@@ -540,7 +557,11 @@ even the holomorphic envelope of $\mathcal U_k$, is an old open problem.
 
 \begin{definition}[The vacuum-expectation domain $\mathcal V_k$; KS Section 5]
   \label{def:vacuum-domain}
-  \notready
+  \lean{WickRotation.MinkowskiComplexGeometry, WickRotation.VacuumExpectationData,
+    WickRotation.VacuumExpectationData.Vk, WickRotation.VacuumExpectationData.projVk,
+    WickRotation.VacuumExpectationData.EkOnVk, WickRotation.Vcheck,
+    WickRotation.VacuumExpectationData.VkIsDomainOfHolomorphy}
+  \leanok
   \uses{def:allowable, prop:invariance-principle, def:observables}
   The framework of this paper suggests a candidate for $\mathcal V_k$. It sits over the
   open subset $\check{\mathcal V}_k$ of those $k$-tuples
@@ -587,7 +608,8 @@ What is proved is the following inclusion.
 
 \begin{proposition}[Proposition 5.4; KS Section 5]
   \label{prop:Vk-contains-Uk}
-  \notready
+  \lean{WickRotation.VacuumExpectationData.Uk_subset_Vk}
+  \leanok
   \uses{def:vacuum-domain, def:allowable}
   The domain $\mathcal V_k$ contains the Wightman domain $\mathcal U_k$.
 \end{proposition}
