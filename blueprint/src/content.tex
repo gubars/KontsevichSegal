@@ -42,6 +42,7 @@ in Sections~2 and~5.
 \begin{definition}[Allowable complex metric, Hodge-star form; KS Definition 2.1]
   \label{def:allowable-hodge}
   \notready
+  \uses{found:hodge-star}
   On a $d$-dimensional real vector space $V$, a quadratic form
   $g \colon V \to \mathbb C$ is an \emph{allowable complex metric} if, for
   all degrees $p \geq 0$, the real part of the quadratic form
@@ -90,7 +91,7 @@ in Sections~2 and~5.
   \label{thm:angle-equiv}
   \lean{defn_2_1_equiv_angle_condition}
   \notready
-  \uses{def:allowable-hodge, def:allowable}
+  \uses{def:allowable-hodge, def:allowable, found:hodge-star}
   A quadratic form $g \colon V \to \mathbb C$ satisfies
   Definition~\ref{def:allowable-hodge} if and only if it can be written, in
   some basis of $V$, as $\sum_i \lambda_i y_i^2$ with nonzero coefficients
@@ -164,7 +165,7 @@ in Sections~2 and~5.
 \begin{proposition}[Configurations in the holomorphic envelope; KS Proposition 2.3]
   \label{prop:conf-envelope}
   \notready
-  \uses{def:allowable}
+  \uses{def:allowable, found:scv-tube-domain}
   If a complex metric on a $d$-dimensional real vector space $V$ satisfies
   condition (4), then the configuration space $\mathrm{Conf}_k(V)$ of
   $k$-tuples of distinct points of $V$ is contained in the holomorphic
@@ -211,7 +212,7 @@ in Sections~2 and~5.
   \label{prop:parametrization}
   \lean{QC_parametrization, QC_contractible}
   \notready
-  \uses{def:allowable, def:trace-norm-fiber}
+  \uses{def:allowable, def:trace-norm-fiber, found:homogeneous-bundles}
   $Q_{\mathbb C}(V)$ is a fibre bundle over the space of positive-definite
   inner products on $V$ whose fibre at $g_0$ is $\Pi(V, g_0)$. Equivalently,
   choosing a reference inner product,
@@ -263,7 +264,7 @@ in Sections~2 and~5.
 \end{proposition}
 
 \begin{proof}
-  \uses{def:allowable}
+  \uses{def:allowable, found:homogeneous-bundles}
   (Paper, p.~13.) For $g \in Q_{\mathbb C}(V)$ the map
   $v \mapsto \arg g(v)$ is smooth on $\mathbb P(V)$ with critical values the
   angles $\theta_1 \geq \dots \geq \theta_d$, characterized by a min--max
@@ -276,7 +277,7 @@ in Sections~2 and~5.
 \begin{proposition}[Real allowable subspaces of a complex quadratic space; KS Proposition 2.6]
   \label{prop:real-subspaces}
   \notready
-  \uses{def:allowable, def:trace-norm-fiber}
+  \uses{def:allowable, def:trace-norm-fiber, found:homogeneous-bundles}
   Let $Z$ be a $d$-dimensional complex vector space with a nondegenerate
   quadratic form $g$, and let $\mathcal R(Z)$ be the space of
   $d$-dimensional real subspaces $A \subset Z$ such that $g|_A$ belongs to
@@ -311,7 +312,7 @@ in Sections~2 and~5.
   \label{prop:domain-holomorphy}
   \lean{QC_domain_of_holomorphy}
   \notready
-  \uses{def:allowable}
+  \uses{def:allowable, found:scv-tube-domain}
   The domain $Q_{\mathbb C}(V)$ is holomorphically convex, i.e.\ a domain of
   holomorphy in $S^2(V^*_{\mathbb C})$.
 
@@ -336,6 +337,7 @@ in Sections~2 and~5.
 \begin{lemma}[Holomorphic extension from an L-shaped tube; KS Lemma 2.8]
   \label{lem:l-shape}
   \notready
+  \uses{found:scv-tube-domain}
   Let $L$ be the L-shaped subset
   $(\{0\} \times [0,1)) \cup ([0,1) \times \{0\})$ of the quadrant
   $(\mathbb R_+)^2$. Then any holomorphic function $F$ defined in a
@@ -427,7 +429,8 @@ in Sections~2 and~5.
   \label{thm:two-copies}
   \lean{two_copies_on_boundary}
   \notready
-  \uses{def:allowable, def:lorentzian, prop:domain-holomorphy}
+  \uses{def:allowable, def:lorentzian, prop:domain-holomorphy, found:hodge-star,
+    found:scv-tube-domain}
   The Shilov boundary of $Q_{\mathbb C}(V)$, regarded as a bounded domain in
   an affine variety as in the proof of
   Proposition~\ref{prop:domain-holomorphy}, contains \emph{two} disjoint
@@ -458,7 +461,7 @@ in Sections~2 and~5.
   \label{prop:two-dim-polydisc}
   \lean{QC_two_dim_polydisc}
   \notready
-  \uses{def:allowable}
+  \uses{def:allowable, found:homogeneous-bundles}
   When $\dim V = 2$, the conformal class $(\det g)^{-1/2} g$ decouples from
   the volume element, and a nondegenerate complex metric is determined up to
   scale by its two null directions in $\mathbb P(V_{\mathbb C})$;
@@ -475,3 +478,5 @@ in Sections~2 and~5.
 \input{section3}
 
 \input{section5}
+
+\input{foundations}

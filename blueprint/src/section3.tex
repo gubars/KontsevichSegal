@@ -14,7 +14,7 @@ $\mathcal C_d^{\mathbb C}$ of space-time manifolds carrying complex metrics.
   \lean{Cobordism.CobordismGeometry, Cobordism.Semicategory,
     Cobordism.instSemicategory}
   \notready
-  \uses{def:allowable}
+  \uses{def:allowable, found:smooth-cobordism-geometry, abstract:cobordism-domain}
   A \emph{complex metric} on a smooth manifold $X$ is a smooth field
   $x \mapsto g_x$ assigning to each point an allowable complex metric
   $g_x \in Q_{\mathbb C}(T_x X)$ on the tangent space. Write
@@ -171,7 +171,7 @@ record the structures and properties assumed of each.
     ComplexTVSFibres}
   \notready
   \uses{def:cobordism-category, def:nuclear-frechet, def:holomorphic-bundle,
-    def:metc-complex-manifold}
+    def:metc-complex-manifold, found:tvs-limits-tensor, found:smooth-cobordism-geometry}
   A \emph{$d$-dimensional field theory} is a holomorphic functor from the
   cobordism category $\mathcal C_d^{\mathbb C}$ to the category of Fréchet
   topological vector spaces and nuclear (trace-class) linear maps, which takes
@@ -244,7 +244,7 @@ are stated here; the unitarity condition is treated separately.
   \label{def:continuity}
   \lean{IsContinuous}
   \notready
-  \uses{def:field-theory}
+  \uses{def:field-theory, found:tvs-limits-tensor}
   A field theory satisfies the \emph{continuity} property if, for every object
   $\Sigma$, the canonical maps
   \[
@@ -264,7 +264,7 @@ are stated here; the unitarity condition is treated separately.
   \label{def:tensor-axiom}
   \lean{MonoidalCobordism, IsTensorial, partitionFunction}
   \notready
-  \uses{def:field-theory, def:nuclear-frechet}
+  \uses{def:field-theory, def:nuclear-frechet, found:tvs-limits-tensor, found:smooth-cobordism-geometry}
   A field theory \emph{takes disjoint unions to tensor products}: it is equipped
   with a natural isomorphism
   \[
@@ -295,7 +295,7 @@ requirement. The nodes below follow that order.
   \label{def:dual-conjugate-functors}
   \lean{DualConjugateGeometry, dualConj, DualRelation}
   \notready
-  \uses{def:field-theory, def:cobordism-category}
+  \uses{def:field-theory, def:cobordism-category, abstract:cobordism-domain}
   Write $\Sigma^*$ for the object $\Sigma$ with its co-orientation reversed, the
   incoming and outgoing sides exchanged while the underlying germ and metric are
   unchanged. A cobordism $M \colon \Sigma_0 \leadsto \Sigma_1$ is equally a
@@ -316,7 +316,7 @@ requirement. The nodes below follow that order.
   \label{def:conjugate-dual-duality}
   \lean{PlainDuality, IsReal, ConjugateDualIdentification}
   \notready
-  \uses{def:dual-conjugate-functors, def:nuclear-frechet}
+  \uses{def:dual-conjugate-functors, def:nuclear-frechet, found:tvs-limits-tensor}
   For any field theory, with no further hypothesis, the appendix to Section 3 of
   the paper proves the duality
   \[
@@ -350,7 +350,7 @@ requirement. The nodes below follow that order.
   \lean{IsTimeSymmetric, IsUnitary}
   \notready
   \uses{def:conjugate-dual-duality, def:field-theory, prop:lorentzian-boundary,
-    prop:only-lorentzian}
+    prop:only-lorentzian, found:hilbert-completion}
   A germ $\Sigma$ is \emph{time-symmetric} if $\Sigma \cong \bar\Sigma^*$, that
   is, if $\Sigma \subset U$ admits a reflection with fixed-point set $\Sigma$
   that reverses the co-orientation and replaces the metric by its complex

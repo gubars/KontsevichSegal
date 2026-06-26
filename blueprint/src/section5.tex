@@ -35,7 +35,8 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
     WickRotation.RealAnalyticStructure, WickRotation.ComplexManifoldStructure,
     WickRotation.IsRealAnalytic}
   \leanok
-  \uses{def:cobordism-category, prop:lorentzian-boundary, prop:only-lorentzian}
+  \uses{def:cobordism-category, prop:lorentzian-boundary, prop:only-lorentzian,
+    found:lorentzian-causal-geometry, abstract:lorentzian-domain}
   The \emph{Lorentzian cobordism category} $\mathcal C_d^{\mathrm{Lor}}$ is the
   Lorentzian analogue of the complex cobordism category
   $\mathcal C_d^{\mathbb C}$.
@@ -95,7 +96,8 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
     WickRotation.ghSemicategory, WickRotation.IsGloballyHyperbolicOmega,
     WickRotation.cob_metric_deformable_to_allowable}
   \leanok
-  \uses{def:lorentzian-cobordism-category, def:allowable}
+  \uses{def:lorentzian-cobordism-category, def:allowable,
+    found:lorentzian-causal-geometry, abstract:lorentzian-domain}
   Among the Lorentzian cobordisms of $\mathcal C_d^{\mathrm{Lor}}$ we single out the
   \emph{globally hyperbolic} ones.
 
@@ -182,7 +184,9 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
     WickRotation.TimeSymmetricRotation.wickMetric, WickRotation.IsEuclideanObject,
     WickRotation.EuclideanSpace}
   \leanok
-  \uses{def:lorentzian-cobordism-category, def:unitarity, def:field-theory}
+  \uses{def:lorentzian-cobordism-category, def:unitarity, def:field-theory,
+    found:lorentzian-causal-geometry, found:real-analytic-complexification,
+    found:wick-correspondence}
   For a \emph{time-symmetric} Lorentzian germ the Wick rotation continues the
   Lorentzian metric to a Riemannian one and uses it to define the Euclidean space
   $E_{\Sigma}$.
@@ -243,7 +247,8 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
     WickRotation.CurveSubmanifold, WickRotation.ComplexAnalyticStructure}
   \leanok
   \uses{def:field-theory, def:holomorphicity, def:allowable,
-    def:lorentzian-cobordism-category}
+    def:lorentzian-cobordism-category, found:real-analytic-complexification,
+    found:wick-correspondence}
   Let $M$ be a $d$-dimensional cobordism that is a real submanifold of a complex
   $d$-manifold $M_{\mathbb C}$, and suppose the complex metric of $M$ is allowable
   and is induced from a holomorphic symmetric form $g$ on the tangent bundle
@@ -298,7 +303,8 @@ real-analytic manifold is not available in Mathlib.
     WickRotation.InducesUnitaryGH.pairing_reflectionPositive}
   \leanok
   \uses{def:unitarity, def:field-theory, def:continuity, def:globally-hyperbolic,
-    prop:invariance-principle, def:wick-rotation}
+    prop:invariance-principle, def:wick-rotation, found:real-analytic-complexification,
+    found:hilbert-completion, found:wick-correspondence}
   A unitary quantum field theory on $\mathcal C_d^{\mathbb C}$, in the sense of
   Definition~\ref{def:unitarity}, induces a functor from the real-analytic globally
   hyperbolic category $\mathcal C_d^{\mathrm{gh},\omega}$ of
@@ -387,7 +393,8 @@ $t_k \downarrow 0$.
     WickRotation.timeSymmetricHermitianInner}
   \leanok
   \uses{prop:invariance-principle, def:wick-rotation, def:field-theory, def:unitarity,
-    def:lorentzian-cobordism-category}
+    def:lorentzian-cobordism-category, found:tvs-limits-tensor,
+    found:real-analytic-complexification, def:holomorphic-bundle}
   Any smooth path $f \in \mathcal J$ defines the same space $\hat E_{\Sigma}$: for any
   two paths there is a canonical isomorphism between the corresponding inverse limits,
   and these isomorphisms are coherent. The family is compatible with conjugation:
@@ -440,7 +447,8 @@ recovers the Wightman axiom that operators at space-like separated points commut
     WickRotation.ComplexTangentAt}
   \leanok
   \uses{def:metc-complex-manifold, prop:real-subspaces, prop:invariance-principle,
-    def:wick-rotation}
+    def:wick-rotation, found:observable-bundle, found:real-analytic-complexification,
+    found:homogeneous-bundles}
   In Section~3 the space $\mathcal O_x$ of \emph{observables} at a point $x$ of a
   manifold carrying a complex metric was introduced as the inverse limit of the spaces
   $E_{\partial D}$ attached to the boundaries of the closed discs $D$ around $x$,
@@ -467,7 +475,8 @@ recovers the Wightman axiom that operators at space-like separated points commut
   \lean{WickRotation.ObservableAction, WickRotation.ObservableMultilinear,
     WickRotation.ObservableMultilinear.eval_orderIndep}
   \leanok
-  \uses{def:observables, def:field-theory, def:tensor-axiom}
+  \uses{def:observables, def:field-theory, def:tensor-axiom,
+    found:observable-bundle, found:tvs-limits-tensor, found:smooth-cobordism-geometry}
   Let $M \colon \Sigma_0 \leadsto \Sigma_1$ be a Lorentzian cobordism and
   $x \in \mathring M$. An observable $\psi \in \mathcal O_x$ acts as an operator
   $E_{\Sigma_0} \to E_{\Sigma_1}$. If $x$ lies on a time-slice $\Sigma$, then $\psi$
@@ -516,7 +525,8 @@ recovers the Wightman axiom that operators at space-like separated points commut
 
 \begin{proof}
   \leanok
-  \uses{thm:unitary-gh, prop:observable-action, prop:invariance-principle}
+  \uses{thm:unitary-gh, prop:observable-action, prop:invariance-principle,
+    found:hilbert-completion, found:wick-correspondence, found:observable-bundle}
   The identification of the rigged Hilbert spaces along the foliation and the operator
   $\tilde\psi$ use the unitary propagation of Theorem~\ref{thm:unitary-gh}. That
   $\tilde\psi$ does not depend on the time-function follows from Principle~5.1
@@ -562,7 +572,9 @@ even the holomorphic envelope of $\mathcal U_k$, is an old open problem.
     WickRotation.VacuumExpectationData.EkOnVk, WickRotation.Vcheck,
     WickRotation.VacuumExpectationData.VkIsDomainOfHolomorphy}
   \leanok
-  \uses{def:allowable, prop:invariance-principle, def:observables}
+  \uses{def:allowable, prop:invariance-principle, def:observables,
+    found:minkowski-linear, found:scv-tube-domain, found:observable-bundle,
+    found:real-analytic-complexification}
   The framework of this paper suggests a candidate for $\mathcal V_k$. It sits over the
   open subset $\check{\mathcal V}_k$ of those $k$-tuples
   $\mathbf x = \{x_1, \ldots, x_k\}$ of distinct points of $\mathbb M_{\mathbb C}$ that
@@ -610,7 +622,7 @@ What is proved is the following inclusion.
   \label{prop:Vk-contains-Uk}
   \lean{WickRotation.VacuumExpectationData.Uk_subset_Vk}
   \leanok
-  \uses{def:vacuum-domain, def:allowable}
+  \uses{def:vacuum-domain, def:allowable, found:minkowski-linear, found:scv-tube-domain}
   The domain $\mathcal V_k$ contains the Wightman domain $\mathcal U_k$.
 \end{proposition}
 

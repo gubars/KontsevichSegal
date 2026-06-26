@@ -57,10 +57,72 @@
       
       <dt>Dark green border</dt><dd>this is in Mathlib</dd>
       
+      <dt>Grey dashed</dt><dd>a <em>deliberately abstract</em> foundation: a parametric assumption (a field theory over an arbitrary cobordism geometry, and its tangent / dual / gh plumbing) that is never instantiated by design -- not a TODO</dd>
+      
     </dl>
   </div>
     <div id="graph"></div>
 <div id="statements">
+
+    
+    <div class="dep-modal-container" id="abstract:cobordism-domain_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="abstract:cobordism-domain" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">41</span><span class="definition_thmtitle">Arbitrary-cobordism-geometry parametrization</span></div>
+    <div class="thm_thmcontent"><p>  The TQFT-style abstraction underlying Section&#160;3: a field theory is developed over an arbitrary <span class="ttfamily">CobordismGeometry</span>, never a concrete one. This node carries the deliberately-abstract aspect of <span class="ttfamily">CobordismGeometry</span> (its bare object/morphism parametrization, as opposed to the smooth geometry of Definition&#160;<a href="sect0004.html#found:smooth-cobordism-geometry">44</a>), together with the abstract <span class="ttfamily">TangentStructure</span> (an abstract manifold-like type with a tangent space) and the <span class="ttfamily">DualConjugateGeometry</span> operations \(\Sigma \mapsto \Sigma ^*\), \(\Sigma \mapsto \bar\Sigma \). These are parametric plumbing: a concrete instance is never a goal, so the node is abstract, not orange. </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#abstract:cobordism-domain">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="abstract:lorentzian-domain_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="abstract:lorentzian-domain" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">42</span><span class="definition_thmtitle">Arbitrary-Lorentzian-geometry parametrization</span></div>
+    <div class="thm_thmcontent"><p>  The Section&#160;5 counterpart: the development is parametric over an arbitrary <span class="ttfamily">LorentzianCobordismGeometry</span>, never a concrete one. This node carries that abstraction together with the <span class="ttfamily">GhCategory</span> closure/openness assumptions (that the globally hyperbolic cobordisms are closed under concatenation and form an open subcategory), which are categorical bookkeeping over the abstract geometry rather than a construction to formalize. </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#abstract:lorentzian-domain">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
 
     
     <div class="dep-modal-container" id="def:allowable_modal">
@@ -76,11 +138,11 @@
       </span>
       <span class="definition_thmlabel">2</span><span class="definition_thmtitle">Allowable complex metric, working definition: the angle condition</span></div>
     <div class="thm_thmcontent"><p>   A tuple of complex numbers \((\lambda _1, \dots , \lambda _d)\) satisfies the <em>angle condition</em> if every \(\lambda _i\) is nonzero, no \(\lambda _i\) lies on the non-positive real axis, and </p>
-<div class="displaymath" id="a0000000007">
+<div class="displaymath" id="a0000000008">
   \[  |\arg (\lambda _1)| + |\arg (\lambda _2)| + \dots + |\arg (\lambda _d)| \; {\lt}\;  \pi . \tag {4}  \]
 </div>
 <p> An <em>allowable complex metric</em> on a finite-dimensional real vector space \(V\) is a symmetric nondegenerate \(\mathbb R\)-bilinear form \(g \colon V \times V \to \mathbb C\) for which there exist a basis \((y_i)\) of coordinates on \(V\) and coefficients \((\lambda _i)\) satisfying the angle condition with </p>
-<div class="displaymath" id="a0000000008">
+<div class="displaymath" id="a0000000009">
   \[  g \; =\;  \lambda _1 y_1^2 + \lambda _2 y_2^2 + \dots + \lambda _d y_d^2 .  \]
 </div>
 <p> The collection of allowable complex metrics on \(V\) is denoted \(Q_{\mathbb C}(V)\); in the paper it is an open subset of the complex vector space \(S^2(V^*_{\mathbb C})\). This diagonal characterization serves as the definition of allowability throughout the formalization, since Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> requires the Hodge star operator. </p>
@@ -124,8 +186,8 @@
       Definition
       </span>
       <span class="definition_thmlabel">1</span><span class="definition_thmtitle">Allowable complex metric, Hodge-star form; KS Definition 2.1</span></div>
-    <div class="thm_thmcontent"><p>  On a \(d\)-dimensional real vector space \(V\), a quadratic form \(g \colon V \to \mathbb C\) is an <em>allowable complex metric</em> if, for all degrees \(p \geq 0\), the real part of the quadratic form </p>
-<div class="displaymath" id="a0000000006">
+    <div class="thm_thmcontent"><p>   On a \(d\)-dimensional real vector space \(V\), a quadratic form \(g \colon V \to \mathbb C\) is an <em>allowable complex metric</em> if, for all degrees \(p \geq 0\), the real part of the quadratic form </p>
+<div class="displaymath" id="a0000000007">
   \[  \Lambda ^p(V^*) \longrightarrow |\Lambda ^d(V^*)|_{\mathbb C}, \qquad \alpha \mapsto \alpha \wedge *_g\,  \alpha  \]
 </div>
 <p> is positive-definite. Here \(*_g\) is the Hodge star operator of the complex metric \(g\), and \(|\Lambda ^d(V^*)|_{\mathbb C}\) is the complexified twisted determinant line, with orientation-reversing automorphisms of \(V\) acting antilinearly. </p>
@@ -207,12 +269,12 @@
       </span>
       <span class="definition_thmlabel">28</span><span class="definition_thmtitle">Conjugate-dual duality; KS Section 3, Appendix</span></div>
     <div class="thm_thmcontent"><p>    For any field theory, with no further hypothesis, the appendix to Section 3 of the paper proves the duality </p>
-<div class="displaymath" id="a0000000040">
+<div class="displaymath" id="a0000000043">
   \[  (\check E_{\Sigma })^* \; \cong \;  \hat E_{\Sigma ^*},  \]
 </div>
 <p> that is, the strong dual of \(\check E_{\Sigma }\) is \(\hat E_{\Sigma ^*}\). The companion form, that the strong dual of \(\hat E_{\Sigma }\) is \(\check E_{\Sigma ^*}\), also holds. Passing between the two forms is not a mere swap of \(\Sigma \) and \(\Sigma ^*\); it dualizes the first and invokes the reflexivity of the nuclear Fréchet space \(\hat E_{\Sigma }\), which is among the properties assumed of nuclear spaces. We state these results; their appendix proof is not formalized. </p>
 <p>Separately, a field theory may satisfy the <em>reality condition</em>: a natural antilinear involution </p>
-<div class="displaymath" id="a0000000041">
+<div class="displaymath" id="a0000000044">
   \[  E_{\bar\Sigma } \; \cong \;  \overline{E_{\Sigma }}. \tag {5}  \]
 </div>
 <p> This is an additional hypothesis on the field theory, not part of the duality above. </p>
@@ -258,7 +320,7 @@
       </span>
       <span class="definition_thmlabel">25</span><span class="definition_thmtitle">Continuity; KS Section 3</span></div>
     <div class="thm_thmcontent"><p>    A field theory satisfies the <em>continuity</em> property if, for every object \(\Sigma \), the canonical maps </p>
-<div class="displaymath" id="a0000000038">
+<div class="displaymath" id="a0000000041">
   \[  \check E_{\Sigma } \; \longrightarrow \;  E_{\Sigma } \; \longrightarrow \;  \hat E_{\Sigma }  \]
 </div>
 <p> are each injective with dense image. </p>
@@ -336,7 +398,7 @@
       <span class="definition_thmlabel">23</span><span class="definition_thmtitle">Field theory as a holomorphic functor; KS Section 3</span></div>
     <div class="thm_thmcontent"><p>    A <em>\(d\)-dimensional field theory</em> is a holomorphic functor from the cobordism category \(\mathcal C_d^{\mathbb C}\) to the category of Fréchet topological vector spaces and nuclear (trace-class) linear maps, which takes disjoint unions to tensor products. Write \(E_{\Sigma }\) for the space assigned to an object \(\Sigma \) and \(Z_M \colon E_{\Sigma _0} \to E_{\Sigma _1}\) for the nuclear (trace-class) map assigned to a cobordism \(M \colon \Sigma _0 \leadsto \Sigma _1\). Following the boxed definition, \(E_{\Sigma }\) is a Fréchet topological vector space. The paper assigns it no further structure: it plays only a provisional role, serving to construct the fundamental nuclear spaces between which it is sandwiched, and it is not asserted to be nuclear. Those fundamental nuclear spaces are the limit spaces \(\check E_{\Sigma }\) and \(\hat E_{\Sigma }\) introduced below, whose structure differs and is recorded there. </p>
 <p><em>Induced limit structure.</em> Because an object \(\Sigma \subset U\) is a germ of a \(d\)-manifold, it carries a direct system and an inverse system of neighbouring objects. Upstream, the sub-cobordisms \(\Sigma ' \leadsto \Sigma \) contained in \(U\), each diffeomorphic to the trivial cobordism \(\Sigma \times [0,1]\) with outgoing end \(\Sigma \), are ordered by inclusion and form a direct system with cobordisms to \(\Sigma \). Downstream, the cobordisms \(\Sigma \leadsto \Sigma ''\) contained in \(U\) form an inverse system to which \(\Sigma \) maps. Applying the functor yields canonical maps </p>
-<div class="displaymath" id="a0000000037">
+<div class="displaymath" id="a0000000040">
   \[  \check E_{\Sigma } \; \longrightarrow \;  E_{\Sigma } \; \longrightarrow \;  \hat E_{\Sigma },  \]
 </div>
 <p> where \(\check E_{\Sigma } := \varinjlim E_{\Sigma '}\) is the direct limit over the upstream system and \(\hat E_{\Sigma } := \varprojlim E_{\Sigma ''}\) is the inverse limit over the downstream system. The downstream limit \(\hat E_{\Sigma }\), being the inverse limit of a countable sequence of nuclear maps of Fréchet spaces, is a nuclear Fréchet space. The upstream limit \(\check E_{\Sigma }\) is also nuclear, but in general not metrizable, so unlike \(\hat E_{\Sigma }\) it is not a Fréchet space; the paper further identifies it as the strong dual of the nuclear Fréchet space \(\hat E_{\Sigma ^*}\), where \(\Sigma ^*\) is \(\Sigma \) with its co-orientation reversed, a result deferred to a later node. These two limit spaces, not \(E_{\Sigma }\), are the load-bearing nuclear spaces of the theory; \(E_{\Sigma }\) exists only to construct them. </p>
@@ -389,7 +451,7 @@
 <p><em>The globally hyperbolic subcategory.</em> The globally hyperbolic cobordisms are closed under concatenation, so the objects of \(\mathcal C_d^{\mathrm{Lor}}\) together with the globally hyperbolic cobordisms between them form a subcategory \(\mathcal C_d^{\mathrm{gh}} \subseteq \mathcal C_d^{\mathrm{Lor}}\). The existence of a time-function on a compact Lorentzian cobordism is an <em>open</em> condition, so \(\mathcal C_d^{\mathrm{gh}}\) is an <em>open</em> subcategory of \(\mathcal C_d^{\mathrm{Lor}}\). It is the analogue of the dense open subgroup of the Shilov boundary of a complex semigroup, the real Lie group to which the holomorphic contraction representations of Section&#160;4 extend as genuine unitary operators. It should play that role here, although the theorem obtained below, Theorem&#160;5.2, is weaker. </p>
 <p><em>The real-analytic version.</em> Inside the real-analytic Lorentzian category \(\mathcal C_d^{\mathrm{Lor},\omega }\) there is the subcategory \(\mathcal C_d^{\mathrm{gh},\omega } \subseteq \mathcal C_d^{\mathrm{Lor},\omega }\) of globally hyperbolic cobordisms, in which the manifolds, their Lorentzian metrics, and the time-function are all real-analytic. The real-analyticity of the time-function can be dropped, since any smooth function can be approximated real-analytically. This is the category required for the operator assignment of Section&#160;5: the forthcoming Principle&#160;5.1 and Theorem&#160;5.2 move a cobordism inside a complexification \(M_{\mathbb C}\), a holomorphic thickening that exists only when the cobordism and its metric are real-analytic. </p>
 <p><em>The metric normal form and the deformation into allowable metrics.</em> For a globally hyperbolic cobordism equipped with a time-function, the metric, written through the diffeomorphism \(M \cong \Sigma _0 \times [0,1]\), takes the form </p>
-<div class="displaymath" id="a0000000043">
+<div class="displaymath" id="a0000000046">
   \[  h_t + c^2 \,  \mathrm{d}t^2, \qquad c \colon \Sigma _0 \times [0,1] \to \mathrm{i}\mathbb R,  \]
 </div>
 <p> where \(t \mapsto h_t\) is a family of Riemannian metrics on the time-slices. The factor \(c\) is purely imaginary, recording the Lorentzian signature: \(c^2\) is real and negative, so \(h_t + c^2\, \mathrm{d}t^2 = h_t - |c|^2\, \mathrm{d}t^2\). A small deformation \(\delta c\) pushing \(c\) into the open right half-plane \(\mathbb C_+ = \{ z \in \mathbb C : \mathrm{Re}\, z {\gt} 0\} \) turns the Lorentzian metric into an <em>allowable</em> complex metric in the sense of Section&#160;2 (Definition&#160;<a href="sect0001.html#def:allowable">2</a>): the single eigenvalue \(c^2\), which for the Lorentzian metric sat on the negative real axis, moves off it into the complex plane, while the \(h_t\) eigenvalues stay positive, so the angle condition holds for small \(\delta c\). This is the deformation picture connecting \(\mathcal C_d^{\mathrm{gh}}\) to the interior \(\mathcal C_d^{\mathbb C}\). One would like to define the operator \(Z_M\) of a Lorentzian cobordism as a limit of the operators attached to such deformations, but the deformed metric depends on the choice of time-function, which should be irrelevant to \(Z_M\). Resolving this is the purpose of the forthcoming Principle&#160;5.1 and Theorem&#160;5.2. </p>
@@ -789,7 +851,7 @@
       </span>
       <span class="definition_thmlabel">26</span><span class="definition_thmtitle">Disjoint unions to tensor products; KS Section 3</span></div>
     <div class="thm_thmcontent"><p>    A field theory <em>takes disjoint unions to tensor products</em>: it is equipped with a natural isomorphism </p>
-<div class="displaymath" id="a0000000039">
+<div class="displaymath" id="a0000000042">
   \[  \check E_{\Sigma } \otimes \check E_{\Sigma '} \; \cong \;  \check E_{\Sigma \sqcup \Sigma '},  \]
 </div>
 <p> associative and commutative with respect to the standard isomorphisms of disjoint union and tensor product. The tensor product is unambiguous because the spaces are nuclear, nuclear spaces having a unique natural tensor product, and this isomorphism is equivalent to the corresponding one for the downstream limits, \(\hat E_{\Sigma } \otimes \hat E_{\Sigma '} \cong \hat E_{\Sigma \sqcup \Sigma '}\). Functoriality is the assumption that \(Z_M \otimes Z_{M'} = Z_{M \sqcup M'}\) for cobordisms \(M\) and \(M'\). </p>
@@ -873,7 +935,7 @@
 </li>
 </ul>
 <p>For a unitary theory and a time-symmetric germ \(\Sigma \), the positive-definite hermitian form makes \(\check E_{\Sigma }\) a pre-Hilbert space, which completes to a Hilbert space \(E^{\mathrm{Hilb}}_{\Sigma }\) sitting in </p>
-<div class="displaymath" id="a0000000042">
+<div class="displaymath" id="a0000000045">
   \[  \check E_{\Sigma } \; \longrightarrow \;  E^{\mathrm{Hilb}}_{\Sigma } \; \longrightarrow \;  \hat E_{\Sigma }.  \]
 </div>
 <p>This is where unitarity meets Section 2. The metric of a time-symmetric germ is real and Riemannian on the hypersurface \(\Sigma \), and by Propositions&#160;<a href="sect0001.html#prop:lorentzian-boundary">15</a> and&#160;<a href="sect0001.html#prop:only-lorentzian">16</a> the nondegenerate real metrics on the Shilov boundary of \(Q_{\mathbb C}(V)\) are exactly the Lorentzian ones. The time-symmetric hypersurfaces on which a unitary theory acquires Hilbert spaces are the functorial counterpart of those Lorentzian metrics on the Shilov boundary. </p>
@@ -924,7 +986,7 @@
 </ul>
 <p> When the metric of \(M\) is allowable the projection \(M \to \mathbb E\) is a local diffeomorphism, so (ii) makes \(M\) the graph of a smooth map \(\mathbb E \to \mathrm i \mathbb E\). Let \(\mathcal F_k\) be the space of pairs \((M, \mathbf x)\) satisfying (i) and (ii), an infinite-dimensional complex manifold with an open projection \(\pi \colon \mathcal F_k \to \check{\mathcal V}_k \subset \mathrm{Conf}_k(\mathbb M_{\mathbb C})\). Then \(\mathcal V_k\) is the largest Hausdorff quotient manifold of \(\mathcal F_k\) through which \(\pi \) factorizes and which maps to \(\check{\mathcal V}_k\) by a local diffeomorphism: two pairs \((M, \mathbf x)\) and \((M', \mathbf x)\) in a fibre have the same image when they lie in one connected component of the fibre, and more generally when they are joined to a common third pair by paths covering the same path in \(\check{\mathcal V}_k\), the further identifications making the quotient Hausdorff. </p>
 <p>A field theory holomorphic on the enlarged cobordism category of allowable submanifolds of \(\mathbb M_{\mathbb C}\) cut between time-symmetric hypersurfaces, with a Lorentz-invariant vacuum, has vacuum expectation values forming a holomorphic section of a bundle on \(\mathcal F_k\); trivializing by the local diffeomorphism \(M \to \mathbb E\) gives a holomorphic function </p>
-<div class="displaymath" id="a0000000054">
+<div class="displaymath" id="a0000000057">
   \[  \mathcal E_k \colon \mathcal F_k \; \longrightarrow \;  \mathrm{Hom}(\mathcal O^{\otimes k}; \mathbb C),  \]
 </div>
 <p> where \(\mathcal O\) is the space of observables at a point of \(\mathbb E\). By Principle&#160;5.1 (Proposition&#160;<a href="sect0003.html#prop:invariance-principle">33</a>) the value of \(\mathcal E_k\) is unchanged when the marked points \(\mathbf x\) are held fixed and \(M\) is moved smoothly within the allowable class, so \(\mathcal E_k\) is constant on the connected components of the fibres of \(\pi \), the isotopy classes of allowable manifolds through \(\mathbf x\). </p>
@@ -978,12 +1040,12 @@
       <span class="definition_thmlabel">32</span><span class="definition_thmtitle">Wick rotation of a time-symmetric germ; KS Section 5</span></div>
     <div class="thm_thmcontent"><p>    For a <em>time-symmetric</em> Lorentzian germ the Wick rotation continues the Lorentzian metric to a Riemannian one and uses it to define the Euclidean space \(E_{\Sigma }\). </p>
 <p><em>The setup.</em> Let \(\Sigma \subset U\) be a Lorentzian germ, with \(\Sigma \) co-oriented in \(U\). Exponentiating the geodesics emanating perpendicularly from \(\Sigma \) identifies \(U\) with \(\Sigma \times (-\varepsilon , \varepsilon )\), and in this identification the Lorentzian metric takes the geodesic-normal form </p>
-<div class="displaymath" id="a0000000044">
+<div class="displaymath" id="a0000000047">
   \[  h_t - \mathrm{d}t^2,  \]
 </div>
 <p> where \(t \mapsto h_t\) is a smooth map from \((-\varepsilon , \varepsilon )\) into the manifold of Riemannian metrics on \(\Sigma \), as in Definition&#160;<a href="sect0003.html#def:lorentzian-cobordism-category">30</a>. </p>
 <p><em>The Wick rotation.</em> Suppose the germ is <em>time-symmetric</em> in the sense of Definition&#160;<a href="sect0002.html#def:unitarity">29</a>, that is \(\Sigma \cong \bar\Sigma ^*\). We define the Euclidean space \(E_{\Sigma }\) of the Lorentzian germ by replacing its Lorentzian metric with the <em>Wick-rotated</em> Riemannian metric </p>
-<div class="displaymath" id="a0000000045">
+<div class="displaymath" id="a0000000048">
   \[  h_{\mathrm{i}t} + \mathrm{d}t^2,  \]
 </div>
 <p> and taking \(E_{\Sigma }\) to be the space that the field theory of Definition&#160;<a href="sect0002.html#def:field-theory">23</a> assigns to this Riemannian germ. </p>
@@ -1017,6 +1079,336 @@
         
       </ul>
   </div>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:hilbert-completion_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:hilbert-completion" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">48</span><span class="definition_thmtitle">The Hilbert completion of the rigged triple</span></div>
+    <div class="thm_thmcontent"><p>   Completion of the pre-Hilbert space \(\check E_\Sigma \), under the reflection-positivity pairing, to the Hilbert space \(E_\Sigma ^{\mathrm{Hilb}}\) sitting in \(\check E_\Sigma \subset E_\Sigma ^{\mathrm{Hilb}} \subset \hat E_\Sigma \) by injective dense maps whose composite is the field-theory map \(\kappa \) (the assumed <span class="ttfamily">HilbertFibres</span> and the data of <span class="ttfamily">InducesUnitaryGH</span>). Mathlib has Hilbert completion of an inner-product space; what is missing is the wiring to the deferred limit spaces \(\check E\), \(\hat E\). <em>Grind to Mathlib-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:hilbert-completion">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:hodge-star_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:hodge-star" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">51</span><span class="definition_thmtitle">The Hodge star on exterior powers</span></div>
+    <div class="thm_thmcontent"><p>  The Hodge star operator \(*_g\) for complex metrics and the induced quadratic forms on the exterior powers \(\Lambda ^p(V^*)\), with the twisted determinant line. This is exactly the machinery Definition&#160;2.1 (the Hodge-star form of allowability) and Theorem&#160;2.2 (its equivalence with the angle condition) need, and the \(p=0\) branch of the two-copies statement. The Hodge star at this generality is not in Mathlib. <em>Grind to Mathlib-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:hodge-star">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:homogeneous-bundles_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:homogeneous-bundles" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">52</span><span class="definition_thmtitle">Homogeneous spaces, associated bundles and the \(Q_{\mathbb C}\) topology</span></div>
+    <div class="thm_thmcontent"><p>  The \(\mathrm{GL}(V)/\mathrm O(V)\) and \(\mathrm O_{\mathbb C}(Z)\) homogeneous-space actions, the associated-bundle machinery, the real Grassmannian, and a topology on \(Q_{\mathbb C}(V)\) (needed even to state contractibility). This is what Propositions&#160;2.4 and&#160;2.6 rest on, and what the two-dimensional polydisc description needs. The same node carries the small linear-algebra sub-gap that blocks the Proposition&#160;2.5 proof: the Courant–Fischer min–max / eigenvalue-interlacing characterization of the critical angles, which is one lemma rather than a body of theory. <em>Grind to Mathlib-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:homogeneous-bundles">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:lorentzian-causal-geometry_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:lorentzian-causal-geometry" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">45</span><span class="definition_thmtitle">Lorentzian and causal geometry</span></div>
+    <div class="thm_thmcontent"><p>   The geometric content abstracted by <span class="ttfamily">LorentzianCobordismGeometry</span>, <span class="ttfamily">LightConeGeometry</span> and <span class="ttfamily">GhCategory</span>: Lorentzian metrics of signature \((d-1,1)\), light-cone structure, timelike geodesics, smooth time-functions, global hyperbolicity, and the geodesic normal form \(h_t - \mathrm dt^2\). Lorentzian causal geometry is standard mathematics but absent from Mathlib. Pairs with the deliberately-abstract Definition&#160;<a href="sect0004.html#abstract:lorentzian-domain">42</a>. <em>Research-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:lorentzian-causal-geometry">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:minkowski-linear_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:minkowski-linear" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">53</span><span class="definition_thmtitle">Complexified Minkowski space</span></div>
+    <div class="thm_thmcontent"><p>  Complexified Minkowski space \(\mathbb M_{\mathbb C} = \mathbb E \oplus \mathrm i \mathbb E\) with its \(\mathbb C\)-bilinear form and the projection onto the real Euclidean subspace (the linear-algebra fields of <span class="ttfamily">MinkowskiComplexGeometry</span>: <span class="ttfamily">mC</span>, <span class="ttfamily">bilin</span>, <span class="ttfamily">Eucl</span>, <span class="ttfamily">projE</span>). This is finite-dimensional linear algebra, largely expressible with existing Mathlib; the totally-real-submanifold half of that class is folded into Definition&#160;<a href="sect0004.html#found:real-analytic-complexification">46</a>. The nearest foundation to green. <em>Grind.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:minkowski-linear">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:observable-bundle_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:observable-bundle" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">49</span><span class="definition_thmtitle">The observable bundle</span></div>
+    <div class="thm_thmcontent"><p>   The observable bundle over \(\mathrm{Met}_{\mathbb C}(\hat x)\) and the space of observables \(\mathcal O_x = \varprojlim E_{\partial D}\) as the inverse limit over the boundary spheres of shrinking discs around \(x\), with the disc-removal action \(E_{\partial D} \to \mathrm{Hom}(E_{\Sigma _0}; E_{\Sigma _1})\) (the assumed <span class="ttfamily">Observables.Obs</span>; the opaque ambient morphism has no disc-removal accessor). <em>Research-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:observable-bundle">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:real-analytic-complexification_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:real-analytic-complexification" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">46</span><span class="definition_thmtitle">Real-analytic structure and holomorphic complexification</span></div>
+    <div class="thm_thmcontent"><p>   The real-analytic structure and its holomorphic complexification: a real-analytic manifold \(M\) as a totally real submanifold of a complex manifold \(M_{\mathbb C}\), with a holomorphic symmetric form \(g\) on \(TM_{\mathbb C}\) inducing the allowable metric, and the isotopies of \(M\) inside \(M_{\mathbb C}\) (the assumed <span class="ttfamily">IsRealAnalytic</span>, <span class="ttfamily">HolomorphicComplexification</span>, <span class="ttfamily">ComplexAnalyticStructure</span>). This is the paper’s heaviest assumed piece. It also covers the totally-real \(d\)-submanifolds of \(\mathbb M_{\mathbb C}\) used by the vacuum-domain candidate (folded in from the Minkowski geometry). The complexification of a real-analytic manifold is not in Mathlib. <em>Research-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:real-analytic-complexification">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:scv-tube-domain_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:scv-tube-domain" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">50</span><span class="definition_thmtitle">Several complex variables: tube, Stein and Shilov theory</span></div>
+    <div class="thm_thmcontent"><p>  Domains of holomorphy and holomorphic envelopes, Bochner’s tube theorem, Siegel domains and the Cayley transform, the Shilov boundary, and the Wightman permuted extended tube \(\mathcal U_k\) (the assumed <span class="ttfamily">MinkowskiComplexGeometry.Uk</span> and <span class="ttfamily">.isDomainOfHolomorphy</span>). This single body of several-complex-variable analysis is what Section&#160;2 defers at Propositions&#160;2.3, 2.7 and Lemma&#160;2.8, what the two-copies Shilov-boundary statement needs, and what the closing \(\mathcal V_k\) conjecture invokes. None of it is in Mathlib. <em>Research-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:scv-tube-domain">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:smooth-cobordism-geometry_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:smooth-cobordism-geometry" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">44</span><span class="definition_thmtitle">The smooth cobordism geometry</span></div>
+    <div class="thm_thmcontent"><p>   The geometric content abstracted by <span class="ttfamily">CobordismGeometry</span>: germs of \(d\)-manifolds along closed co-oriented \((d-1)\)-submanifolds, complex metrics as sections of \(\mathrm{Met}_{\mathbb C}\), cobordisms up to boundary-fixing isometry, their gluing, and the disjoint unions of <span class="ttfamily">MonoidalCobordism</span>. The categorical skeleton over this geometry (the <span class="ttfamily">Semicategory</span>) is already built; what is missing is the smooth-manifold geometry itself, none of which (manifold germs, gluing) is in Mathlib. This geometry conceptually rests on the complex-manifold structure \(\mathrm{Met}_{\mathbb C}\) (Definition&#160;<a href="sect0002.html#def:metc-complex-manifold">21</a>), of which its metrics are sections; the dependency edge to that node is deliberately omitted to keep the dependency graph acyclic, since Definition&#160;<a href="sect0002.html#def:metc-complex-manifold">21</a> already depends on Definition&#160;<a href="sect0002.html#def:cobordism-category">19</a> and the edge would close a cycle. The recorded dependency on Definition&#160;<a href="sect0001.html#def:allowable">2</a> instead reflects that those cobordism metrics are allowable complex metrics. Pairs with the deliberately-abstract Definition&#160;<a href="sect0004.html#abstract:cobordism-domain">41</a>. <em>Research-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:smooth-cobordism-geometry">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:tvs-limits-tensor_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:tvs-limits-tensor" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">43</span><span class="definition_thmtitle">Limits and completed tensor products of nuclear spaces</span></div>
+    <div class="thm_thmcontent"><p>   Countable inverse and direct limits of nuclear maps of Fréchet spaces, and the unique completed tensor product of nuclear spaces. This is what actually realizes \(\hat E_\Sigma = \varprojlim E_{\Sigma ''}\), \(\check E_\Sigma = \varinjlim E_{\Sigma '}\) and \(E \otimes F\), all of which Section&#160;3 asserts but defers (the “limit construction is deferred” in <span class="ttfamily">FieldTheory.lean</span>; the tensor in <span class="ttfamily">TensorAxiom.lean</span>). It is the second Mathlib gap named in the README. Missing: limits and completed tensor products of topological vector spaces (Mathlib has only algebraic tensor products and finite-rank traces). <em>Mathlib-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:tvs-limits-tensor">LaTeX</a>
+    
+    
+  
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="found:wick-correspondence_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="found:wick-correspondence" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">47</span><span class="definition_thmtitle">The Wick / boundary correspondence</span></div>
+    <div class="thm_thmcontent"><p>   The boundary relation realizing \(\mathcal C_d^{\mathrm{Lor},\omega }\) inside \(\mathcal C_d^{\mathbb C}\): the object-level Wick rotation (a Lorentzian germ to the complex object it rotates to, the assumed <span class="ttfamily">WickObjectCorrespondence</span>) and the morphism-level realization (a Lorentzian cobordism to a complex one, the assumed <span class="ttfamily">CobordismRealization</span>). This is a construction KS defer, not a parametrization, so it is orange. <em>Research-scale.</em> </p>
+</div>
+
+    <a class="latex_link" href="sect0004.html#found:wick-correspondence">LaTeX</a>
+    
+    
+  
     
     
   
@@ -1070,7 +1462,7 @@
       Lemma
       </span>
       <span class="lemma_thmlabel">13</span><span class="lemma_thmtitle">Holomorphic extension from an L-shaped tube; KS Lemma 2.8</span></div>
-    <div class="thm_thmcontent"><p>  Let \(L\) be the L-shaped subset \((\{ 0\}  \times [0,1)) \cup ([0,1) \times \{ 0\} )\) of the quadrant \((\mathbb R_+)^2\). Then any holomorphic function \(F\) defined in a neighbourhood of \(L \times \mathrm i \mathbb R^2 \subset \mathbb C^2\) extends holomorphically to \(P \times \mathrm i \mathbb R^2\), where \(P\) is the intersection of \((\mathbb R_+)^2\) with a neighbourhood of \(L\) in \(\mathbb R^2\). </p>
+    <div class="thm_thmcontent"><p>   Let \(L\) be the L-shaped subset \((\{ 0\}  \times [0,1)) \cup ([0,1) \times \{ 0\} )\) of the quadrant \((\mathbb R_+)^2\). Then any holomorphic function \(F\) defined in a neighbourhood of \(L \times \mathrm i \mathbb R^2 \subset \mathbb C^2\) extends holomorphically to \(P \times \mathrm i \mathbb R^2\), where \(P\) is the intersection of \((\mathbb R_+)^2\) with a neighbourhood of \(L\) in \(\mathbb R^2\). </p>
 <p>Formalization requires several-complex-variables extension theory (continuity-principle and analytic-disc arguments, Bochner’s tube theorem), not in Mathlib; deferred together with Proposition&#160;<a href="sect0001.html#prop:conf-envelope">6</a>. </p>
 </div>
 
@@ -1314,7 +1706,7 @@
       </span>
       <span class="proposition_thmlabel">37</span><span class="proposition_thmtitle">Action of observables; KS Section 5</span></div>
     <div class="thm_thmcontent"><p>    Let \(M \colon \Sigma _0 \leadsto \Sigma _1\) be a Lorentzian cobordism and \(x \in \mathring M\). An observable \(\psi \in \mathcal O_x\) acts as an operator \(E_{\Sigma _0} \to E_{\Sigma _1}\). If \(x\) lies on a time-slice \(\Sigma \), then \(\psi \) acts as an element of \(\mathrm{Hom}(\check E_{\Sigma }; \hat E_{\Sigma })\), an unbounded operator in \(E_{\Sigma }\). For distinct points \(x_1, \ldots , x_k\) on \(\Sigma \) there is a multilinear map </p>
-<div class="displaymath" id="a0000000051">
+<div class="displaymath" id="a0000000054">
   \[  \mathcal O_{x_1} \otimes \cdots \otimes \mathcal O_{x_k} \; \longrightarrow \;  \mathrm{Hom}(\check E_{\Sigma }; \hat E_{\Sigma })  \]
 </div>
 <p> that does not depend on an ordering of the points. </p>
@@ -1389,7 +1781,7 @@
       </span>
       <span class="proposition_thmlabel">8</span><span class="proposition_thmtitle">Parametrization and contractibility; KS Proposition 2.4</span></div>
     <div class="thm_thmcontent"><p>    \(Q_{\mathbb C}(V)\) is a fibre bundle over the space of positive-definite inner products on \(V\) whose fibre at \(g_0\) is \(\Pi (V, g_0)\). Equivalently, choosing a reference inner product, </p>
-<div class="displaymath" id="a0000000015">
+<div class="displaymath" id="a0000000016">
   \[  Q_{\mathbb C}(V) \; \cong \;  \mathrm{GL}(V) \times _{\mathrm{O}(V)} \Pi (V).  \]
 </div>
 <p> In particular, \(Q_{\mathbb C}(V)\) is contractible. </p>
@@ -1433,7 +1825,7 @@
       </span>
       <span class="proposition_thmlabel">11</span><span class="proposition_thmtitle">Real allowable subspaces of a complex quadratic space; KS Proposition 2.6</span></div>
     <div class="thm_thmcontent"><p>   Let \(Z\) be a \(d\)-dimensional complex vector space with a nondegenerate quadratic form \(g\), and let \(\mathcal R(Z)\) be the space of \(d\)-dimensional real subspaces \(A \subset Z\) such that \(g|_A\) belongs to \(Q_{\mathbb C}(A)\) (an open subset of the real Grassmannian). Then \(\mathcal R(Z)\) is contractible, and </p>
-<div class="displaymath" id="a0000000018">
+<div class="displaymath" id="a0000000019">
   \[  \mathcal R(Z) \; \cong \;  \mathrm{O}_{\mathbb C}(Z) \times _{\mathrm{O}(Z_{\mathbb R})} \Pi (Z_{\mathbb R}).  \]
 </div>
 <p>Formalization requires the Grassmannian of real subspaces, \(\mathrm{O}_{\mathbb C}(Z)\)-actions, and the same associated-bundle machinery as Proposition&#160;<a href="sect0001.html#prop:parametrization">8</a>. The result is needed for the Wick rotation of field operators in Section&#160;5 of the paper and is deferred to <span class="ttfamily">WickRotation/FieldOperators</span>. </p>
@@ -1497,7 +1889,7 @@
       </span>
       <span class="proposition_thmlabel">38</span><span class="proposition_thmtitle">Spacelike commutativity; KS Section 5</span></div>
     <div class="thm_thmcontent"><p>    On a real-analytic globally hyperbolic space-time the field operators of observables at space-like separated points commute, which is the Wightman locality axiom. Precisely: by the unitary propagation \(Z_{t,t'}\) of Theorem&#160;<a href="sect0003.html#thm:unitary-gh">34</a>, the rigged Hilbert spaces \(\check E_{\Sigma _t} \subset E_{\Sigma _t}^{\mathrm{Hilb}} \subset \hat E_{\Sigma _t}\) for \(t_0 \le t \le t_1\) are identified into a single rigged Hilbert space \(\check E \subset E^{\mathrm{Hilb}} \subset \hat E\), and an observable \(\psi \in \mathcal O_x\) with \(x \in \Sigma _t\) defines an unbounded operator </p>
-<div class="displaymath" id="a0000000053">
+<div class="displaymath" id="a0000000056">
   \[  \tilde\psi = Z_{t_0,t}^{-1} \circ \psi \circ Z_{t_0,t} \colon \check E \to \hat E,  \]
 </div>
 <p> independent of the choice of time-function. If \(x\) and \(x'\) are space-like separated, the operators \(\tilde\psi \) and \(\tilde\psi '\) are composable and commute. </p>
@@ -1670,7 +2062,7 @@
       <span class="theorem_thmlabel">34</span><span class="theorem_thmtitle">Theorem 5.2; KS Section 5</span></div>
     <div class="thm_thmcontent"><p>    A unitary quantum field theory on \(\mathcal C_d^{\mathbb C}\), in the sense of Definition&#160;<a href="sect0002.html#def:unitarity">29</a>, induces a functor from the real-analytic globally hyperbolic category \(\mathcal C_d^{\mathrm{gh},\omega }\) of Definition&#160;<a href="sect0003.html#def:globally-hyperbolic">31</a> to topological vector spaces. The functor takes time-symmetric objects to Hilbert spaces and globally hyperbolic cobordisms between them to unitary operators. </p>
 <p>More precisely: for a time-symmetric \((d-1)\)-germ \(\Sigma \) there is a Hilbert space \(E_{\Sigma }^{\mathrm{Hilb}}\) with </p>
-<div class="displaymath" id="a0000000048">
+<div class="displaymath" id="a0000000051">
   \[  \check E_{\Sigma } \; \subset \;  E_{\Sigma }^{\mathrm{Hilb}} \; \subset \;  \hat E_{\Sigma },  \]
 </div>
 <p> the completion of the pre-Hilbert space \(\check E_{\Sigma }\) of Definition&#160;<a href="sect0002.html#def:unitarity">29</a>, sitting between the limit spaces \(\check E_{\Sigma }\) and \(\hat E_{\Sigma }\) of Definition&#160;<a href="sect0002.html#def:field-theory">23</a> through the injective dense maps of Definition&#160;<a href="sect0002.html#def:continuity">25</a>. A real-analytic globally hyperbolic cobordism \(\Sigma _0 \leadsto \Sigma _1\) between time-symmetric hypersurfaces induces a unitary isomorphism \(E_{\Sigma _0}^{\mathrm{Hilb}} \to E_{\Sigma _1}^{\mathrm{Hilb}}\) which also carries \(\check E_{\Sigma _0}\) to \(\check E_{\Sigma _1}\) and \(\hat E_{\Sigma _0}\) to \(\hat E_{\Sigma _1}\). </p>
@@ -1722,7 +2114,7 @@ graphContainer.graphviz({useWorker: true})
     .width(width)
     .height(height)
     .fit(true)
-    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"def:trace-norm-fiber"	[color=green,		fillcolor="#B0ECA3",		label="trace-norm-fiber",		shape=box,		style=filled];	"prop:parametrization"	[color="#FFAA33",		label=parametrization,		shape=ellipse];	"def:trace-norm-fiber" -> "prop:parametrization"	[style=dashed];	"prop:real-subspaces"	[color="#FFAA33",		label="real-subspaces",		shape=ellipse];	"prop:parametrization" -> "prop:real-subspaces";	"def:observables"	[color=green,		fillcolor="#B0ECA3",		label=observables,		shape=box,		style=filled];	"prop:real-subspaces" -> "def:observables"	[style=dashed];	"def:vacuum-domain"	[color=green,		fillcolor="#B0ECA3",		label="vacuum-domain",		shape=box,		style=filled];	"def:observables" -> "def:vacuum-domain"	[style=dashed];	"prop:observable-action"	[color=green,		label="observable-action",		shape=ellipse];	"def:observables" -> "prop:observable-action"	[style=dashed];	"def:holomorphicity"	[color="#FFAA33",		label=holomorphicity,		shape=box];	"prop:invariance-principle"	[color=green,		label="invariance-principle",		shape=ellipse];	"def:holomorphicity" -> "prop:invariance-principle"	[style=dashed];	"prop:invariance-principle" -> "def:observables"	[style=dashed];	"prop:lorentzian-E-welldefined"	[color=green,		label="lorentzian-E-welldefined",		shape=ellipse];	"prop:invariance-principle" -> "prop:lorentzian-E-welldefined"	[style=dashed];	"thm:unitary-gh"	[color=green,		label="unitary-gh",		shape=ellipse];	"prop:invariance-principle" -> "thm:unitary-gh"	[style=dashed];	"prop:spacelike-commutativity"	[color=green,		fillcolor="#9CEC8B",		label="spacelike-commutativity",		shape=ellipse,		style=filled];	"thm:unitary-gh" -> "prop:spacelike-commutativity"	[style=dashed];	"prop:Vk-contains-Uk"	[color=green,		fillcolor="#A3D6FF",		label="Vk-contains-Uk",		shape=ellipse,		style=filled];	"def:vacuum-domain" -> "prop:Vk-contains-Uk"	[style=dashed];	"prop:observable-action" -> "prop:spacelike-commutativity"	[style=dashed];	"def:allowable"	[color=green,		fillcolor="#B0ECA3",		label=allowable,		shape=box,		style=filled];	"def:allowable" -> "prop:parametrization"	[style=dashed];	"lem:convex-cone"	[color=green,		fillcolor="#1CAC78",		label="convex-cone",		shape=ellipse,		style=filled];	"def:allowable" -> "lem:convex-cone"	[style=dashed];	"prop:only-lorentzian"	[color=green,		fillcolor="#1CAC78",		label="only-lorentzian",		shape=ellipse,		style=filled];	"def:allowable" -> "prop:only-lorentzian"	[style=dashed];	"prop:conf-envelope"	[color="#FFAA33",		label="conf-envelope",		shape=ellipse];	"def:allowable" -> "prop:conf-envelope"	[style=dashed];	"thm:angle-equiv"	[color="#FFAA33",		label="angle-equiv",		shape=ellipse];	"def:allowable" -> "thm:angle-equiv"	[style=dashed];	"def:cobordism-category"	[color="#FFAA33",		label="cobordism-category",		shape=box];	"def:allowable" -> "def:cobordism-category"	[style=dashed];	"def:restrict-form"	[color=green,		fillcolor="#B0ECA3",		label="restrict-form",		shape=box,		style=filled];	"def:allowable" -> "def:restrict-form"	[style=dashed];	"lem:volume-element"	[color=green,		fillcolor="#1CAC78",		label="volume-element",		shape=ellipse,		style=filled];	"def:allowable" -> "lem:volume-element"	[style=dashed];	"prop:domain-holomorphy"	[color="#FFAA33",		label="domain-holomorphy",		shape=ellipse];	"def:allowable" -> "prop:domain-holomorphy"	[style=dashed];	"prop:two-dim-polydisc"	[color="#FFAA33",		label="two-dim-polydisc",		shape=ellipse];	"def:allowable" -> "prop:two-dim-polydisc"	[style=dashed];	"prop:lorentzian-boundary"	[color=green,		fillcolor="#1CAC78",		label="lorentzian-boundary",		shape=ellipse,		style=filled];	"lem:convex-cone" -> "prop:lorentzian-boundary";	"def:lorentzian-cobordism-category"	[color=green,		fillcolor="#B0ECA3",		label="lorentzian-cobordism-category",		shape=box,		style=filled];	"prop:only-lorentzian" -> "def:lorentzian-cobordism-category"	[style=dashed];	"def:unitarity"	[color="#FFAA33",		label=unitarity,		shape=box];	"prop:only-lorentzian" -> "def:unitarity"	[style=dashed];	"def:cobordism-category" -> "def:lorentzian-cobordism-category"	[style=dashed];	"def:metc-complex-manifold"	[color="#FFAA33",		label="metc-complex-manifold",		shape=box];	"def:cobordism-category" -> "def:metc-complex-manifold"	[style=dashed];	"prop:restriction"	[color=green,		fillcolor="#A3D6FF",		label=restriction,		shape=ellipse,		style=filled];	"def:restrict-form" -> "prop:restriction"	[style=dashed];	"thm:two-copies"	[color="#FFAA33",		label="two-copies",		shape=ellipse];	"prop:domain-holomorphy" -> "thm:two-copies"	[style=dashed];	"prop:lorentzian-boundary" -> "def:lorentzian-cobordism-category"	[style=dashed];	"prop:lorentzian-boundary" -> "def:unitarity"	[style=dashed];	"def:lorentzian-cobordism-category" -> "prop:invariance-principle"	[style=dashed];	"def:globally-hyperbolic"	[color=green,		fillcolor="#B0ECA3",		label="globally-hyperbolic",		shape=box,		style=filled];	"def:lorentzian-cobordism-category" -> "def:globally-hyperbolic"	[style=dashed];	"def:wick-rotation"	[color=green,		fillcolor="#B0ECA3",		label="wick-rotation",		shape=box,		style=filled];	"def:lorentzian-cobordism-category" -> "def:wick-rotation"	[style=dashed];	"def:unitarity" -> "def:wick-rotation"	[style=dashed];	"def:holomorphic-bundle"	[color="#FFAA33",		label="holomorphic-bundle",		shape=box];	"def:metc-complex-manifold" -> "def:holomorphic-bundle"	[style=dashed];	"def:field-theory"	[color="#FFAA33",		label="field-theory",		shape=box];	"def:holomorphic-bundle" -> "def:field-theory"	[style=dashed];	"def:globally-hyperbolic" -> "thm:unitary-gh"	[style=dashed];	"def:field-theory" -> "def:holomorphicity"	[style=dashed];	"def:tensor-axiom"	[color="#FFAA33",		label="tensor-axiom",		shape=box];	"def:field-theory" -> "def:tensor-axiom"	[style=dashed];	"def:dual-conjugate-functors"	[color="#FFAA33",		label="dual-conjugate-functors",		shape=box];	"def:field-theory" -> "def:dual-conjugate-functors"	[style=dashed];	"def:continuity"	[color="#FFAA33",		label=continuity,		shape=box];	"def:field-theory" -> "def:continuity"	[style=dashed];	"def:tensor-axiom" -> "prop:observable-action"	[style=dashed];	"def:conjugate-dual-duality"	[color="#FFAA33",		label="conjugate-dual-duality",		shape=box];	"def:dual-conjugate-functors" -> "def:conjugate-dual-duality"	[style=dashed];	"def:continuity" -> "thm:unitary-gh"	[style=dashed];	"def:conjugate-dual-duality" -> "def:unitarity"	[style=dashed];	"def:wick-rotation" -> "def:observables"	[style=dashed];	"def:wick-rotation" -> "prop:lorentzian-E-welldefined"	[style=dashed];	"def:wick-rotation" -> "thm:unitary-gh"	[style=dashed];	"lem:l-shape"	[color="#FFAA33",		label="l-shape",		shape=ellipse];	"lem:l-shape" -> "prop:conf-envelope";	"def:allowable-hodge"	[color="#FFAA33",		label="allowable-hodge",		shape=box];	"def:allowable-hodge" -> "thm:angle-equiv"	[style=dashed];	"def:allowable-hodge" -> "prop:domain-holomorphy";	"def:lorentzian"	[color=green,		fillcolor="#B0ECA3",		label=lorentzian,		shape=box,		style=filled];	"def:lorentzian" -> "prop:only-lorentzian"	[style=dashed];	"def:lorentzian" -> "prop:lorentzian-boundary"	[style=dashed];	"def:lorentzian" -> "thm:two-copies"	[style=dashed];	"def:nuclear-frechet"	[color="#FFAA33",		label="nuclear-frechet",		shape=box];	"def:nuclear-frechet" -> "def:holomorphic-bundle"	[style=dashed];}`)
+    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"found:wick-correspondence"	[color="#FFAA33",		label="wick-correspondence",		shape=box];	"def:wick-rotation"	[color=green,		fillcolor="#B0ECA3",		label="wick-rotation",		shape=box,		style=filled];	"found:wick-correspondence" -> "def:wick-rotation"	[style=dashed];	"prop:invariance-principle"	[color=green,		label="invariance-principle",		shape=ellipse];	"found:wick-correspondence" -> "prop:invariance-principle"	[style=dashed];	"thm:unitary-gh"	[color=green,		label="unitary-gh",		shape=ellipse];	"def:wick-rotation" -> "thm:unitary-gh"	[style=dashed];	"def:observables"	[color=green,		fillcolor="#B0ECA3",		label=observables,		shape=box,		style=filled];	"def:wick-rotation" -> "def:observables"	[style=dashed];	"prop:lorentzian-E-welldefined"	[color=green,		label="lorentzian-E-welldefined",		shape=ellipse];	"def:wick-rotation" -> "prop:lorentzian-E-welldefined"	[style=dashed];	"prop:invariance-principle" -> "thm:unitary-gh"	[style=dashed];	"prop:invariance-principle" -> "def:observables"	[style=dashed];	"prop:invariance-principle" -> "prop:lorentzian-E-welldefined"	[style=dashed];	"prop:spacelike-commutativity"	[color=green,		fillcolor="#9CEC8B",		label="spacelike-commutativity",		shape=ellipse,		style=filled];	"thm:unitary-gh" -> "prop:spacelike-commutativity"	[style=dashed];	"def:vacuum-domain"	[color=green,		fillcolor="#B0ECA3",		label="vacuum-domain",		shape=box,		style=filled];	"def:observables" -> "def:vacuum-domain"	[style=dashed];	"prop:observable-action"	[color=green,		label="observable-action",		shape=ellipse];	"def:observables" -> "prop:observable-action"	[style=dashed];	"lem:l-shape"	[color="#FFAA33",		label="l-shape",		shape=ellipse];	"prop:conf-envelope"	[color="#FFAA33",		label="conf-envelope",		shape=ellipse];	"lem:l-shape" -> "prop:conf-envelope";	"prop:restriction"	[color=green,		label=restriction,		shape=ellipse];	"prop:real-subspaces"	[color="#FFAA33",		label="real-subspaces",		shape=ellipse];	"prop:real-subspaces" -> "def:observables"	[style=dashed];	"prop:Vk-contains-Uk"	[color=green,		label="Vk-contains-Uk",		shape=ellipse];	"def:vacuum-domain" -> "prop:Vk-contains-Uk"	[style=dashed];	"prop:observable-action" -> "prop:spacelike-commutativity"	[style=dashed];	"def:nuclear-frechet"	[color="#FFAA33",		label="nuclear-frechet",		shape=box];	"found:tvs-limits-tensor"	[color="#FFAA33",		label="tvs-limits-tensor",		shape=box];	"def:nuclear-frechet" -> "found:tvs-limits-tensor"	[style=dashed];	"def:holomorphic-bundle"	[color="#FFAA33",		label="holomorphic-bundle",		shape=box];	"def:nuclear-frechet" -> "def:holomorphic-bundle"	[style=dashed];	"def:field-theory"	[color="#FFAA33",		label="field-theory",		shape=box];	"found:tvs-limits-tensor" -> "def:field-theory"	[style=dashed];	"found:hilbert-completion"	[color="#FFAA33",		label="hilbert-completion",		shape=box];	"found:tvs-limits-tensor" -> "found:hilbert-completion"	[style=dashed];	"found:observable-bundle"	[color="#FFAA33",		label="observable-bundle",		shape=box];	"found:tvs-limits-tensor" -> "found:observable-bundle"	[style=dashed];	"def:holomorphic-bundle" -> "def:field-theory"	[style=dashed];	"def:conjugate-dual-duality"	[color="#FFAA33",		label="conjugate-dual-duality",		shape=box];	"def:unitarity"	[color="#FFAA33",		label=unitarity,		shape=box];	"def:conjugate-dual-duality" -> "def:unitarity"	[style=dashed];	"def:unitarity" -> "def:wick-rotation"	[style=dashed];	"def:tensor-axiom"	[color="#FFAA33",		label="tensor-axiom",		shape=box];	"def:tensor-axiom" -> "prop:observable-action"	[style=dashed];	"def:field-theory" -> "def:tensor-axiom"	[style=dashed];	"def:continuity"	[color="#FFAA33",		label=continuity,		shape=box];	"def:field-theory" -> "def:continuity"	[style=dashed];	"def:dual-conjugate-functors"	[color="#FFAA33",		label="dual-conjugate-functors",		shape=box];	"def:field-theory" -> "def:dual-conjugate-functors"	[style=dashed];	"def:holomorphicity"	[color="#FFAA33",		label=holomorphicity,		shape=box];	"def:field-theory" -> "def:holomorphicity"	[style=dashed];	"def:continuity" -> "thm:unitary-gh"	[style=dashed];	"def:dual-conjugate-functors" -> "def:conjugate-dual-duality"	[style=dashed];	"def:holomorphicity" -> "prop:invariance-principle"	[style=dashed];	"found:hilbert-completion" -> "def:unitarity"	[style=dashed];	"found:observable-bundle" -> "def:observables"	[style=dashed];	"found:minkowski-linear"	[color="#FFAA33",		label="minkowski-linear",		shape=box];	"found:minkowski-linear" -> "def:vacuum-domain"	[style=dashed];	"lem:convex-cone"	[color=green,		fillcolor="#1CAC78",		label="convex-cone",		shape=ellipse,		style=filled];	"prop:lorentzian-boundary"	[color=green,		fillcolor="#1CAC78",		label="lorentzian-boundary",		shape=ellipse,		style=filled];	"lem:convex-cone" -> "prop:lorentzian-boundary";	"prop:lorentzian-boundary" -> "def:unitarity"	[style=dashed];	"def:lorentzian-cobordism-category"	[color=green,		fillcolor="#B0ECA3",		label="lorentzian-cobordism-category",		shape=box,		style=filled];	"prop:lorentzian-boundary" -> "def:lorentzian-cobordism-category"	[style=dashed];	"def:lorentzian-cobordism-category" -> "def:wick-rotation"	[style=dashed];	"def:lorentzian-cobordism-category" -> "prop:invariance-principle"	[style=dashed];	"def:globally-hyperbolic"	[color=green,		fillcolor="#B0ECA3",		label="globally-hyperbolic",		shape=box,		style=filled];	"def:lorentzian-cobordism-category" -> "def:globally-hyperbolic"	[style=dashed];	"lem:volume-element"	[color=green,		fillcolor="#1CAC78",		label="volume-element",		shape=ellipse,		style=filled];	"prop:two-dim-polydisc"	[color="#FFAA33",		label="two-dim-polydisc",		shape=ellipse];	"thm:two-copies"	[color="#FFAA33",		label="two-copies",		shape=ellipse];	"abstract:cobordism-domain"	[color="#8A8A8A",		fillcolor="#ECECEC",		label="cobordism-domain",		shape=box,		style="filled,dashed"];	"def:cobordism-category"	[color="#FFAA33",		label="cobordism-category",		shape=box];	"abstract:cobordism-domain" -> "def:cobordism-category"	[style=dashed];	"def:cobordism-category" -> "def:lorentzian-cobordism-category"	[style=dashed];	"def:metc-complex-manifold"	[color="#FFAA33",		label="metc-complex-manifold",		shape=box];	"def:cobordism-category" -> "def:metc-complex-manifold"	[style=dashed];	"def:metc-complex-manifold" -> "def:holomorphic-bundle"	[style=dashed];	"def:metc-complex-manifold" -> "found:observable-bundle"	[style=dashed];	"found:real-analytic-complexification"	[color="#FFAA33",		label="real-analytic-complexification",		shape=box];	"def:metc-complex-manifold" -> "found:real-analytic-complexification"	[style=dashed];	"found:real-analytic-complexification" -> "found:wick-correspondence"	[style=dashed];	"prop:domain-holomorphy"	[color="#FFAA33",		label="domain-holomorphy",		shape=ellipse];	"prop:domain-holomorphy" -> "thm:two-copies"	[style=dashed];	"prop:only-lorentzian"	[color=green,		fillcolor="#1CAC78",		label="only-lorentzian",		shape=ellipse,		style=filled];	"prop:only-lorentzian" -> "def:unitarity"	[style=dashed];	"prop:only-lorentzian" -> "def:lorentzian-cobordism-category"	[style=dashed];	"def:globally-hyperbolic" -> "thm:unitary-gh"	[style=dashed];	"found:smooth-cobordism-geometry"	[color="#FFAA33",		label="smooth-cobordism-geometry",		shape=box];	"found:smooth-cobordism-geometry" -> "def:cobordism-category"	[style=dashed];	"found:lorentzian-causal-geometry"	[color="#FFAA33",		label="lorentzian-causal-geometry",		shape=box];	"found:smooth-cobordism-geometry" -> "found:lorentzian-causal-geometry"	[style=dashed];	"found:lorentzian-causal-geometry" -> "def:lorentzian-cobordism-category"	[style=dashed];	"found:lorentzian-causal-geometry" -> "found:real-analytic-complexification"	[style=dashed];	"found:hodge-star"	[color="#FFAA33",		label="hodge-star",		shape=box];	"def:allowable-hodge"	[color="#FFAA33",		label="allowable-hodge",		shape=box];	"found:hodge-star" -> "def:allowable-hodge"	[style=dashed];	"def:allowable-hodge" -> "prop:domain-holomorphy";	"thm:angle-equiv"	[color="#FFAA33",		label="angle-equiv",		shape=ellipse];	"def:allowable-hodge" -> "thm:angle-equiv"	[style=dashed];	"found:scv-tube-domain"	[color="#FFAA33",		label="scv-tube-domain",		shape=box];	"found:scv-tube-domain" -> "lem:l-shape"	[style=dashed];	"found:scv-tube-domain" -> "def:vacuum-domain"	[style=dashed];	"found:scv-tube-domain" -> "prop:domain-holomorphy"	[style=dashed];	"found:homogeneous-bundles"	[color="#FFAA33",		label="homogeneous-bundles",		shape=box];	"found:homogeneous-bundles" -> "prop:restriction";	"found:homogeneous-bundles" -> "prop:two-dim-polydisc"	[style=dashed];	"prop:parametrization"	[color="#FFAA33",		label=parametrization,		shape=ellipse];	"found:homogeneous-bundles" -> "prop:parametrization"	[style=dashed];	"prop:parametrization" -> "prop:real-subspaces";	"def:allowable"	[color=green,		fillcolor="#B0ECA3",		label=allowable,		shape=box,		style=filled];	"def:allowable" -> "prop:conf-envelope"	[style=dashed];	"def:allowable" -> "lem:convex-cone"	[style=dashed];	"def:allowable" -> "lem:volume-element"	[style=dashed];	"def:allowable" -> "prop:two-dim-polydisc"	[style=dashed];	"def:allowable" -> "prop:domain-holomorphy"	[style=dashed];	"def:allowable" -> "prop:only-lorentzian"	[style=dashed];	"def:allowable" -> "found:smooth-cobordism-geometry"	[style=dashed];	"def:allowable" -> "thm:angle-equiv"	[style=dashed];	"def:allowable" -> "prop:parametrization"	[style=dashed];	"def:restrict-form"	[color=green,		fillcolor="#B0ECA3",		label="restrict-form",		shape=box,		style=filled];	"def:allowable" -> "def:restrict-form"	[style=dashed];	"def:restrict-form" -> "prop:restriction"	[style=dashed];	"def:trace-norm-fiber"	[color=green,		fillcolor="#B0ECA3",		label="trace-norm-fiber",		shape=box,		style=filled];	"def:trace-norm-fiber" -> "prop:parametrization"	[style=dashed];	"def:lorentzian"	[color=green,		fillcolor="#B0ECA3",		label=lorentzian,		shape=box,		style=filled];	"def:lorentzian" -> "prop:lorentzian-boundary"	[style=dashed];	"def:lorentzian" -> "thm:two-copies"	[style=dashed];	"def:lorentzian" -> "prop:only-lorentzian"	[style=dashed];	"abstract:lorentzian-domain"	[color="#8A8A8A",		fillcolor="#ECECEC",		label="lorentzian-domain",		shape=box,		style="filled,dashed"];	"abstract:lorentzian-domain" -> "def:lorentzian-cobordism-category"	[style=dashed];}`)
     .on("end", interactive);
 
 latexLabelEscaper = function(label) {

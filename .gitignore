@@ -7,3 +7,5 @@ docs/only_lorentzian_plan.md
 blueprint/lean_decls
 blueprint/src/web.paux
 blueprint/web/
+__pycache__/
+*.pyc

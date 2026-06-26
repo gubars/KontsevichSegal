@@ -1,0 +1,223 @@
+\chapter{Deferred foundations (roadmap)}
+
+This chapter makes explicit the infrastructure the rest of the blueprint rests on but
+does not build. Each node below is a \emph{foundation}: a body of mathematics the paper
+cites as known, or a Mathlib gap, encoded in the Lean development as a \texttt{class} of
+assumed properties with no instance. The scope-(a) content of Sections~2, 3 and~5 is
+stated faithfully over these assumptions; the dependency edges from those content nodes
+into this chapter are what turn the dependency graph into a roadmap of the unbuilt walls.
+
+\emph{Reading the colours.}
+\begin{itemize}
+  \item \textbf{Green} (dark green fill) is the finish line: statement and proof are
+    formalized \emph{and every node it depends on, transitively, is too}, so it rests on
+    nothing assumed. Green means full formalization including foundations, relative to
+    nothing assumed.
+  \item \textbf{Scaffold} (green border, possibly the lighter green or blue fill) is a
+    faithfully-encoded statement, perhaps with a compiling proof, that still depends on at
+    least one orange foundation. A compiling proof keeps its green; the ``not yet on solid
+    ground'' signal is the dependency edge into an orange node, not a withheld colour.
+  \item \textbf{Orange} (\notready) is a buildable foundation not yet formalized, or a
+    content node whose statement itself is a \texttt{True}-placeholder. These are the
+    grind queue.
+  \item \textbf{Grey, dashed} is a \emph{deliberately abstract} foundation: a parametric
+    assumption that is never instantiated by design (see below), not a TODO.
+\end{itemize}
+The project is finished when every node is \textbf{green, or a foundation deliberately
+left abstract with a recorded reason} --- not necessarily 100\% green.
+
+\emph{Tooling caveat.} The dark-green ``fully formalized'' colour treats unbuilt
+\emph{definition}-foundations as transparent to its computation, so a proved result
+resting only on them can mis-render dark green; whenever a node newly turns dark green,
+re-check that its foundation ancestry is genuinely built before trusting the colour.
+
+\section{Deliberately-abstract parametric wrappers}
+
+A field theory is a functor out of an \emph{arbitrary} cobordism geometry, in the same way
+an Atiyah-style TQFT is a functor on an arbitrary cobordism category. The
+arbitrary-geometry parametrization, and the tangent / dual / globally-hyperbolic plumbing
+threaded through it, are therefore not objects to be constructed: staying parametric is the
+intended permanent state. They are recorded here, grey and dashed, so the buildable-orange
+queue reads unambiguously.
+
+\begin{definition}[Arbitrary-cobordism-geometry parametrization]
+  \label{abstract:cobordism-domain}
+  \abstractnode
+  The TQFT-style abstraction underlying Section~3: a field theory is developed over an
+  arbitrary \texttt{CobordismGeometry}, never a concrete one. This node carries the
+  deliberately-abstract aspect of \texttt{CobordismGeometry} (its bare object/morphism
+  parametrization, as opposed to the smooth geometry of
+  Definition~\ref{found:smooth-cobordism-geometry}), together with the abstract
+  \texttt{TangentStructure} (an abstract manifold-like type with a tangent space) and the
+  \texttt{DualConjugateGeometry} operations $\Sigma \mapsto \Sigma^*$, $\Sigma \mapsto
+  \bar\Sigma$. These are parametric plumbing: a concrete instance is never a goal, so the
+  node is abstract, not orange.
+\end{definition}
+
+\begin{definition}[Arbitrary-Lorentzian-geometry parametrization]
+  \label{abstract:lorentzian-domain}
+  \abstractnode
+  The Section~5 counterpart: the development is parametric over an arbitrary
+  \texttt{LorentzianCobordismGeometry}, never a concrete one. This node carries that
+  abstraction together with the \texttt{GhCategory} closure/openness assumptions (that the
+  globally hyperbolic cobordisms are closed under concatenation and form an open
+  subcategory), which are categorical bookkeeping over the abstract geometry rather than a
+  construction to formalize.
+\end{definition}
+
+\section{Buildable foundations}
+
+These are the walls to build. The existing nodes
+Definition~\ref{def:nuclear-frechet} (nuclear Fr\'echet spaces),
+Definition~\ref{def:metc-complex-manifold} ($\mathrm{Met}_{\mathbb C}(M)$ as a complex
+manifold) and Definition~\ref{def:holomorphic-bundle} (holomorphic vector bundles) are
+themselves foundations of this kind, already orange in Sections~3; they are not repeated
+here. Difficulty is flagged as \emph{grind} (sit down and formalize),
+\emph{Mathlib-scale} (a library to contribute) or \emph{research-scale} (a genuine wall).
+
+\begin{definition}[Limits and completed tensor products of nuclear spaces]
+  \label{found:tvs-limits-tensor}
+  \notready
+  \uses{def:nuclear-frechet}
+  Countable inverse and direct limits of nuclear maps of Fr\'echet spaces, and the unique
+  completed tensor product of nuclear spaces. This is what actually realizes
+  $\hat E_\Sigma = \varprojlim E_{\Sigma''}$, $\check E_\Sigma = \varinjlim E_{\Sigma'}$ and
+  $E \otimes F$, all of which Section~3 asserts but defers (the ``limit construction is
+  deferred'' in \texttt{FieldTheory.lean}; the tensor in \texttt{TensorAxiom.lean}). It is
+  the second Mathlib gap named in the README. Missing: limits and completed tensor products
+  of topological vector spaces (Mathlib has only algebraic tensor products and finite-rank
+  traces). \emph{Mathlib-scale.}
+\end{definition}
+
+\begin{definition}[The smooth cobordism geometry]
+  \label{found:smooth-cobordism-geometry}
+  \notready
+  \uses{def:allowable}
+  The geometric content abstracted by \texttt{CobordismGeometry}: germs of $d$-manifolds
+  along closed co-oriented $(d-1)$-submanifolds, complex metrics as sections of
+  $\mathrm{Met}_{\mathbb C}$, cobordisms up to boundary-fixing isometry, their gluing, and
+  the disjoint unions of \texttt{MonoidalCobordism}. The categorical skeleton over this
+  geometry (the \texttt{Semicategory}) is already built; what is missing is the
+  smooth-manifold geometry itself, none of which (manifold germs, gluing) is in Mathlib.
+  This geometry conceptually rests on the complex-manifold structure
+  $\mathrm{Met}_{\mathbb C}$ (Definition~\ref{def:metc-complex-manifold}), of which its
+  metrics are sections; the dependency edge to that node is deliberately omitted to keep
+  the dependency graph acyclic, since Definition~\ref{def:metc-complex-manifold} already
+  depends on Definition~\ref{def:cobordism-category} and the edge would close a cycle. The
+  recorded dependency on Definition~\ref{def:allowable} instead reflects that those
+  cobordism metrics are allowable complex metrics.
+  Pairs with the deliberately-abstract Definition~\ref{abstract:cobordism-domain}.
+  \emph{Research-scale.}
+\end{definition}
+
+\begin{definition}[Lorentzian and causal geometry]
+  \label{found:lorentzian-causal-geometry}
+  \notready
+  \uses{found:smooth-cobordism-geometry}
+  The geometric content abstracted by \texttt{LorentzianCobordismGeometry},
+  \texttt{LightConeGeometry} and \texttt{GhCategory}: Lorentzian metrics of signature
+  $(d-1,1)$, light-cone structure, timelike geodesics, smooth time-functions, global
+  hyperbolicity, and the geodesic normal form $h_t - \mathrm dt^2$. Lorentzian causal
+  geometry is standard mathematics but absent from Mathlib. Pairs with the
+  deliberately-abstract Definition~\ref{abstract:lorentzian-domain}.
+  \emph{Research-scale.}
+\end{definition}
+
+\begin{definition}[Real-analytic structure and holomorphic complexification]
+  \label{found:real-analytic-complexification}
+  \notready
+  \uses{found:lorentzian-causal-geometry, def:metc-complex-manifold}
+  The real-analytic structure and its holomorphic complexification: a real-analytic
+  manifold $M$ as a totally real submanifold of a complex manifold $M_{\mathbb C}$, with a
+  holomorphic symmetric form $g$ on $TM_{\mathbb C}$ inducing the allowable metric, and the
+  isotopies of $M$ inside $M_{\mathbb C}$ (the assumed \texttt{IsRealAnalytic},
+  \texttt{HolomorphicComplexification}, \texttt{ComplexAnalyticStructure}). This is the
+  paper's heaviest assumed piece. It also covers the totally-real $d$-submanifolds of
+  $\mathbb M_{\mathbb C}$ used by the vacuum-domain candidate (folded in from the
+  Minkowski geometry). The complexification of a real-analytic manifold is not in Mathlib.
+  \emph{Research-scale.}
+\end{definition}
+
+\begin{definition}[The Wick / boundary correspondence]
+  \label{found:wick-correspondence}
+  \notready
+  \uses{found:real-analytic-complexification}
+  The boundary relation realizing $\mathcal C_d^{\mathrm{Lor},\omega}$ inside
+  $\mathcal C_d^{\mathbb C}$: the object-level Wick rotation (a Lorentzian germ to the
+  complex object it rotates to, the assumed \texttt{WickObjectCorrespondence}) and the
+  morphism-level realization (a Lorentzian cobordism to a complex one, the assumed
+  \texttt{CobordismRealization}). This is a construction KS defer, not a parametrization, so
+  it is orange. \emph{Research-scale.}
+\end{definition}
+
+\begin{definition}[The Hilbert completion of the rigged triple]
+  \label{found:hilbert-completion}
+  \notready
+  \uses{found:tvs-limits-tensor}
+  Completion of the pre-Hilbert space $\check E_\Sigma$, under the reflection-positivity
+  pairing, to the Hilbert space $E_\Sigma^{\mathrm{Hilb}}$ sitting in
+  $\check E_\Sigma \subset E_\Sigma^{\mathrm{Hilb}} \subset \hat E_\Sigma$ by injective dense
+  maps whose composite is the field-theory map $\kappa$ (the assumed \texttt{HilbertFibres}
+  and the data of \texttt{InducesUnitaryGH}). Mathlib has Hilbert completion of an
+  inner-product space; what is missing is the wiring to the deferred limit spaces
+  $\check E$, $\hat E$. \emph{Grind to Mathlib-scale.}
+\end{definition}
+
+\begin{definition}[The observable bundle]
+  \label{found:observable-bundle}
+  \notready
+  \uses{found:tvs-limits-tensor, def:metc-complex-manifold, found:smooth-cobordism-geometry}
+  The observable bundle over $\mathrm{Met}_{\mathbb C}(\hat x)$ and the space of observables
+  $\mathcal O_x = \varprojlim E_{\partial D}$ as the inverse limit over the boundary spheres
+  of shrinking discs around $x$, with the disc-removal action
+  $E_{\partial D} \to \mathrm{Hom}(E_{\Sigma_0}; E_{\Sigma_1})$ (the assumed
+  \texttt{Observables.Obs}; the opaque ambient morphism has no disc-removal accessor).
+  \emph{Research-scale.}
+\end{definition}
+
+\begin{definition}[Several complex variables: tube, Stein and Shilov theory]
+  \label{found:scv-tube-domain}
+  \notready
+  Domains of holomorphy and holomorphic envelopes, Bochner's tube theorem, Siegel domains
+  and the Cayley transform, the Shilov boundary, and the Wightman permuted extended tube
+  $\mathcal U_k$ (the assumed \texttt{MinkowskiComplexGeometry.Uk} and
+  \texttt{.isDomainOfHolomorphy}). This single body of several-complex-variable analysis is
+  what Section~2 defers at Propositions~2.3, 2.7 and Lemma~2.8, what the two-copies
+  Shilov-boundary statement needs, and what the closing $\mathcal V_k$ conjecture invokes.
+  None of it is in Mathlib. \emph{Research-scale.}
+\end{definition}
+
+\begin{definition}[The Hodge star on exterior powers]
+  \label{found:hodge-star}
+  \notready
+  The Hodge star operator $*_g$ for complex metrics and the induced quadratic forms on the
+  exterior powers $\Lambda^p(V^*)$, with the twisted determinant line. This is exactly the
+  machinery Definition~2.1 (the Hodge-star form of allowability) and Theorem~2.2 (its
+  equivalence with the angle condition) need, and the $p=0$ branch of the two-copies
+  statement. The Hodge star at this generality is not in Mathlib. \emph{Grind to
+  Mathlib-scale.}
+\end{definition}
+
+\begin{definition}[Homogeneous spaces, associated bundles and the $Q_{\mathbb C}$ topology]
+  \label{found:homogeneous-bundles}
+  \notready
+  The $\mathrm{GL}(V)/\mathrm O(V)$ and $\mathrm O_{\mathbb C}(Z)$ homogeneous-space actions,
+  the associated-bundle machinery, the real Grassmannian, and a topology on
+  $Q_{\mathbb C}(V)$ (needed even to state contractibility). This is what Propositions~2.4
+  and~2.6 rest on, and what the two-dimensional polydisc description needs. The same node
+  carries the small linear-algebra sub-gap that blocks the Proposition~2.5 proof: the
+  Courant--Fischer min--max / eigenvalue-interlacing characterization of the critical angles,
+  which is one lemma rather than a body of theory. \emph{Grind to Mathlib-scale.}
+\end{definition}
+
+\begin{definition}[Complexified Minkowski space]
+  \label{found:minkowski-linear}
+  \notready
+  Complexified Minkowski space $\mathbb M_{\mathbb C} = \mathbb E \oplus \mathrm i \mathbb E$
+  with its $\mathbb C$-bilinear form and the projection onto the real Euclidean subspace
+  (the linear-algebra fields of \texttt{MinkowskiComplexGeometry}: \texttt{mC},
+  \texttt{bilin}, \texttt{Eucl}, \texttt{projE}). This is finite-dimensional linear algebra,
+  largely expressible with existing Mathlib; the totally-real-submanifold half of that class
+  is folded into Definition~\ref{found:real-analytic-complexification}. The nearest
+  foundation to green. \emph{Grind.}
+\end{definition}
