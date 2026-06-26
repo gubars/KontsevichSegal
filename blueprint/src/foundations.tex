@@ -212,12 +212,23 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
 
 \begin{definition}[Complexified Minkowski space]
   \label{found:minkowski-linear}
-  \notready
-  Complexified Minkowski space $\mathbb M_{\mathbb C} = \mathbb E \oplus \mathrm i \mathbb E$
-  with its $\mathbb C$-bilinear form and the projection onto the real Euclidean subspace
-  (the linear-algebra fields of \texttt{MinkowskiComplexGeometry}: \texttt{mC},
-  \texttt{bilin}, \texttt{Eucl}, \texttt{projE}). This is finite-dimensional linear algebra,
-  largely expressible with existing Mathlib; the totally-real-submanifold half of that class
-  is folded into Definition~\ref{found:real-analytic-complexification}. The nearest
-  foundation to green. \emph{Grind.}
+  \lean{WickRotation.MinkowskiLinear, WickRotation.MinkowskiModel.minkowskiLinear}
+  \leanok
+  Real Minkowski space $\mathbb M = \mathbb R^{d-1,1}$ with its Lorentzian form of signature
+  $(d-1,1)$; its complexification
+  $\mathbb M_{\mathbb C} = \mathbb M \otimes_{\mathbb R} \mathbb C = \mathbb M \oplus \mathrm i
+  \mathbb M$, with the $\mathbb C$-bilinear base change of the real form; and the Euclidean real
+  subspace $\mathbb E = \mathbb R^d$ of
+  $\mathbb M_{\mathbb C} = \mathbb E \oplus \mathrm i \mathbb E$, the Wick rotation of $\mathbb M$,
+  on which the $\mathbb C$-bilinear form is real and positive definite. This is the linear-algebra
+  interface of \texttt{MinkowskiComplexGeometry} (its fields \texttt{mC}, \texttt{bilin},
+  \texttt{Eucl}, \texttt{projE}), which now extends it. It is built as finite-dimensional linear
+  algebra over Mathlib and realized by a concrete coordinate model on $\mathbb C^{d}$, $d \ge 2$:
+  the restriction of the complex form to the real points is the real Lorentzian form, both
+  splittings hold, the form is positive definite on $\mathbb E$, and the Lorentzian form is
+  indefinite and nondegenerate; the forward light cone is exhibited (nonempty, open, proper), its
+  convexity left to the causal geometry of
+  Definition~\ref{found:lorentzian-causal-geometry}. The totally-real-submanifold half of
+  \texttt{MinkowskiComplexGeometry} stays deferred, folded into
+  Definition~\ref{found:real-analytic-complexification}.
 \end{definition}

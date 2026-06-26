@@ -105,3 +105,5 @@ WickRotation.VacuumExpectationData.EkOnVk
 WickRotation.Vcheck
 WickRotation.VacuumExpectationData.VkIsDomainOfHolomorphy
 WickRotation.VacuumExpectationData.Uk_subset_Vk
+WickRotation.MinkowskiLinear
+WickRotation.MinkowskiModel.minkowskiLinear

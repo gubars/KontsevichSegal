@@ -43,13 +43,16 @@ none).
 THE ENCODING (scope (a): STATE the data; the infinite-dim-manifold / ruled-manifold constructions are
 deferred prose, never `sorry`'d).
 
-* `MinkowskiComplexGeometry` — the assumed ambient geometry of complexified Minkowski space `m_C`
-  (a complex vector space with the ℂ-bilinear Minkowski form `bilin`, the Euclidean `Eucl = ℝ^d` with
-  the projection `projE`, the totally-real submanifolds with their real tangent and induced complex
-  form, the opaque permuted-extended-tube predicate `Uk` with its `k = 2` characterization, and the
-  assumed domain-of-holomorphy predicate). Infrastructure-to-axiomatize (KS cite the tube-domain and
-  Stein-manifold material as known; Section 2 deferred it): a `class` of assumed operations, no
-  `axiom` keyword, no instance.
+* `MinkowskiComplexGeometry` — the ambient geometry of complexified Minkowski space `m_C`. Its
+  LINEAR-ALGEBRA part (the complex vector space `m_C`, the ℂ-bilinear Minkowski form `bilin`, the
+  Euclidean `Eucl = ℝ^d` with the splitting `m_C = E ⊕ iE` and the projection `projE`) is the BUILT
+  foundation `MinkowskiLinear` (blueprint `found:minkowski-linear`, `MinkowskiLinear.lean`), realized
+  by the genuine model `MinkowskiModel.minkowskiLinear`; this class `extends` it. What remains
+  assumed is the deferred geometry: the totally-real submanifolds with their real tangent and induced
+  complex form (`found:real-analytic-complexification`), the opaque permuted-extended-tube predicate
+  `Uk` with its `k = 2` characterization, and the domain-of-holomorphy predicate
+  (`found:scv-tube-domain`). Infrastructure-to-axiomatize (KS cite the tube-domain and Stein-manifold
+  material as known; Section 2 deferred it): no `axiom` keyword, no instance.
 
 * `Vcheck x` (`V̌_k`) — the base predicate: `x` is a tuple of DISTINCT points (`Function.Injective x`,
   Conf_k) lying on some totally-real `M` with (i) `∃ G : AllowableComplexMetric (tangent M), G.toForm =
@@ -107,11 +110,14 @@ THE FIVE STANDING DISCIPLINES.
    invariance field) — axiom-clean, like `eval_orderIndep` / `propCheck_eq`.
 
 GEOMETRY / DEFERRALS (assumed, documented; no concrete instance, never the `axiom` keyword, never
-`sorry`). Each named: `m_C` (complexified Minkowski) with the splitting `m_C = E ⊕ iE` and the
-ℂ-bilinear form; the Euclidean `E = ℝ^d` and the projection `m_C → E` (carried as the plain map
-`projE`, its real-linearity/along-`iE` structure deferred); totally-real submanifolds with their real
-tangent and induced complex form (the manifold geometry deferred, the induced metric TIED to
-`AllowableComplexMetric`); the complex orthogonal group of `m_C` and the forward light-cone (used in
+`sorry`). NOW BUILT (no longer deferred): `m_C` (complexified Minkowski) with the splitting
+`m_C = E ⊕ iE`, the ℂ-bilinear Minkowski form, the Euclidean `E = ℝ^d`, and the projection
+`m_C → E` — all the linear algebra of the built foundation `MinkowskiLinear` (`MinkowskiLinear.lean`,
+blueprint `found:minkowski-linear`), realized by `MinkowskiModel.minkowskiLinear`; the forward
+light-cone is also exhibited there (nonempty, open, proper, a cone), its convexity left to
+`found:lorentzian-causal-geometry`. STILL DEFERRED, each named: totally-real submanifolds with their
+real tangent and induced complex form (the manifold geometry deferred, the induced metric TIED to
+`AllowableComplexMetric`); the complex orthogonal group of `m_C` (used in
 the general permuted-tube definition of `Uk`, carried opaque with the explicit `k = 2`
 characterization, the general one in prose); `U_k` and Proposition 2.3 (Section-2 tube-domain
 material, not formalized, prose-cited); `F_k` as an infinite-dim complex manifold and `V_k` as the
@@ -134,6 +140,7 @@ Blueprint: `def:vacuum-domain` and `prop:Vk-contains-Uk` in `blueprint/src/secti
 -/
 
 import KontsevichSegal.WickRotation.ObservableAction
+import KontsevichSegal.WickRotation.MinkowskiLinear
 
 namespace WickRotation
 
@@ -143,29 +150,18 @@ universe u
 
 /-! ## The complexified-Minkowski ambient geometry (assumed; deferred) -/
 
-/-- **Assumed (KS Section 5 / Section 2 infrastructure): complexified Minkowski space `m_C` and the
-tube-domain data.** The ambient geometry of the closing conjecture: `m_C = ℝ^{d-1,1} ⊗ ℂ` with its
-ℂ-bilinear Minkowski form, the Euclidean subspace `E = ℝ^d` of the splitting `m_C = E ⊕ iE`, the
-totally-real submanifolds with their real tangent and induced complex metric, the Wightman permuted
-extended tube `Uk`, and the notion of a domain of holomorphy. Infrastructure-to-axiomatize: KS cite
-this as known and Section 2 deferred the tube-domain material; encoded as a `class` of assumed
+/-- **The complexified-Minkowski ambient geometry of the closing conjecture.** The LINEAR-ALGEBRA
+part (complexified Minkowski space `m_C = ℝ^{d-1,1} ⊗ ℂ` with its ℂ-bilinear Minkowski form, the
+Euclidean subspace `E = ℝ^d` of `m_C = E ⊕ iE`, and the projection `projE`) is the BUILT foundation
+`MinkowskiLinear` (blueprint `found:minkowski-linear`, realized by the model
+`MinkowskiModel.minkowskiLinear`), extended here. What remains ASSUMED is the deferred geometry: the
+totally-real submanifolds with their real tangent and induced complex metric
+(`found:real-analytic-complexification`), the Wightman permuted extended tube `Uk`, and the notion
+of a domain of holomorphy (`found:scv-tube-domain`). KS cite the latter as known and Section 2
+deferred
+the tube-domain material; encoded as a `class` extending the built linear algebra with assumed
 operations (never the `axiom` keyword, no instance). -/
-class MinkowskiComplexGeometry where
-  /-- Complexified Minkowski space `m_C` (a complex vector space, ℂ-dimension `d`). -/
-  mC : Type u
-  [acg : AddCommGroup mC]
-  [mod : Module ℂ mC]
-  /-- The ℂ-bilinear extension of the Minkowski form; `‖v‖² := bilin v v`. -/
-  bilin : mC →ₗ[ℂ] mC →ₗ[ℂ] ℂ
-  /-- The Minkowski form is symmetric. -/
-  bilin_symm : ∀ v w, bilin v w = bilin w v
-  /-- The real Euclidean subspace `E = ℝ^d` of `m_C = E ⊕ iE` (where the observables live). -/
-  Eucl : Type u
-  [eacg : AddCommGroup Eucl]
-  [emod : Module ℝ Eucl]
-  /-- The projection `m_C → E` along `iE` (its real-linearity is deferred geometry; the plain map
-  suffices to state the surjectivity condition (ii) of `V̌_k`). -/
-  projE : mC → Eucl
+class MinkowskiComplexGeometry extends MinkowskiLinear where
   /-- The totally-real `d`-submanifolds `M ⊂ m_C` (deferred geometry). -/
   TotallyRealSub : Type u
   /-- The point set of a totally-real submanifold. -/
@@ -195,8 +191,7 @@ class MinkowskiComplexGeometry where
   notion as known. Carried as an assumed predicate, used ONLY to STATE the closing conjecture. -/
   isDomainOfHolomorphy : ∀ {k : ℕ} {D : Type u}, (D → (Fin k → mC)) → Prop
 
-attribute [instance] MinkowskiComplexGeometry.acg MinkowskiComplexGeometry.mod
-  MinkowskiComplexGeometry.eacg MinkowskiComplexGeometry.emod MinkowskiComplexGeometry.tacg
+attribute [instance] MinkowskiComplexGeometry.tacg
   MinkowskiComplexGeometry.tmod MinkowskiComplexGeometry.tfin
 
 /-! ## The base configuration domain `V̌_k` -/

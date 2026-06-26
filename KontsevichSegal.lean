@@ -25,6 +25,7 @@ import KontsevichSegal.WickRotation.GloballyHyperbolic
 import KontsevichSegal.WickRotation.InvariancePrinciple
 import KontsevichSegal.WickRotation.LorentzianCategory
 import KontsevichSegal.WickRotation.LorentzianEWelldefined
+import KontsevichSegal.WickRotation.MinkowskiLinear
 import KontsevichSegal.WickRotation.ObservableAction
 import KontsevichSegal.WickRotation.Observables
 import KontsevichSegal.WickRotation.SpacelikeCommutativity

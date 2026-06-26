@@ -86,6 +86,10 @@ instantiated (flagged for a decision).
   effort; the totally-real-submanifold half is research-scale and overlaps F7's
   techniques. **Decision:** one node F14, or split into `found:minkowski-linear` (grind)
   and fold the submanifold half into F7?
+  **RESOLVED (2026-06-26): split, and `found:minkowski-linear` BUILT (green).** The `class
+  MinkowskiLinear` (`MinkowskiLinear.lean`) carries the flat linear algebra, realized by the
+  Mathlib model `MinkowskiModel.minkowskiLinear`; `MinkowskiComplexGeometry` now extends it.
+  The submanifold half stays folded into `found:real-analytic-complexification` (F7).
 
 ### Abstract-parametrization flags (the "may stay abstract forever" decisions)
 
@@ -336,7 +340,8 @@ which are the substance of this plan.
      node/foundation separation is physical. Heavier; touches `.lean`.
 3. **Split F2 out of F1?** Recommended yes (README gap 2, load-bearing). Confirm.
 4. **Split F14?** `found:minkowski-linear` (grind, near-green) + fold the submanifold half
-   into F7, vs. one node.
+   into F7, vs. one node. **DONE (2026-06-26): split + `found:minkowski-linear` built green
+   (`MinkowskiLinear.lean`); submanifold half folded into F7.**
 5. **Relabel the 3 existing infra nodes** (`def:nuclear-frechet`, `def:metc-complex-manifold`,
    `def:holomorphic-bundle`) to `found:*`? Cosmetic and it **breaks existing `\uses`
    references** — recommend **keeping their labels**, just classifying them as foundations
