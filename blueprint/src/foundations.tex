@@ -150,17 +150,31 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
   it is orange. \emph{Research-scale.}
 \end{definition}
 
-\begin{definition}[The Hilbert completion of the rigged triple]
+\begin{definition}[Hilbert completion of a pre-Hilbert space]
   \label{found:hilbert-completion}
+  \lean{WickRotation.HilbertCompletion, WickRotation.hilbertCompletion}
+  \leanok
+  The completion of a positive-definite complex inner product space $E$ to a Hilbert space
+  $E^{\mathrm{Hilb}}$, together with the dense injective embedding
+  $\iota \colon E \hookrightarrow E^{\mathrm{Hilb}}$ and the inner-product extension
+  $\langle \iota x, \iota y\rangle = \langle x, y\rangle$, built over Mathlib's completion
+  machinery.
+\end{definition}
+
+\begin{definition}[The rigged triple and the $\kappa$-factorisation]
+  \label{found:rigged-triple}
   \notready
-  \uses{found:tvs-limits-tensor}
-  Completion of the pre-Hilbert space $\check E_\Sigma$, under the reflection-positivity
-  pairing, to the Hilbert space $E_\Sigma^{\mathrm{Hilb}}$ sitting in
-  $\check E_\Sigma \subset E_\Sigma^{\mathrm{Hilb}} \subset \hat E_\Sigma$ by injective dense
-  maps whose composite is the field-theory map $\kappa$ (the assumed \texttt{HilbertFibres}
-  and the data of \texttt{InducesUnitaryGH}). Mathlib has Hilbert completion of an
-  inner-product space; what is missing is the wiring to the deferred limit spaces
-  $\check E$, $\hat E$. \emph{Grind to Mathlib-scale.}
+  \uses{found:hilbert-completion, found:tvs-limits-tensor}
+  The placement of the Hilbert space $E_\Sigma^{\mathrm{Hilb}}$ in the rigged triple
+  $\check E_\Sigma \subset E_\Sigma^{\mathrm{Hilb}} \subset \hat E_\Sigma$: the downstream
+  injective dense inclusion $E_\Sigma^{\mathrm{Hilb}} \subset \hat E_\Sigma$ and the factorisation
+  of the composite $\check E_\Sigma \to \hat E_\Sigma$ through the field-theory map $\kappa$. The
+  reflection-positivity pairing of Definition~\ref{def:unitarity} makes $\check E_\Sigma$ positive
+  definite, so $E_\Sigma^{\mathrm{Hilb}}$ is the Hilbert completion
+  (Definition~\ref{found:hilbert-completion}) of it. Here $\check E_\Sigma = \mathtt{T.ECheck}$ and
+  $\hat E_\Sigma = \mathtt{T.EHat}$ are the deferred inverse and direct limit spaces
+  (Definition~\ref{found:tvs-limits-tensor}), so there is no concrete $\hat E_\Sigma$ to map into;
+  this wiring is the assumed \texttt{hatIncl}/\texttt{factor} data of \texttt{InducesUnitaryGH}.
 \end{definition}
 
 \begin{definition}[The observable bundle]

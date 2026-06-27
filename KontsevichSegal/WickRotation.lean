@@ -1,5 +1,6 @@
 import KontsevichSegal.WickRotation.Complexification
 import KontsevichSegal.WickRotation.GloballyHyperbolic
+import KontsevichSegal.WickRotation.HilbertCompletion
 import KontsevichSegal.WickRotation.InvariancePrinciple
 import KontsevichSegal.WickRotation.LorentzianCategory
 import KontsevichSegal.WickRotation.LorentzianEWelldefined
