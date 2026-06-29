@@ -3,3 +3,4 @@ import KontsevichSegal.ComplexMetrics.Equivalence
 import KontsevichSegal.ComplexMetrics.Domain
 import KontsevichSegal.ComplexMetrics.Restriction
 import KontsevichSegal.ComplexMetrics.ShilovBoundary
+import KontsevichSegal.ComplexMetrics.HodgeScaffold
