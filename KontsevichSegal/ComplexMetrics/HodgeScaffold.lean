@@ -32,6 +32,7 @@ import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 namespace KontsevichSegal.Hodge
 
@@ -95,6 +96,22 @@ theorem inducedForm_nondegenerate (B : LinearMap.BilinForm K W) (hB : B.Nondegen
   rw [LinearMap.coe_comp]
   exact (pairingDual_injective p).comp
     (exteriorPower.map_injective_field (B.toDual hB).injective)
+
+/-- **`g_p` is symmetric (from `B` symmetric).** Checked on the `Basis.exteriorPower` basis:
+the Gram-determinant value is unchanged under `S ↔ T` by `B`'s symmetry and `det_transpose`. -/
+theorem inducedForm_isSymm (B : LinearMap.BilinForm K W) (hB : B.Nondegenerate)
+    (hsymm : B.IsSymm) (p : ℕ) : (inducedForm B hB p).IsSymm := by
+  classical
+  rw [LinearMap.BilinForm.isSymm_iff_basis ((Module.finBasis K W).exteriorPower p)]
+  intro S T
+  rw [basis_apply, basis_apply]
+  simp only [ιMulti_family]
+  rw [inducedForm_apply_ιMulti, inducedForm_apply_ιMulti]
+  conv_rhs => rw [← Matrix.det_transpose]
+  congr 1
+  ext i j
+  simp only [Matrix.transpose_apply, Matrix.of_apply, Function.comp_apply]
+  exact hsymm.eq _ _
 
 /-! ### The wedge pairing `∧ᵖ × ∧^q → ∧^{p+q}`
 
@@ -165,6 +182,51 @@ theorem gc_apply_tmul (g : AllowableComplexMetric V) (v w : V) :
     LinearMap.BilinForm.baseChange_tmul, LinearMap.compr₂_apply, Complex.reLm_coe,
     Complex.imLm_coe, mul_one, Complex.real_smul, smul_eq_mul]
   linear_combination Complex.re_add_im (g.toForm v w)
+
+/-- **`g_ℂ` is symmetric**, inherited from `g`. -/
+theorem gc_isSymm (g : AllowableComplexMetric V) : (gc g).IsSymm := by
+  classical
+  rw [LinearMap.BilinForm.isSymm_iff_basis ((Module.finBasis ℝ V).baseChange ℂ)]
+  intro i j
+  rw [Module.Basis.baseChange_apply, Module.Basis.baseChange_apply, gc_apply_tmul, gc_apply_tmul]
+  exact g.symmetric' _ _
+
+/-- **`g_ℂ` is nondegenerate** (the load-bearing nondegeneracy). Its Gram matrix in the
+base-change basis `{1 ⊗ eᵢ}` is `g`'s complex Gram matrix `[g(eᵢ, eⱼ)]` (via `gc_apply_tmul`),
+whose determinant is nonzero because `volume_element_positive` exhibits a square root with
+positive real part. -/
+theorem gc_nondegenerate (g : AllowableComplexMetric V) : (gc g).Nondegenerate := by
+  classical
+  set b := Module.finBasis ℝ V with hb
+  rw [LinearMap.BilinForm.nondegenerate_iff_det_ne_zero (b.baseChange ℂ)]
+  have hM : LinearMap.BilinForm.toMatrix (b.baseChange ℂ) (gc g)
+      = Matrix.of (fun i j => g.toForm (b i) (b j)) := by
+    ext i j
+    simp only [LinearMap.BilinForm.toMatrix_apply, Module.Basis.baseChange_apply, gc_apply_tmul,
+      Matrix.of_apply]
+  rw [hM]
+  obtain ⟨w, hw, hwre⟩ := (volume_element_positive g b).2
+  rw [← hw]
+  exact pow_ne_zero 2 (fun h => by rw [h] at hwre; simp at hwre)
+
+/-- The **complex induced form** `g_p^ℂ` on `⋀ᵖ(V_ℂ)`: the induced form (`inducedForm`) of the
+ℂ-bilinear extension `g_ℂ`. This is the object on which KS paper Definition 2.1 places its
+positivity condition (the quadratic form `α ↦ α ∧ ⋆α` builds on it). -/
+noncomputable def formC (g : AllowableComplexMetric V) (p : ℕ) :
+    LinearMap.BilinForm ℂ (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) :=
+  inducedForm (gc g) (gc_nondegenerate g) p
+
+/-- Gram-determinant tie for the complex induced form (corollary of `inducedForm_apply_ιMulti`
+at `g_ℂ`), pinning `formC` to `g_ℂ`. -/
+theorem formC_apply_ιMulti (g : AllowableComplexMetric V) (p : ℕ)
+    (v w : Fin p → ℂ ⊗[ℝ] V) :
+    formC g p (ιMulti ℂ p v) (ιMulti ℂ p w) = (Matrix.of fun i j => gc g (v j) (w i)).det :=
+  inducedForm_apply_ιMulti (gc g) (gc_nondegenerate g) p v w
+
+/-- The complex induced form is nondegenerate (corollary of `inducedForm_nondegenerate`). -/
+theorem formC_nondegenerate (g : AllowableComplexMetric V) (p : ℕ) :
+    (formC g p).Nondegenerate :=
+  inducedForm_nondegenerate (gc g) (gc_nondegenerate g) p
 
 end Complexification
 
