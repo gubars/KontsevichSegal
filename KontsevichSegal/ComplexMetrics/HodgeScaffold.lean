@@ -33,11 +33,55 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.Data.List.OfFn
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 namespace KontsevichSegal.Hodge
 
 open exteriorPower LinearMap
 open scoped TensorProduct
+
+/-! ## General exterior-algebra lemmas
+
+Two facts about wedge products that Mathlib does not provide directly, used to build the perfect
+wedge pairing. They hold over any commutative ring / field and any module. -/
+
+section ExteriorAux
+
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
+
+/-- The wedge of a concatenated family is the algebra product of the two wedges: `ιMulti` turns
+`Fin.append` into multiplication in the exterior algebra. -/
+theorem ιMulti_append_eq_mul {m n : ℕ} (v : Fin m → M) (w : Fin n → M) :
+    ExteriorAlgebra.ιMulti R (m + n) (Fin.append v w)
+      = ExteriorAlgebra.ιMulti R m v * ExteriorAlgebra.ιMulti R n w := by
+  have happ : (fun i => (ExteriorAlgebra.ι R) (Fin.append v w i))
+      = Fin.append (fun i => (ExteriorAlgebra.ι R) (v i))
+          (fun i => (ExteriorAlgebra.ι R) (w i)) := by
+    funext i
+    refine Fin.addCases (fun j => ?_) (fun j => ?_) i <;>
+      simp [Fin.append_left, Fin.append_right]
+  rw [ExteriorAlgebra.ιMulti_apply, ExteriorAlgebra.ιMulti_apply, ExteriorAlgebra.ιMulti_apply,
+    happ, List.ofFn_fin_append, List.prod_append]
+
+variable {K : Type*} [Field K] {E : Type*} [AddCommGroup E] [Module K E]
+
+/-- The wedge of a linearly independent family is nonzero. (Over a field; the family is then part
+of a basis of its span, whose exterior power has it as a nonzero basis vector.) -/
+theorem ιMulti_ne_zero_of_linearIndependent {n : ℕ} {v : Fin n → E}
+    (hv : LinearIndependent K v) : exteriorPower.ιMulti K n v ≠ 0 := by
+  have hli := exteriorPower.ιMulti_family_linearIndependent_field (n := n) hv
+  have hcard : (Finset.univ : Finset (Fin n)) ∈ Set.powersetCard (Fin n) n := by simp
+  have h0 := hli.ne_zero ⟨Finset.univ, hcard⟩
+  have hid : Finset.univ.orderEmbOfFin (Finset.card_univ.trans (Fintype.card_fin n))
+      = RelEmbedding.refl (α := Fin n) (· ≤ ·) :=
+    (Finset.orderEmbOfFin_unique' _ (fun j => Finset.mem_univ _)).symm
+  rw [exteriorPower.ιMulti_family] at h0
+  convert h0 using 3
+  funext i
+  exact congrArg v (congrFun (congrArg DFunLike.coe hid.symm) i)
+
+end ExteriorAux
 
 section Generic
 
@@ -138,6 +182,137 @@ lemma wedge_coe (p q : ℕ) (x : ⋀[K]^p W) (y : ⋀[K]^q W) :
     ((wedge p q x y : ⋀[K]^(p + q) W) : ExteriorAlgebra K W)
       = (x : ExteriorAlgebra K W) * (y : ExteriorAlgebra K W) :=
   rfl
+
+/-! ### Pairing-perfectness: the wedge `∧ᵖ × ∧^{d−p} → ∧ᵈ` is a perfect pairing
+
+For `p + q = d = finrank`, the wedge `η ↦ (γ ↦ γ ∧ η)` into the 1-dimensional top exterior power is
+a linear equivalence `⋀^q W ≃ (⋀^p W →ₗ ⋀^d W)`. This is the perfect pairing underlying the Hodge
+star (KS paper Definition 2.1, the form `α ↦ α ∧ ⋆α`): `⋆` is defined from its inverse. -/
+
+/-- A wedge of two `Basis.exteriorPower` vectors is `ιMulti` of the concatenated index families. -/
+theorem wedge_eb_eq {p q : ℕ}
+    (S : Set.powersetCard (Fin (Module.finrank K W)) p)
+    (T : Set.powersetCard (Fin (Module.finrank K W)) q) :
+    wedge p q ((Module.finBasis K W).exteriorPower p S) ((Module.finBasis K W).exteriorPower q T)
+      = exteriorPower.ιMulti K (p + q)
+          (Module.finBasis K W ∘ Fin.append (⇑(Set.powersetCard.ofFinEmbEquiv.symm S))
+            (⇑(Set.powersetCard.ofFinEmbEquiv.symm T))) := by
+  apply Subtype.ext
+  rw [wedge_coe, basis_apply, basis_apply]
+  simp only [ιMulti_family, ιMulti_apply_coe]
+  rw [← ιMulti_append_eq_mul]
+  congr 1
+  funext i
+  refine Fin.addCases (fun j => ?_) (fun j => ?_) i <;> simp [Fin.append_left, Fin.append_right]
+
+/-- On a complementary pair `(S, Sᶜ)` the wedge of basis vectors is nonzero (distinct factors). -/
+theorem wedge_eb_compl_ne_zero {p q : ℕ} (hpq : p + q = Module.finrank K W)
+    (S : Set.powersetCard (Fin (Module.finrank K W)) p) :
+    wedge p q ((Module.finBasis K W).exteriorPower p S)
+      ((Module.finBasis K W).exteriorPower q
+        (Set.powersetCard.compl (by rw [Fintype.card_fin, add_comm]; exact hpq) S)) ≠ 0 := by
+  classical
+  set T := Set.powersetCard.compl (by rw [Fintype.card_fin, add_comm]; exact hpq) S with hT
+  have hinj : Function.Injective
+      (Fin.append (⇑(Set.powersetCard.ofFinEmbEquiv.symm S))
+        (⇑(Set.powersetCard.ofFinEmbEquiv.symm T))) := by
+    rw [Fin.append_injective_iff]
+    refine ⟨EmbeddingLike.injective _, EmbeddingLike.injective _, fun i j hc => ?_⟩
+    have hi := (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem S _).mp (Set.mem_range_self i)
+    have hj := (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem T _).mp (Set.mem_range_self j)
+    rw [hT, Set.powersetCard.mem_compl] at hj
+    rw [hc] at hi
+    exact hj hi
+  rw [wedge_eb_eq]
+  exact ιMulti_ne_zero_of_linearIndependent ((Module.finBasis K W).linearIndependent.comp _ hinj)
+
+/-- On a non-complementary pair the wedge of basis vectors vanishes (a repeated factor). -/
+theorem wedge_eb_ne_compl_eq_zero {p q : ℕ} (hpq : p + q = Module.finrank K W)
+    (S : Set.powersetCard (Fin (Module.finrank K W)) p)
+    (T : Set.powersetCard (Fin (Module.finrank K W)) q)
+    (hST : T ≠ Set.powersetCard.compl (by rw [Fintype.card_fin, add_comm]; exact hpq) S) :
+    wedge p q ((Module.finBasis K W).exteriorPower p S) ((Module.finBasis K W).exteriorPower q T)
+      = 0 := by
+  classical
+  rw [wedge_eb_eq]
+  have hov : ¬ Disjoint (S : Finset (Fin (Module.finrank K W))) (T : Finset (Fin _)) := by
+    intro hdis
+    apply hST
+    rw [Set.powersetCard.eq_iff_subset, Set.powersetCard.coe_compl]
+    exact Finset.subset_compl_iff_disjoint_right.mpr hdis.symm
+  rw [Finset.not_disjoint_iff] at hov
+  obtain ⟨a, haS, haT⟩ := hov
+  obtain ⟨i, hi⟩ := (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem S a).mpr haS
+  obtain ⟨j, hj⟩ := (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem T a).mpr haT
+  refine (exteriorPower.ιMulti K (p + q)).map_eq_zero_of_eq _ (i := Fin.castAdd q i)
+    (j := Fin.natAdd p j) ?_ ?_
+  · simp only [Function.comp_apply, Fin.append_left, Fin.append_right, hi, hj]
+  · simp [Fin.ext_iff, Fin.castAdd, Fin.natAdd]; omega
+
+/-- The wedge into the top exterior power `∧ᵖ × ∧^q → ∧ᵈ` (`d = finrank`). The degree cast
+`∧^{p+q} ≃ ∧ᵈ` is `LinearEquiv.ofEq` (the two are literally the same submodule once `p + q = d`),
+so it is the identity on the underlying exterior-algebra element. -/
+noncomputable def wedgeTop {p q : ℕ} (hpq : p + q = Module.finrank K W) :
+    (⋀[K]^p W) →ₗ[K] (⋀[K]^q W) →ₗ[K] (⋀[K]^(Module.finrank K W) W) :=
+  LinearMap.compr₂ (wedge p q)
+    (LinearEquiv.ofEq (⋀[K]^(p + q) W) (⋀[K]^(Module.finrank K W) W)
+      (by rw [hpq])).toLinearMap
+
+omit [FiniteDimensional K W] in
+theorem wedgeTop_apply {p q : ℕ} (hpq : p + q = Module.finrank K W)
+    (γ : ⋀[K]^p W) (η : ⋀[K]^q W) :
+    wedgeTop hpq γ η
+      = LinearEquiv.ofEq (⋀[K]^(p + q) W) (⋀[K]^(Module.finrank K W) W)
+          (by rw [hpq]) (wedge p q γ η) :=
+  rfl
+
+/-- `wedgeTop` is right-nondegenerate: pairing with every `γ` detects `η`. -/
+theorem wedgeTop_flip_injective {p q : ℕ} (hpq : p + q = Module.finrank K W) :
+    Function.Injective (wedgeTop hpq).flip := by
+  classical
+  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+  intro η hη
+  have hall : ∀ γ : ⋀[K]^p W, wedge p q γ η = 0 := by
+    intro γ
+    have hγ := LinearMap.congr_fun hη γ
+    rw [LinearMap.flip_apply, wedgeTop_apply, LinearMap.zero_apply] at hγ
+    exact (LinearEquiv.ofEq _ _ (by rw [hpq])).map_eq_zero_iff.mp hγ
+  apply ((Module.finBasis K W).exteriorPower q).repr.injective
+  ext T
+  rw [map_zero]
+  set S := (Set.powersetCard.compl (by rw [Fintype.card_fin, add_comm]; exact hpq)).symm T
+  have hcompl : Set.powersetCard.compl (by rw [Fintype.card_fin, add_comm]; exact hpq) S = T :=
+    Equiv.apply_symm_apply _ _
+  have key := hall ((Module.finBasis K W).exteriorPower p S)
+  rw [← ((Module.finBasis K W).exteriorPower q).sum_repr η, map_sum] at key
+  simp only [map_smul] at key
+  rw [Finset.sum_eq_single
+    (Set.powersetCard.compl (by rw [Fintype.card_fin, add_comm]; exact hpq) S), hcompl] at key
+  · rcases smul_eq_zero.mp key with hr | hw
+    · simpa using hr
+    · exact absurd (hcompl ▸ hw) (wedge_eb_compl_ne_zero hpq S)
+  · intro T' _ hne
+    rw [wedge_eb_ne_compl_eq_zero hpq S T' hne, smul_zero]
+  · intro hmem; exact absurd (Finset.mem_univ _) hmem
+
+/-- `dim ⋀^q W = C(d,q) = C(d,p) = dim (⋀^p W →ₗ ⋀^d W)` (the top power is 1-dimensional). -/
+theorem wedgeTop_finrank_eq {p q : ℕ} (hpq : p + q = Module.finrank K W) :
+    Module.finrank K (⋀[K]^q W)
+      = Module.finrank K ((⋀[K]^p W) →ₗ[K] (⋀[K]^(Module.finrank K W) W)) := by
+  have hp : p ≤ Module.finrank K W := by omega
+  have hq : Module.finrank K W - p = q := by omega
+  rw [Module.finrank_linearMap, exteriorPower.finrank_eq, exteriorPower.finrank_eq,
+    exteriorPower.finrank_eq, Nat.choose_self, mul_one, ← hq, Nat.choose_symm hp]
+
+/-- **Pairing-perfectness (KS Definition 2.1; the input Run 3's `⋆` consumes).** For
+`p + q = finrank K W`, the wedge pairing into the top exterior power is a linear equivalence
+`⋀^q W ≃ₗ (⋀^p W →ₗ ⋀^{finrank} W)`, namely `η ↦ (γ ↦ γ ∧ η)`. -/
+noncomputable def wedgePairingEquiv {p q : ℕ} (hpq : p + q = Module.finrank K W) :
+    (⋀[K]^q W) ≃ₗ[K] ((⋀[K]^p W) →ₗ[K] (⋀[K]^(Module.finrank K W) W)) :=
+  LinearEquiv.ofBijective (wedgeTop hpq).flip
+    ⟨wedgeTop_flip_injective hpq,
+      (LinearMap.injective_iff_surjective_of_finrank_eq_finrank
+        (wedgeTop_finrank_eq hpq)).mp (wedgeTop_flip_injective hpq)⟩
 
 end Generic
 
