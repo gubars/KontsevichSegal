@@ -64,6 +64,43 @@ theorem ιMulti_append_eq_mul {m n : ℕ} (v : Fin m → M) (w : Fin n → M) :
   rw [ExteriorAlgebra.ιMulti_apply, ExteriorAlgebra.ιMulti_apply, ExteriorAlgebra.ιMulti_apply,
     happ, List.ofFn_fin_append, List.prod_append]
 
+/-! ### Block graded-commutativity
+
+Mathlib provides only degree-1 graded commutativity (`ι_add_mul_swap`). The Hodge star's sign
+`(-1)^{p(d−p)}` comes from swapping a `p`-blade past a `q`-blade, which costs `(-1)^{pq}`
+(`block_comm`). These hold over any commutative ring. -/
+
+/-- Anticommutativity of generators: `ι a * ι b = -(ι b * ι a)`. -/
+theorem ι_anticomm (a b : M) :
+    ExteriorAlgebra.ι R a * ExteriorAlgebra.ι R b
+      = -(ExteriorAlgebra.ι R b * ExteriorAlgebra.ι R a) :=
+  eq_neg_of_add_eq_zero_left (ExteriorAlgebra.ι_add_mul_swap a b)
+
+/-- Moving a single generator past an `n`-blade costs `(-1)^n`:
+`ι a * ιMulti n w = (-1)^n • (ιMulti n w * ι a)`. -/
+theorem ι_mul_block (a : M) {n : ℕ} (w : Fin n → M) :
+    ExteriorAlgebra.ι R a * ExteriorAlgebra.ιMulti R n w
+      = (-1 : R) ^ n • (ExteriorAlgebra.ιMulti R n w * ExteriorAlgebra.ι R a) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [ExteriorAlgebra.ιMulti_succ_apply, ← mul_assoc, ι_anticomm, neg_mul, mul_assoc,
+      ih (Matrix.vecTail w), mul_smul_comm, mul_assoc, pow_succ, mul_neg_one, neg_smul]
+
+/-- **Block graded-commutativity**: an `m`-blade and an `n`-blade commute up to the sign
+`(-1)^{mn}`: `ιMulti m v * ιMulti n w = (-1)^{mn} • (ιMulti n w * ιMulti m v)`. The source of the
+Hodge star's `(-1)^{p(d−p)}` sign. -/
+theorem block_comm {m n : ℕ} (v : Fin m → M) (w : Fin n → M) :
+    ExteriorAlgebra.ιMulti R m v * ExteriorAlgebra.ιMulti R n w
+      = (-1 : R) ^ (m * n) • (ExteriorAlgebra.ιMulti R n w * ExteriorAlgebra.ιMulti R m v) := by
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    rw [ExteriorAlgebra.ιMulti_succ_apply, mul_assoc, ih (Matrix.vecTail v), mul_smul_comm,
+      ← mul_assoc, ι_mul_block, smul_mul_assoc, smul_smul, mul_assoc,
+      ← ExteriorAlgebra.ιMulti_succ_apply, ← pow_add,
+      show m * n + n = (m + 1) * n from by ring]
+
 variable {K : Type*} [Field K] {E : Type*} [AddCommGroup E] [Module K E]
 
 /-- The wedge of a linearly independent family is nonzero. (Over a field; the family is then part
@@ -182,6 +219,30 @@ lemma wedge_coe (p q : ℕ) (x : ⋀[K]^p W) (y : ⋀[K]^q W) :
     ((wedge p q x y : ⋀[K]^(p + q) W) : ExteriorAlgebra K W)
       = (x : ExteriorAlgebra K W) * (y : ExteriorAlgebra K W) :=
   rfl
+
+/-- **Graded commutativity of the wedge**: `x ∧ y = (-1)^{pq} • (y ∧ x)` for `x ∈ ⋀ᵖW`,
+`y ∈ ⋀^qW` (the degree match `⋀^{q+p} = ⋀^{p+q}` is the identity-on-carrier `LinearEquiv.ofEq`).
+Extends `block_comm` from decomposables to all of `⋀ᵖW × ⋀^qW` by bilinearity and the
+`Basis.exteriorPower` spanning. This is the source of the Hodge star's `(-1)^{p(d−p)}` sign. -/
+theorem wedge_comm {p q : ℕ} (x : ⋀[K]^p W) (y : ⋀[K]^q W) :
+    wedge p q x y
+      = (-1 : K) ^ (p * q) •
+          (LinearEquiv.ofEq (⋀[K]^(q + p) W) (⋀[K]^(p + q) W) (by rw [Nat.add_comm])
+            (wedge q p y x)) := by
+  have hbil : wedge p q
+      = ((wedge q p).flip).compr₂
+          (((-1 : K) ^ (p * q)) • (LinearEquiv.ofEq (⋀[K]^(q + p) W) (⋀[K]^(p + q) W)
+            (by rw [Nat.add_comm])).toLinearMap) := by
+    refine Module.Basis.ext ((Module.finBasis K W).exteriorPower p) fun S => ?_
+    refine Module.Basis.ext ((Module.finBasis K W).exteriorPower q) fun T => ?_
+    apply Subtype.ext
+    simp only [LinearMap.compr₂_apply, LinearMap.flip_apply, LinearMap.smul_apply,
+      wedge_coe, SetLike.val_smul, LinearEquiv.coe_ofEq_apply, LinearEquiv.coe_coe,
+      basis_apply, ιMulti_family, ιMulti_apply_coe]
+    exact block_comm _ _
+  have h := LinearMap.congr_fun (LinearMap.congr_fun hbil x) y
+  simpa only [LinearMap.compr₂_apply, LinearMap.flip_apply, LinearMap.smul_apply,
+    LinearEquiv.coe_coe] using h
 
 /-! ### Pairing-perfectness: the wedge `∧ᵖ × ∧^{d−p} → ∧ᵈ` is a perfect pairing
 
@@ -314,6 +375,92 @@ noncomputable def wedgePairingEquiv {p q : ℕ} (hpq : p + q = Module.finrank K 
       (LinearMap.injective_iff_surjective_of_finrank_eq_finrank
         (wedgeTop_finrank_eq hpq)).mp (wedgeTop_flip_injective hpq)⟩
 
+/-- Evaluation of the pairing equivalence: `wedgePairingEquiv hpq η γ = γ ∧ η` (into the top
+power). -/
+@[simp] lemma wedgePairingEquiv_apply_apply {p q : ℕ} (hpq : p + q = Module.finrank K W)
+    (η : ⋀[K]^q W) (γ : ⋀[K]^p W) :
+    wedgePairingEquiv hpq η γ = wedgeTop hpq γ η := by
+  rw [wedgePairingEquiv, LinearEquiv.ofBijective_apply, LinearMap.flip_apply]
+
+/-! ### The volume form and the Hodge star operator `⋆`
+
+KS paper Definition 2.1 builds the star from the perfect wedge pairing `⋀ᵖ × ⋀^{d−p} → ⋀ᵈ`:
+`⋆β` is the unique `(d−p)`-vector with `γ ∧ ⋆β = g_p(γ,β) · vol` for all `γ`. We realize it as
+`wedgePairingEquiv.symm` applied to the functional `γ ↦ g_p(γ,β) · vol`. -/
+
+/-- The canonical **volume form** `vol`: the `Basis.exteriorPower` top vector of
+`Module.finBasis K W` at the unique index `univ ∈ powersetCard (Fin d) d`, a generator of the
+1-dimensional top exterior power `⋀ᵈW` (`d = finrank K W`). This is the `*1` of KS paper
+Definition 2.1 against which the Hodge star wedges. (It is the basis volume `|dx¹…dxᵈ|`, not the
+metric-normalized `vol_g = (det g)^{1/2}|dx|` of KS (3); the `(det g)^{1/2}` factor is recorded
+separately, see `starOp_starOp`.) -/
+noncomputable def volForm : ⋀[K]^(Module.finrank K W) W :=
+  (Module.finBasis K W).exteriorPower (Module.finrank K W) ⟨Finset.univ, by simp⟩
+
+/-- The volume form is nonzero (it is a basis vector of `⋀ᵈW`). -/
+theorem volForm_ne_zero : (volForm : ⋀[K]^(Module.finrank K W) W) ≠ 0 :=
+  ((Module.finBasis K W).exteriorPower (Module.finrank K W)).ne_zero _
+
+/-- The functional `γ ↦ g_p(γ, β) · vol` packaged as a `K`-linear map in `β`, the input to
+`wedgePairingEquiv.symm` that defines `⋆`. -/
+noncomputable def wedgeFunctional (B : LinearMap.BilinForm K W) (hB : B.Nondegenerate) (p : ℕ) :
+    (⋀[K]^p W) →ₗ[K] ((⋀[K]^p W) →ₗ[K] (⋀[K]^(Module.finrank K W) W)) :=
+  (LinearMap.llcomp K (⋀[K]^p W) K (⋀[K]^(Module.finrank K W) W)
+      (LinearMap.toSpanSingleton K _ volForm)).comp (inducedForm B hB p).flip
+
+@[simp] lemma wedgeFunctional_apply (B : LinearMap.BilinForm K W) (hB : B.Nondegenerate) (p : ℕ)
+    (β γ : ⋀[K]^p W) :
+    wedgeFunctional B hB p β γ = inducedForm B hB p γ β • volForm := by
+  simp [wedgeFunctional, LinearMap.llcomp_apply, LinearMap.toSpanSingleton_apply]
+
+/-- **The Hodge star operator `⋆`** at degree `p` (with `q = d − p`, `d = finrank K W`), for a
+nondegenerate bilinear form `B`. Built from the perfect wedge pairing: `⋆β` is the unique
+`(d−p)`-vector with `γ ∧ ⋆β = g_p(γ, β) · vol` for all `γ` (`starOp_wedge`). This is the `⋆` of
+KS paper Definition 2.1. -/
+noncomputable def starOp (B : LinearMap.BilinForm K W) (hB : B.Nondegenerate) (p q : ℕ)
+    (hpq : p + q = Module.finrank K W) : (⋀[K]^p W) →ₗ[K] (⋀[K]^q W) :=
+  (wedgePairingEquiv hpq).symm.toLinearMap.comp (wedgeFunctional B hB p)
+
+/-- **The defining equation of the Hodge star.** `γ ∧ ⋆β = g_p(γ, β) · vol` for all `γ`, with
+the wedge landing in the top power `⋀ᵈW` (KS paper Definition 2.1, the form `α ↦ α ∧ ⋆α`). This
+pins `⋆` to the pair `(g_p, vol)`. -/
+theorem starOp_wedge (B : LinearMap.BilinForm K W) (hB : B.Nondegenerate) (p q : ℕ)
+    (hpq : p + q = Module.finrank K W) (γ β : ⋀[K]^p W) :
+    wedgeTop hpq γ (starOp B hB p q hpq β) = inducedForm B hB p γ β • volForm := by
+  have h2 := LinearMap.congr_fun
+    ((wedgePairingEquiv hpq).apply_symm_apply (wedgeFunctional B hB p β)) γ
+  rw [wedgePairingEquiv_apply_apply, wedgeFunctional_apply] at h2
+  exact h2
+
+/-- **Uniqueness of the Hodge star.** `⋆β` is the unique `(d−p)`-vector satisfying the defining
+equation `γ ∧ x = g_p(γ, β) · vol` for all `γ` (the wedge pairing is perfect). -/
+theorem starOp_unique (B : LinearMap.BilinForm K W) (hB : B.Nondegenerate) (p q : ℕ)
+    (hpq : p + q = Module.finrank K W) (β : ⋀[K]^p W) (x : ⋀[K]^q W)
+    (hx : ∀ γ, wedgeTop hpq γ x = inducedForm B hB p γ β • volForm) :
+    x = starOp B hB p q hpq β := by
+  apply wedgeTop_flip_injective hpq
+  refine LinearMap.ext fun z => ?_
+  rw [LinearMap.flip_apply, LinearMap.flip_apply, hx z, starOp_wedge]
+
+/-- **The Hodge star is a linear equivalence** `⋀ᵖW ≃ₗ ⋀^{d−p}W`, a corollary of nondegeneracy
+of `g_p` and `dim ⋀ᵖW = dim ⋀^{d−p}W`. -/
+noncomputable def starEquiv (B : LinearMap.BilinForm K W) (hB : B.Nondegenerate)
+    (p q : ℕ) (hpq : p + q = Module.finrank K W) : (⋀[K]^p W) ≃ₗ[K] (⋀[K]^q W) :=
+  LinearEquiv.ofBijective (starOp B hB p q hpq) <| by
+    have hinj : Function.Injective (starOp B hB p q hpq) := by
+      rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+      intro β hβ
+      have key : ∀ γ, inducedForm B hB p γ β = 0 := by
+        intro γ
+        have h := starOp_wedge B hB p q hpq γ β
+        rw [hβ, map_zero] at h
+        exact (smul_eq_zero.mp h.symm).resolve_right volForm_ne_zero
+      exact (inducedForm_nondegenerate B hB p).2 β key
+    refine ⟨hinj, (LinearMap.injective_iff_surjective_of_finrank_eq_finrank ?_).mp hinj⟩
+    rw [exteriorPower.finrank_eq, exteriorPower.finrank_eq,
+      show q = Module.finrank K W - p from by omega,
+      Nat.choose_symm (show p ≤ Module.finrank K W from by omega)]
+
 end Generic
 
 /-! ## The complexification `V_ℂ` and the ℂ-bilinear extension `g_ℂ`
@@ -402,6 +549,42 @@ theorem formC_apply_ιMulti (g : AllowableComplexMetric V) (p : ℕ)
 theorem formC_nondegenerate (g : AllowableComplexMetric V) (p : ℕ) :
     (formC g p).Nondegenerate :=
   inducedForm_nondegenerate (gc g) (gc_nondegenerate g) p
+
+/-- The complex induced form is symmetric (corollary of `inducedForm_isSymm`, using `gc_isSymm`). -/
+theorem formC_isSymm (g : AllowableComplexMetric V) (p : ℕ) : (formC g p).IsSymm :=
+  inducedForm_isSymm (gc g) (gc_nondegenerate g) (gc_isSymm g) p
+
+/-- **The Hodge star `⋆` of an allowable complex metric**, at degree `p` (`q = d − p`,
+`d = finrank ℂ (V_ℂ)`), acting on complex `p`-forms `⋀ᵖ(V_ℂ)`. This is the `⋆_g` of KS paper
+Definition 2.1: `⋆β` is the unique complex `(d−p)`-form with `γ ∧ ⋆β = g_p^ℂ(γ,β) · vol` for
+all `γ`. -/
+noncomputable def star (g : AllowableComplexMetric V) (p q : ℕ)
+    (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
+    (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) →ₗ[ℂ] (⋀[ℂ]^q (ℂ ⊗[ℝ] V)) :=
+  starOp (gc g) (gc_nondegenerate g) p q hpq
+
+/-- **The defining equation of `⋆_g`** (corollary of `starOp_wedge` at `g_ℂ`): the float-free
+pin `γ ∧ ⋆β = g_p^ℂ(γ,β) · vol`, tying `⋆_g` to `(formC, vol)`. -/
+theorem star_wedge (g : AllowableComplexMetric V) (p q : ℕ)
+    (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (γ β : ⋀[ℂ]^p (ℂ ⊗[ℝ] V)) :
+    wedgeTop hpq γ (star g p q hpq β) = formC g p γ β • volForm :=
+  starOp_wedge (gc g) (gc_nondegenerate g) p q hpq γ β
+
+/-- **`⋆_g` is the unique** complex `(d−p)`-form with the defining property (corollary of
+`starOp_unique`). -/
+theorem star_unique (g : AllowableComplexMetric V) (p q : ℕ)
+    (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (β : ⋀[ℂ]^p (ℂ ⊗[ℝ] V))
+    (x : ⋀[ℂ]^q (ℂ ⊗[ℝ] V))
+    (hx : ∀ γ, wedgeTop hpq γ x = formC g p γ β • volForm) :
+    x = star g p q hpq β :=
+  starOp_unique (gc g) (gc_nondegenerate g) p q hpq β x hx
+
+/-- **`⋆_g` is a linear equivalence** `⋀ᵖ(V_ℂ) ≃ₗ ⋀^{d−p}(V_ℂ)` (corollary of `starEquiv`,
+using nondegeneracy and symmetry of `g_ℂ`). -/
+noncomputable def starLinearEquiv (g : AllowableComplexMetric V) (p q : ℕ)
+    (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
+    (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) ≃ₗ[ℂ] (⋀[ℂ]^q (ℂ ⊗[ℝ] V)) :=
+  starEquiv (gc g) (gc_nondegenerate g) p q hpq
 
 end Complexification
 
