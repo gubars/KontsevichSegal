@@ -6,6 +6,7 @@ import KontsevichSegal.ComplexMetrics
 import KontsevichSegal.ComplexMetrics.Defs
 import KontsevichSegal.ComplexMetrics.Domain
 import KontsevichSegal.ComplexMetrics.Equivalence
+import KontsevichSegal.ComplexMetrics.HodgeScaffold
 import KontsevichSegal.ComplexMetrics.Restriction
 import KontsevichSegal.ComplexMetrics.ShilovBoundary
 import KontsevichSegal.FieldTheory
