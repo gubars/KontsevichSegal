@@ -932,6 +932,150 @@ theorem star_star (g : AllowableComplexMetric V) (p q : ℕ)
         • ((-1 : ℂ) ^ (p * q) • LinearMap.id) :=
   starOp_starOp (gc g) (gc_nondegenerate g) (gc_isSymm g) p q hpq hqp
 
+/-! ### Normalization: the metric volume `vol_g` and the normalized Hodge star `⋆_g`
+
+KS paper (3) / page 7: the metric volume element is `vol_g = (det g)^{1/2} · |dx|`, and the
+normalized Hodge star `⋆_g` wedges against `vol_g` rather than the coordinate volume `volForm`,
+yielding the clean `⋆⋆ = (-1)^{p(d−p)}·id` of KS paper Definition 2.1 with the `det g` magnitude
+divided out.
+
+Option A (finBasis volume). `volForm` is the top blade of the arbitrary complex basis
+`Module.finBasis ℂ (ℂ⊗V)`, not a real coframe, so `g_d^ℂ(volForm, volForm)` equals `det g` only up
+to a nonzero complex square; the positive-real-part branch of `(det g)^{1/2}` (KSTeX line 126,
+`volume_element_positive`) is therefore not available on it, and is not needed: `detSqrt` is an
+arbitrary square root, and every result below (`formC_vol_g_self`, `star_g_star_g`,
+`IsAllowableHodge`) is invariant under `detSqrt ↦ −detSqrt`. -/
+
+/-- The top-degree induced form of the volume form is nonzero: `g_d^ℂ(vol, vol) ≠ 0`. Since `⋀ᵈ` is
+one-dimensional and `formC g d` is nondegenerate with `volForm ≠ 0`, the single Gram entry is
+nonzero. This is `det g_ℂ` (up to the finBasis change-of-basis square), the radicand of
+`detSqrt`. -/
+theorem formC_volForm_self_ne_zero (g : AllowableComplexMetric V) :
+    formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm ≠ 0 := by
+  intro h
+  refine volForm_ne_zero (K := ℂ) (W := ℂ ⊗[ℝ] V) ?_
+  have hdim1 : Module.finrank ℂ (⋀[ℂ]^(Module.finrank ℂ (ℂ ⊗[ℝ] V)) (ℂ ⊗[ℝ] V)) = 1 := by
+    rw [exteriorPower.finrank_eq, Nat.choose_self]
+  refine (formC_nondegenerate g (Module.finrank ℂ (ℂ ⊗[ℝ] V))).1 volForm (fun y => ?_)
+  obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' volForm volForm_ne_zero).mp hdim1 y
+  rw [← hc, map_smul, h, smul_zero]
+
+/-- `√det(g_ℂ)`: a square root of the top-degree induced form `g_d^ℂ(vol, vol)` of the volume form,
+the `(det g)^{1/2}` normalizing factor of the metric volume element (KS paper (3), page 7). Built by
+the polar formula `√‖z‖ · exp(i·arg z / 2)`, so `detSqrt_sq` holds unconditionally. (Option A: an
+arbitrary branch — the finBasis `volForm` is not a real coframe, so the positive-real-part branch of
+KSTeX line 126 is unavailable; it is also unused, every downstream result being
+branch-invariant.) -/
+noncomputable def detSqrt (g : AllowableComplexMetric V) : ℂ :=
+  (Real.sqrt ‖formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm‖ : ℂ) *
+    Complex.exp ((↑(Complex.arg
+      (formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm) / 2) : ℂ) * Complex.I)
+
+/-- **`detSqrt` is a square root** of the top induced form (float-free tie): `(detSqrt g)² =
+g_d^ℂ(vol, vol)`. -/
+theorem detSqrt_sq (g : AllowableComplexMetric V) :
+    (detSqrt g) ^ 2 = formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm := by
+  set z := formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm with hz
+  rw [detSqrt, mul_pow, ← Complex.ofReal_pow, Real.sq_sqrt (norm_nonneg z), pow_two,
+    ← Complex.exp_add]
+  rw [show (↑(Complex.arg z / 2) : ℂ) * Complex.I + (↑(Complex.arg z / 2) : ℂ) * Complex.I
+      = (↑(Complex.arg z) : ℂ) * Complex.I from by push_cast; ring]
+  exact Complex.norm_mul_exp_arg_mul_I z
+
+/-- `detSqrt g ≠ 0` (its square `g_d^ℂ(vol, vol)` is nonzero). -/
+theorem detSqrt_ne_zero (g : AllowableComplexMetric V) : detSqrt g ≠ 0 := by
+  intro h
+  apply formC_volForm_self_ne_zero g
+  rw [← detSqrt_sq g, h]; ring
+
+/-- The **metric volume element** `vol_g = (det g)^{-1/2} · |dx|` (KS paper (3)): the coordinate
+volume `volForm` rescaled by `detSqrt⁻¹`, normalized so `g_d^ℂ(vol_g, vol_g) = 1`
+(`formC_vol_g_self`). This is the `*1` of KS paper Definition 2.1 against which `⋆_g` wedges. -/
+noncomputable def vol_g (g : AllowableComplexMetric V) :
+    ⋀[ℂ]^(Module.finrank ℂ (ℂ ⊗[ℝ] V)) (ℂ ⊗[ℝ] V) :=
+  (detSqrt g)⁻¹ • volForm
+
+/-- Float-free tie of the metric volume to the coordinate volume. -/
+theorem vol_g_eq (g : AllowableComplexMetric V) :
+    vol_g g = (detSqrt g)⁻¹ • volForm := rfl
+
+/-- The metric volume is nonzero. -/
+theorem vol_g_ne_zero (g : AllowableComplexMetric V) : vol_g g ≠ 0 :=
+  smul_ne_zero (inv_ne_zero (detSqrt_ne_zero g)) volForm_ne_zero
+
+/-- **The metric volume is unit-normalized**: `g_d^ℂ(vol_g, vol_g) = 1` (KS paper (3): `vol_g =
+(det g)^{-1/2}|dx|` has unit norm). The two `detSqrt⁻¹` factors cancel `(detSqrt)² = g_d(vol, vol)`,
+so this is independent of the branch of `detSqrt`. -/
+theorem formC_vol_g_self (g : AllowableComplexMetric V) :
+    formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) (vol_g g) (vol_g g) = 1 := by
+  have hne := detSqrt_ne_zero g
+  simp only [vol_g, map_smul, LinearMap.smul_apply, smul_eq_mul]
+  rw [← detSqrt_sq g]; field_simp
+
+/-- **The normalized Hodge star `⋆_g`**: the committed `⋆` rescaled by `detSqrt⁻¹`, so it wedges
+against the metric volume `vol_g` (KS paper Definition 2.1). -/
+noncomputable def star_g (g : AllowableComplexMetric V) (p q : ℕ)
+    (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
+    (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) →ₗ[ℂ] (⋀[ℂ]^q (ℂ ⊗[ℝ] V)) :=
+  (detSqrt g)⁻¹ • star g p q hpq
+
+/-- **The defining equation of the normalized Hodge star**: `γ ∧ ⋆_g β = g_p^ℂ(γ, β) · vol_g`, now
+against the metric volume `vol_g` (KS paper Definition 2.1, the form `α ↦ α ∧ ⋆α`). The `detSqrt⁻¹`
+rescaling of `⋆` lands exactly on `vol_g = detSqrt⁻¹ • volForm`. -/
+theorem star_g_wedge (g : AllowableComplexMetric V) (p q : ℕ)
+    (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (γ β : ⋀[ℂ]^p (ℂ ⊗[ℝ] V)) :
+    wedgeTop hpq γ (star_g g p q hpq β) = formC g p γ β • vol_g g := by
+  simp only [star_g, LinearMap.smul_apply, map_smul]
+  rw [star_wedge, vol_g, smul_comm]
+
+/-- **`⋆⋆ = (-1)^{p(d−p)} · id` (normalized, clean).** With the metric volume the `det g` magnitude
+of `star_star` cancels against the two `detSqrt⁻¹` rescalings (`(detSqrt)² = g_d(vol, vol)`), giving
+KS paper Definition 2.1's `⋆⋆ = (-1)^{p(d−p)}·id`. Independent of the branch of `detSqrt`. -/
+theorem star_g_star_g (g : AllowableComplexMetric V) (p q : ℕ)
+    (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (hqp : q + p = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
+    (star_g g q p hqp).comp (star_g g p q hpq) = (-1 : ℂ) ^ (p * q) • LinearMap.id := by
+  have hne := detSqrt_ne_zero g
+  simp only [star_g]
+  rw [LinearMap.smul_comp, LinearMap.comp_smul, smul_smul, star_star g p q hpq hqp, smul_smul,
+    ← detSqrt_sq g, show (detSqrt g)⁻¹ * (detSqrt g)⁻¹ * (detSqrt g) ^ 2 = 1 from by field_simp,
+    one_smul]
+
+/-! ### Definition 2.1 of [KS] (Hodge-star positivity)
+
+KS paper Definition 2.1 (KSTeX 140–142): the complex metric `g` on the real space `V` is allowable
+iff, for every degree `p`, the real part of the quadratic form `α ↦ α ∧ ⋆_g α` on the real exterior
+power `⋀ᵖ(V*)` is positive-definite. Trivializing the top line by `vol_g`, `star_g_wedge` at
+`γ = β = α` gives `α ∧ ⋆_g α = g_p^ℂ(α, α) · vol_g`, so `f_p(α) = g_p^ℂ(α, α)` (the two `detSqrt⁻¹`
+factors of `⋆_g` and `vol_g` cancel) and the condition is `∀ p, Re(g_p^ℂ(α, α)) > 0` on real
+`p`-forms — detSqrt-free. -/
+
+/-- The `ιMulti` alternating map of `V_ℂ`, with scalars restricted from `ℂ` to `ℝ`. (Mathlib ships
+`MultilinearMap.restrictScalars` but not the alternating-map version; the alternating property is
+inherited unchanged since the underlying function is the same.) -/
+noncomputable def ιMultiRestrict (p : ℕ) :
+    (ℂ ⊗[ℝ] V) [⋀^Fin p]→ₗ[ℝ] (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) where
+  toMultilinearMap := (exteriorPower.ιMulti ℂ p).toMultilinearMap.restrictScalars ℝ
+  map_eq_zero_of_eq' v _i _j hv hij := (exteriorPower.ιMulti ℂ p).map_eq_zero_of_eq v hv hij
+
+/-- The **real `p`-forms** included into the complex exterior power `⋀ᵖ(V_ℂ)`: the ℝ-linear map
+`⋀[ℝ]^p V →ₗ[ℝ] ⋀[ℂ]^p (ℂ⊗V)` extending `v ↦ 1 ⊗ v` (so on decomposables `v₁ ∧ ⋯ ∧ v_p ↦
+(1⊗v₁) ∧ ⋯ ∧ (1⊗v_p)`). This is KS's `⋀ᵖ(V*)`, the real forms sitting inside the complexification on
+which `g_p^ℂ` and `⋆_g` live. -/
+noncomputable def realExtPow (p : ℕ) : ⋀[ℝ]^p V →ₗ[ℝ] ⋀[ℂ]^p (ℂ ⊗[ℝ] V) :=
+  exteriorPower.alternatingMapLinearEquiv
+    ((ιMultiRestrict (V := V) p).compLinearMap ((TensorProduct.mk ℝ ℂ V) 1))
+
+/-- **Definition 2.1 of [KS]** (Hodge-star positivity; KSTeX 140–142). `g` is allowable iff for all
+degrees `p`, the real part of the quadratic form `α ↦ α ∧ ⋆_g α` on the real exterior power `⋀ᵖ(V*)`
+is positive-definite. By `star_g_wedge` (at `γ = β = α`), `α ∧ ⋆_g α = g_p^ℂ(α, α) · vol_g`, so the
+condition reduces to `∀ p, ∀ α ≠ 0, 0 < Re(g_p^ℂ(α, α))` on real `p`-forms (detSqrt-free).
+
+This states Definition 2.1 faithfully; its equivalence with the working (angle-condition) definition
+is KS paper Theorem 2.2 (`ComplexMetrics/Equivalence.lean`), deferred pending real simultaneous
+diagonalization. -/
+def IsAllowableHodge (g : AllowableComplexMetric V) : Prop :=
+  ∀ (p : ℕ) (α : ⋀[ℝ]^p V), α ≠ 0 → 0 < (formC g p (realExtPow p α) (realExtPow p α)).re
+
 end Complexification
 
 end KontsevichSegal.Hodge
