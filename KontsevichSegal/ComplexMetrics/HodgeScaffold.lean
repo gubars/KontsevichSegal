@@ -1040,14 +1040,271 @@ theorem star_g_star_g (g : AllowableComplexMetric V) (p q : ℕ)
     ← detSqrt_sq g, show (detSqrt g)⁻¹ * (detSqrt g)⁻¹ * (detSqrt g) ^ 2 = 1 from by field_simp,
     one_smul]
 
+/-! ### The real-coframe determinant and its principal square root
+
+KS's normalization datum (KS paper (3) + KSTeX 126): the volume element is
+`vol_g = (det g)^{1/2}|dx¹…dxᵈ|`, with `det g` computed in a REAL coframe, where it is invariant
+up to a positive real square (a real change of basis) — exactly the ambiguity of the twisted line
+`|⋀ᵈ(V*)|`. On a real-coframe determinant, "not real and negative" and "the square root with
+positive real part" are therefore well-defined (`volume_element_positive`), and KS fix the
+principal branch: "we choose `(det g)^{1/2}` to have positive real part" (KSTeX 126). This
+subsection provides that determinant (`detGramReal`), its principal root (`detSqrtReal`), and the
+diagonal factorization and blade translation that Definition 2.1 consumes. (Contrast the `detSqrt`
+of the normalized operator above: its radicand `g_d^ℂ(volForm, volForm)` sits over a finBasis of
+`ℂ ⊗ V`, not a real coframe, so it is defined only up to a nonzero complex square and has no
+principal branch — fine for the operator, unusable for Definition 2.1's positivity.) -/
+
+/-- Polarization of the diagonal form (export of the computation inside
+`volume_element_positive`): a diagonalization `g(v,v) = ∑ᵢ λᵢ·(yᵢ v)²` of the quadratic values
+determines the full bilinear form, `g(v,w) = ∑ᵢ λᵢ·(yᵢ v)·(yᵢ w)`. -/
+theorem toForm_eq_sum_of_diag (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) (v w : V) :
+    g.toForm v w = ∑ i, eig i * (b.repr v i : ℂ) * (b.repr w i : ℂ) := by
+  have h1 := hdiag (v + w)
+  simp only [map_add, LinearMap.add_apply, Finsupp.add_apply, Complex.ofReal_add] at h1
+  have hexp : ∑ i, eig i * ((b.repr v i : ℂ) + (b.repr w i : ℂ)) ^ 2
+      = (∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+        + (∑ i, eig i * (b.repr w i : ℂ) ^ 2)
+        + 2 * ∑ i, eig i * (b.repr v i : ℂ) * (b.repr w i : ℂ) := by
+    rw [Finset.mul_sum, ← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
+    exact Finset.sum_congr rfl fun i _ => by ring
+  linear_combination h1 / 2 + hexp / 2 - hdiag v / 2 - hdiag w / 2
+    + g.symmetric' v w / 2
+
+/-- On a diagonalizing basis the Gram matrix of `g` is `Matrix.diagonal eig`: the diagonalizing
+basis is `g`-orthogonal with the `λᵢ` on the diagonal. -/
+theorem gram_eq_diagonal_of_diag (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    Matrix.of (fun i j => g.toForm (b i) (b j)) = Matrix.diagonal eig := by
+  ext i j
+  rw [Matrix.of_apply, toForm_eq_sum_of_diag g hdiag, Matrix.diagonal_apply,
+    Finset.sum_eq_single i (fun k _ hk => by
+      simp [Module.Basis.repr_self, Finsupp.single_apply, Ne.symm hk])
+    (fun h => absurd (Finset.mem_univ i) h)]
+  by_cases hij : i = j
+  · subst hij
+    simp [Module.Basis.repr_self]
+  · simp [Module.Basis.repr_self, hij]
+
+/-- **Change of real basis for the Gram matrix**: `M_b = Pᵀ·(M_c·P)` with `P` the (complexified)
+real change-of-basis matrix. The general-basis version of the computation inside
+`volume_element_positive`. -/
+theorem gramMatrix_basisChange (g : AllowableComplexMetric V)
+    (b c : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V) :
+    Matrix.of (fun i j => g.toForm (b i) (b j))
+      = (Complex.ofRealHom.mapMatrix (c.toMatrix b)).transpose
+          * (Matrix.of (fun i j => g.toForm (c i) (c j))
+            * Complex.ofRealHom.mapMatrix (c.toMatrix b)) := by
+  ext i j
+  have expand1 : ∀ w : V,
+      g.toForm (b i) w = ∑ k, (c.repr (b i) k : ℂ) * g.toForm (c k) w := by
+    intro w
+    conv_lhs => rw [show b i = ∑ k, c.repr (b i) k • c k from (c.sum_repr (b i)).symm]
+    rw [map_sum, LinearMap.sum_apply]
+    exact Finset.sum_congr rfl fun k _ => by
+      rw [map_smul, LinearMap.smul_apply, Complex.real_smul]
+  have expand2 : ∀ k,
+      g.toForm (c k) (b j) = ∑ l, (c.repr (b j) l : ℂ) * g.toForm (c k) (c l) := by
+    intro k
+    conv_lhs => rw [show b j = ∑ l, c.repr (b j) l • c l from (c.sum_repr (b j)).symm]
+    rw [map_sum]
+    exact Finset.sum_congr rfl fun l _ => by rw [map_smul, Complex.real_smul]
+  rw [Matrix.of_apply, expand1 (b j), Matrix.mul_apply]
+  refine Finset.sum_congr rfl fun k _ => ?_
+  rw [expand2 k, Matrix.mul_apply, Finset.mul_sum, Finset.mul_sum]
+  refine Finset.sum_congr rfl fun l _ => ?_
+  simp only [Matrix.transpose_apply, RingHom.mapMatrix_apply, Matrix.map_apply,
+    Matrix.of_apply, Module.Basis.toMatrix_apply, Complex.ofRealHom_eq_coe]
+  ring
+
+/-- The determinant of the Gram matrix of `g` in the canonical REAL basis `Module.finBasis ℝ V`:
+KS's `det g` computed in a real coframe (KSTeX 126). A real change of basis multiplies it by a
+positive real square (`detGramReal_welldef`) — the twisted-line ambiguity — so "off the
+non-positive real axis" and the principal square root are well-defined for it. -/
+noncomputable def detGramReal (g : AllowableComplexMetric V) : ℂ :=
+  (Matrix.of fun i j =>
+    g.toForm (Module.finBasis ℝ V i) (Module.finBasis ℝ V j)).det
+
+/-- **Well-definedness of the real-coframe determinant.** Two real bases give Gram determinants
+differing by a positive real factor (the square of the real change-of-basis determinant), under
+which "not negative real" and the sign of `Re √·` are invariant. -/
+theorem detGramReal_welldef (g : AllowableComplexMetric V)
+    (b c : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V) :
+    ∃ r : ℝ, 0 < r ∧
+      (Matrix.of fun i j => g.toForm (b i) (b j)).det
+        = (r : ℂ) * (Matrix.of fun i j => g.toForm (c i) (c j)).det := by
+  refine ⟨(c.toMatrix b).det ^ 2, ?_, ?_⟩
+  · refine sq_pos_of_ne_zero ?_
+    have h1 : c.toMatrix b * b.toMatrix c = 1 := by
+      rw [Module.Basis.toMatrix_mul_toMatrix, Module.Basis.toMatrix_self]
+    exact left_ne_zero_of_mul_eq_one (by rw [← Matrix.det_mul, h1, Matrix.det_one])
+  · have hP : (Complex.ofRealHom.mapMatrix (c.toMatrix b)).det
+        = ((c.toMatrix b).det : ℂ) := by
+      rw [← RingHom.map_det, Complex.ofRealHom_eq_coe]
+    rw [gramMatrix_basisChange g b c, Matrix.det_mul, Matrix.det_mul, Matrix.det_transpose, hP]
+    push_cast
+    ring
+
+/-- KS's first allowability condition (KSTeX 126) for the real-coframe determinant: it is not
+real and negative. Direct from `volume_element_positive` at the canonical real basis. -/
+theorem detGramReal_not_neg_real (g : AllowableComplexMetric V) :
+    ¬ ((detGramReal g).im = 0 ∧ (detGramReal g).re < 0) := by
+  obtain ⟨h, -⟩ := volume_element_positive g (Module.finBasis ℝ V)
+  exact h
+
+/-- The real-coframe determinant admits a principal square root (positive real part): KSTeX 126,
+"we choose `(det g)^{1/2}` to have positive real part". From `volume_element_positive`. -/
+theorem detGramReal_exists_principal_sqrt (g : AllowableComplexMetric V) :
+    ∃ w : ℂ, w ^ 2 = detGramReal g ∧ 0 < w.re := by
+  obtain ⟨-, h⟩ := volume_element_positive g (Module.finBasis ℝ V)
+  exact h
+
+/-- `(det g)^{1/2}`: THE principal square root (positive real part) of the real-coframe
+determinant `detGramReal` — the normalizing factor of KS's `vol_g = (det g)^{1/2}|dx|` read
+against a real coframe (KS paper (3), KSTeX 126). The principal branch exists precisely because
+the radicand is a real-coframe determinant (`volume_element_positive`); it is unique
+(`detSqrtReal_eq_of_sq`). -/
+noncomputable def detSqrtReal (g : AllowableComplexMetric V) : ℂ :=
+  (detGramReal_exists_principal_sqrt g).choose
+
+/-- **`detSqrtReal` is a square root of the real-coframe determinant** (float-free tie). -/
+theorem detSqrtReal_sq (g : AllowableComplexMetric V) :
+    detSqrtReal g ^ 2 = detGramReal g :=
+  (detGramReal_exists_principal_sqrt g).choose_spec.1
+
+/-- **`detSqrtReal` is the principal branch**: its real part is positive (KSTeX 126). This is
+the branch condition that is provable on a real coframe and false for the finBasis-of-`ℂ⊗V`
+radicand of `detSqrt`. -/
+theorem detSqrtReal_re_pos (g : AllowableComplexMetric V) : 0 < (detSqrtReal g).re :=
+  (detGramReal_exists_principal_sqrt g).choose_spec.2
+
+theorem detSqrtReal_ne_zero (g : AllowableComplexMetric V) : detSqrtReal g ≠ 0 := by
+  intro h
+  have hre := detSqrtReal_re_pos g
+  rw [h] at hre
+  simp at hre
+
+/-- A complex number has at most one square root with positive real part (the two roots differ
+by a sign, which flips the real part). Pins `detSqrtReal` uniquely. -/
+theorem sq_eq_sq_re_pos_unique {w u : ℂ} (hw : 0 < w.re) (hu : 0 < u.re)
+    (h : w ^ 2 = u ^ 2) : w = u := by
+  have hfac : (w - u) * (w + u) = 0 := by linear_combination h
+  rcases mul_eq_zero.mp hfac with h1 | h1
+  · exact sub_eq_zero.mp h1
+  · have hwu : w = -u := eq_neg_of_add_eq_zero_left h1
+    rw [hwu, Complex.neg_re] at hw
+    linarith
+
+/-- Any square root of `detGramReal g` with positive real part is `detSqrtReal g`. -/
+theorem detSqrtReal_eq_of_sq (g : AllowableComplexMetric V) {u : ℂ} (hu : 0 < u.re)
+    (h : u ^ 2 = detGramReal g) : detSqrtReal g = u :=
+  sq_eq_sq_re_pos_unique (detSqrtReal_re_pos g) hu (by rw [detSqrtReal_sq g, h])
+
+/-- **Diagonal factorization of the real-coframe determinant.** For any diagonalization
+`(b, eig)` of `g`, `detGramReal g = r·∏ᵢ λᵢ` with `r > 0` real (the square of the
+change-of-basis determinant to the canonical basis). So `detSqrtReal g` squares to a positive
+real multiple of `∏ᵢ λᵢ` — KS's `(λ₁⋯λ_d)^{1/2}` up to the twisted-line ambiguity. -/
+theorem detGramReal_eq_prod_of_diag (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    ∃ r : ℝ, 0 < r ∧ detGramReal g = (r : ℂ) * ∏ i, eig i := by
+  obtain ⟨r, hr, heq⟩ := detGramReal_welldef g (Module.finBasis ℝ V) b
+  refine ⟨r, hr, ?_⟩
+  calc detGramReal g
+      = (r : ℂ) * (Matrix.of fun i j => g.toForm (b i) (b j)).det := heq
+    _ = (r : ℂ) * ∏ i, eig i := by
+        rw [gram_eq_diagonal_of_diag g hdiag, Matrix.det_diagonal]
+
+/-- **The vector↔covector eigenvalue translation (KSTeX 202).** If `w² = r·∏ᵢλᵢ` with `r > 0`
+real (as `detSqrtReal g` does, by `detGramReal_eq_prod_of_diag`), then for every blade-index set
+`S` the normalized vector-side blade value `w⁻¹·∏_{i∈S}λᵢ` is the positive multiple `r⁻¹` of
+KS's covector-side value at the complementary blade, `w·∏_{i∉S}λᵢ⁻¹` — the
+`(λ₁⋯λ_d)^{1/2}·∏_{i∈Sᶜ}λᵢ⁻¹` of KSTeX 202 evaluated on `e*_{Sᶜ}`. In particular the two real
+parts have the same sign (`normalized_blade_re_pos_iff`): positivity of the encoded vector-side
+form and of KS's covector-side form agree blade by blade. -/
+theorem normalized_blade_eq_covector {d : ℕ} {w : ℂ} {r : ℝ} {eig : Fin d → ℂ}
+    (hr : 0 < r) (hne : ∀ i, eig i ≠ 0) (hw : w ^ 2 = (r : ℂ) * ∏ i, eig i)
+    (S : Finset (Fin d)) :
+    w⁻¹ * ∏ i ∈ S, eig i = (r : ℂ)⁻¹ * (w * ∏ i ∈ Sᶜ, (eig i)⁻¹) := by
+  have hprodS : (∏ i ∈ S, eig i) ≠ 0 := Finset.prod_ne_zero_iff.mpr fun i _ => hne i
+  have hprodSc : (∏ i ∈ Sᶜ, eig i) ≠ 0 := Finset.prod_ne_zero_iff.mpr fun i _ => hne i
+  have hr' : (r : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr hr.ne'
+  have hw0 : w ≠ 0 := by
+    intro h
+    rw [h] at hw
+    rw [← Finset.prod_mul_prod_compl S eig] at hw
+    exact mul_ne_zero hr' (mul_ne_zero hprodS hprodSc) (by simpa using hw.symm)
+  have hsplit : (∏ i ∈ S, eig i) * ∏ i ∈ Sᶜ, eig i = ∏ i, eig i :=
+    Finset.prod_mul_prod_compl S eig
+  rw [Finset.prod_inv_distrib]
+  have key : (w⁻¹ * ∏ i ∈ S, eig i) * (w * ((r : ℂ) * ∏ i ∈ Sᶜ, eig i)) = w ^ 2 := by
+    rw [show (w⁻¹ * ∏ i ∈ S, eig i) * (w * ((r : ℂ) * ∏ i ∈ Sᶜ, eig i))
+        = (w⁻¹ * w) * ((r : ℂ) * ((∏ i ∈ S, eig i) * ∏ i ∈ Sᶜ, eig i)) from by ring,
+      inv_mul_cancel₀ hw0, one_mul, hsplit, hw]
+  have key2 : ((r : ℂ)⁻¹ * (w * (∏ i ∈ Sᶜ, eig i)⁻¹))
+      * (w * ((r : ℂ) * ∏ i ∈ Sᶜ, eig i)) = w ^ 2 := by
+    rw [show ((r : ℂ)⁻¹ * (w * (∏ i ∈ Sᶜ, eig i)⁻¹)) * (w * ((r : ℂ) * ∏ i ∈ Sᶜ, eig i))
+        = (((r : ℂ)⁻¹ * (r : ℂ)) * ((∏ i ∈ Sᶜ, eig i)⁻¹ * ∏ i ∈ Sᶜ, eig i)) * (w * w)
+        from by ring,
+      inv_mul_cancel₀ hr', inv_mul_cancel₀ hprodSc, one_mul, one_mul, ← pow_two]
+  exact mul_right_cancel₀ (mul_ne_zero hw0 (mul_ne_zero hr' hprodSc))
+    (key.trans key2.symm)
+
+/-- Blade-wise sign agreement: the encoded vector-side value and KS's covector-side value have
+positive real part together (corollary of `normalized_blade_eq_covector`). -/
+theorem normalized_blade_re_pos_iff {d : ℕ} {w : ℂ} {r : ℝ} {eig : Fin d → ℂ}
+    (hr : 0 < r) (hne : ∀ i, eig i ≠ 0) (hw : w ^ 2 = (r : ℂ) * ∏ i, eig i)
+    (S : Finset (Fin d)) :
+    0 < (w⁻¹ * ∏ i ∈ S, eig i).re ↔ 0 < (w * ∏ i ∈ Sᶜ, (eig i)⁻¹).re := by
+  rw [normalized_blade_eq_covector hr hne hw S, ← Complex.ofReal_inv, Complex.mul_re,
+    Complex.ofReal_re, Complex.ofReal_im, zero_mul, sub_zero]
+  constructor
+  · intro h
+    have hmul := mul_pos hr h
+    rwa [← mul_assoc, mul_inv_cancel₀ hr.ne', one_mul] at hmul
+  · exact fun h => mul_pos (inv_pos.mpr hr) h
+
+/-- **`detSqrtReal`-level translation (the proved faithfulness tie for `IsAllowableHodge`).**
+For any diagonalization `(b, eig)` of `g`, the encoded blade value
+`(detSqrtReal g)⁻¹·∏_{i∈S}λᵢ` is a positive real multiple of KS's covector value
+`(det g)^{1/2}·∏_{i∈Sᶜ}λᵢ⁻¹` (KSTeX 202). -/
+theorem detSqrtReal_blade_eq_covector (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ} (hne : ∀ i, eig i ≠ 0)
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (S : Finset (Fin (Module.finrank ℝ V))) :
+    ∃ r : ℝ, 0 < r ∧
+      (detSqrtReal g)⁻¹ * ∏ i ∈ S, eig i
+        = (r : ℂ)⁻¹ * (detSqrtReal g * ∏ i ∈ Sᶜ, (eig i)⁻¹) := by
+  obtain ⟨r, hr, heq⟩ := detGramReal_eq_prod_of_diag g hdiag
+  exact ⟨r, hr, normalized_blade_eq_covector hr hne (by rw [detSqrtReal_sq g, heq]) S⟩
+
 /-! ### Definition 2.1 of [KS] (Hodge-star positivity)
 
-KS paper Definition 2.1 (KSTeX 140–142): the complex metric `g` on the real space `V` is allowable
-iff, for every degree `p`, the real part of the quadratic form `α ↦ α ∧ ⋆_g α` on the real exterior
-power `⋀ᵖ(V*)` is positive-definite. Trivializing the top line by `vol_g`, `star_g_wedge` at
-`γ = β = α` gives `α ∧ ⋆_g α = g_p^ℂ(α, α) · vol_g`, so `f_p(α) = g_p^ℂ(α, α)` (the two `detSqrt⁻¹`
-factors of `⋆_g` and `vol_g` cancel) and the condition is `∀ p, Re(g_p^ℂ(α, α)) > 0` on real
-`p`-forms — detSqrt-free. -/
+KS paper Definition 2.1 (KSTeX 140–142): the complex metric `g` on the real space `V` is
+allowable iff, for every degree `p`, the real part of the quadratic form `α ↦ α ∧ ⋆_g α` on the
+real exterior power `⋀ᵖ(V*)`, valued in the twisted line `|⋀ᵈ(V*)|_ℂ`, is positive-definite.
+The positivity is read against the REAL positive volume ray of the twisted line (KSTeX 130–131:
+"an element of the real part of the line is positive if it is a positive volume-element"), NOT
+against `vol_g`; on a diagonalizing basis the blade eigenvalue is
+`(λ₁⋯λ_d)^{1/2}·∏_{i∈S}λᵢ⁻¹` (KSTeX 202) — the `(det g)^{1/2}` of `vol_g` stays in the
+eigenvalue. Two conventions translate KS's form to the vector-side machinery of this file:
+
+* **orientation of the exterior power**: KS's form lives on `p`-covectors with the dual metric
+  (blade values `∏_{i∈S}λᵢ⁻¹`), while `formC`/`realExtPow` live on `p`-vectors (blade values
+  `∏_{i∈S}λᵢ`); the two sides are mirrored by `S ↔ Sᶜ`;
+* **normalization**: the `(det g)^{1/2}` is the principal square root of the real-coframe Gram
+  determinant (`detGramReal`/`detSqrtReal` above), well-defined up to the positive real
+  twisted-line ambiguity (`detGramReal_welldef`).
+
+The encoded form is therefore `α ↦ (detSqrtReal g)⁻¹ · g_p^ℂ(α, α)` on real `p`-vectors, whose
+blade values are positive-real multiples of KS's covector values at the complementary blade —
+proved, not asserted, in `detSqrtReal_blade_eq_covector`/`normalized_blade_re_pos_iff`. -/
 
 /-- The `ιMulti` alternating map of `V_ℂ`, with scalars restricted from `ℂ` to `ℝ`. (Mathlib ships
 `MultilinearMap.restrictScalars` but not the alternating-map version; the alternating property is
@@ -1065,16 +1322,20 @@ noncomputable def realExtPow (p : ℕ) : ⋀[ℝ]^p V →ₗ[ℝ] ⋀[ℂ]^p (�
   exteriorPower.alternatingMapLinearEquiv
     ((ιMultiRestrict (V := V) p).compLinearMap ((TensorProduct.mk ℝ ℂ V) 1))
 
-/-- **Definition 2.1 of [KS]** (Hodge-star positivity; KSTeX 140–142). `g` is allowable iff for all
-degrees `p`, the real part of the quadratic form `α ↦ α ∧ ⋆_g α` on the real exterior power `⋀ᵖ(V*)`
-is positive-definite. By `star_g_wedge` (at `γ = β = α`), `α ∧ ⋆_g α = g_p^ℂ(α, α) · vol_g`, so the
-condition reduces to `∀ p, ∀ α ≠ 0, 0 < Re(g_p^ℂ(α, α))` on real `p`-forms (detSqrt-free).
+/-- **Definition 2.1 of [KS]** (Hodge-star positivity; KSTeX 140–142). `g` is allowable iff for
+all degrees `p`, the real part of the quadratic form `α ↦ α ∧ ⋆_g α` on `⋀ᵖ(V*)`, read against
+the real positive volume ray of the twisted line `|⋀ᵈ(V*)|_ℂ` (KSTeX 130–131), is
+positive-definite. Encoded on real `p`-vectors via `realExtPow`, with the real-coframe principal
+normalization `(detSqrtReal g)⁻¹` carrying the `(det g)^{1/2}` phase that reading against the
+real volume ray retains: the blade values of `(detSqrtReal g)⁻¹ · g_p^ℂ(·,·)` are positive-real
+multiples of KS's `(λ₁⋯λ_d)^{1/2}·∏λᵢ⁻¹` (KSTeX 202) at the complementary blade — the proved
+translation `detSqrtReal_blade_eq_covector` (see the section header for the two conventions).
 
-This states Definition 2.1 faithfully; its equivalence with the working (angle-condition) definition
-is KS paper Theorem 2.2 (`ComplexMetrics/Equivalence.lean`), deferred pending real simultaneous
-diagonalization. -/
+Its equivalence with the working (angle-condition) definition is KS paper Theorem 2.2
+(`ComplexMetrics/Equivalence.lean`), deferred pending real simultaneous diagonalization. -/
 def IsAllowableHodge (g : AllowableComplexMetric V) : Prop :=
-  ∀ (p : ℕ) (α : ⋀[ℝ]^p V), α ≠ 0 → 0 < (formC g p (realExtPow p α) (realExtPow p α)).re
+  ∀ (p : ℕ) (α : ⋀[ℝ]^p V), α ≠ 0 →
+    0 < ((detSqrtReal g)⁻¹ * formC g p (realExtPow p α) (realExtPow p α)).re
 
 end Complexification
 
