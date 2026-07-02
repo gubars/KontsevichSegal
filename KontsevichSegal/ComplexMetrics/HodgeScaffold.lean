@@ -1,6 +1,8 @@
-/- Scaffolding for the Hodge star operator (FOUND:HODGE-STAR — scaffolding-only
-increment; the operator ⋆ itself, `star_wedge`, `star_star`, Definition 2.1, and the
-equivalence with Theorem 2.2 are deferred to a later increment).
+/- The Hodge star operator and KS Definition 2.1 (FOUND:HODGE-STAR — built across
+increments: the induced form `g_p`, the operator ⋆, `star_wedge`, `star_star`, the
+normalization, Definition 2.1 (`IsAllowableHodge`) on the bare `ComplexMetric` type, and
+the forward direction of Theorem 2.2; the reverse direction and the biconditional live in
+`ComplexMetrics/Equivalence.lean`).
 
 Mathlib ships no Hodge star, no induced form on exterior powers, and no block-level
 graded commutativity. This file builds the reusable (P) foundation that the Hodge star
@@ -12,8 +14,9 @@ will sit on:
   (`inducedForm_apply_ιMulti`), the classical induced metric. This is the `g_p` of
   KS paper Definition 2.1 (the positive-definiteness of `Re(α ∧ ⋆α)` builds on it).
 
-* the complexification `Vc V = ℂ ⊗[ℝ] V` and the ℂ-bilinear extension `gc` of an
-  `AllowableComplexMetric` `g` (KS paper Section 2): the carrier on which `⋆` will live,
+* the complexification `Vc V = ℂ ⊗[ℝ] V` and the ℂ-bilinear extension `gc` of a
+  `ComplexMetric` `g` (KS paper Section 2; the bare type carries symmetry and KSTeX 126's
+  determinant condition, NOT the angle condition): the carrier on which `⋆` lives,
   since `⋆α` is a complex (d−p)-form when the metric is ℂ-valued.
 
 Construction strategy (advisor three-strategy technique): the induced form is built by
@@ -802,8 +805,15 @@ end Generic
 KS state Definition 2.1 with the metric as a ℂ-valued quadratic form on the REAL space
 `V`, and the Hodge star `⋆α` is a complex `(d−p)`-form (twisted, since the metric is
 ℂ-valued). The carrier for `⋆` is therefore the complexification `V_ℂ = ℂ ⊗_ℝ V` with the
-ℂ-bilinear extension `g_ℂ` of `g`. The project's `AllowableComplexMetric` carries only the
-ℝ-bilinear ℂ-valued `toForm` on real `V`; this section builds `V_ℂ` and `g_ℂ` on top of it.
+ℂ-bilinear extension `g_ℂ` of `g`.
+
+The metric itself enters as the BARE type `ComplexMetric` (KS paper Section 2, KSTeX
+118/126): a symmetric ℝ-bilinear ℂ-valued form whose real-coframe Gram determinant avoids
+the closed negative real axis — KS's requirement that makes the principal branch of
+`(det g)^{1/2}` (and hence the star and Definition 2.1) well-defined. The angle condition is
+NOT assumed on it, so KS Theorem 2.2's reverse direction (Definition 2.1 ⇒ angle condition,
+`ComplexMetrics/Equivalence.lean`) is non-vacuous. The working (angle-condition) definition
+`AllowableComplexMetric` projects onto it via `AllowableComplexMetric.toComplexMetric`.
 -/
 
 section Complexification
@@ -814,25 +824,105 @@ variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
 Hodge star of a complex metric lives (since `⋆α` is a complex `(d−p)`-form). -/
 abbrev Complexified (V : Type*) [AddCommGroup V] [Module ℝ V] := ℂ ⊗[ℝ] V
 
+/-- A **complex metric** on a finite-dimensional real vector space `V` — the bare domain on
+which KS Definition 2.1 is stated (KS paper Section 2, KSTeX 118/126): a symmetric ℝ-bilinear
+ℂ-valued form whose Gram determinant in a real coframe avoids the closed negative real axis
+(`0 < re ∨ im ≠ 0`; in particular it is nonzero, so the form is nondegenerate). This is KS's
+"we require that det g, which is invariantly defined up to multiplication by a positive real
+number, is not real and negative" — exactly the condition under which the principal square
+root `(det g)^{1/2}` with positive real part exists (`detGramReal_exists_principal_sqrt`),
+which Definition 2.1's normalization consumes. The condition is stated at the canonical real
+basis `Module.finBasis ℝ V`; a real change of basis multiplies the determinant by a positive
+real square (`detGramReal_welldef`), so the condition is basis-independent.
+
+The angle condition of Theorem 2.2 is NOT a field: `AllowableComplexMetric` (the working
+definition) projects onto this type via `AllowableComplexMetric.toComplexMetric`, and the
+equivalence of the two conditions on this type is KS Theorem 2.2
+(`defn_2_1_equiv_angle_condition`, `ComplexMetrics/Equivalence.lean`). -/
+structure ComplexMetric (V : Type*) [AddCommGroup V] [Module ℝ V]
+    [FiniteDimensional ℝ V] where
+  /-- The underlying ℝ-bilinear map `V × V → ℂ`. -/
+  toForm : V →ₗ[ℝ] V →ₗ[ℝ] ℂ
+  /-- Symmetry: `g(v, w) = g(w, v)`. -/
+  symmetric' : ∀ v w, toForm v w = toForm w v
+  /-- KS's determinant condition (KSTeX 126): the Gram determinant in the canonical real
+  coframe is not on the closed negative real axis (equivalently: nonzero and not
+  real-and-negative). -/
+  det_not_nonpos_real :
+    0 < (Matrix.of fun i j =>
+          toForm (Module.finBasis ℝ V i) (Module.finBasis ℝ V j)).det.re ∨
+      (Matrix.of fun i j =>
+          toForm (Module.finBasis ℝ V i) (Module.finBasis ℝ V j)).det.im ≠ 0
+
+/-- The determinant of the Gram matrix of `g` in the canonical REAL basis `Module.finBasis ℝ V`:
+KS's `det g` computed in a real coframe (KSTeX 126). A real change of basis multiplies it by a
+positive real square (`detGramReal_welldef`) — the twisted-line ambiguity — so "off the
+non-positive real axis" and the principal square root are well-defined for it. -/
+noncomputable def detGramReal (g : ComplexMetric V) : ℂ :=
+  (Matrix.of fun i j =>
+    g.toForm (Module.finBasis ℝ V i) (Module.finBasis ℝ V j)).det
+
+/-- The `det_not_nonpos_real` field of a complex metric, read on `detGramReal`. -/
+theorem detGramReal_not_nonpos_real (g : ComplexMetric V) :
+    0 < (detGramReal g).re ∨ (detGramReal g).im ≠ 0 :=
+  g.det_not_nonpos_real
+
+/-- The real-coframe Gram determinant of a complex metric is nonzero (`0` lies on the closed
+negative real axis, which the `det_not_nonpos_real` field excludes): the nondegeneracy that
+`gc_nondegenerate` and the whole Hodge-star stack consume. -/
+theorem detGramReal_ne_zero (g : ComplexMetric V) : detGramReal g ≠ 0 := by
+  intro h
+  rcases detGramReal_not_nonpos_real g with hre | him
+  · rw [h] at hre; simp at hre
+  · rw [h] at him; simp at him
+
+/-- Every allowable complex metric (the working, angle-condition definition) is a complex
+metric in the bare sense: its real-coframe Gram determinant avoids the closed negative real
+axis, by `volume_element_positive` (the determinant is not real-and-negative and has a square
+root with positive real part, so it is also nonzero). The committed forward direction of
+Theorem 2.2 (`isAllowableHodge`) is stated along this projection. -/
+noncomputable def _root_.AllowableComplexMetric.toComplexMetric
+    (g : AllowableComplexMetric V) : ComplexMetric V where
+  toForm := g.toForm
+  symmetric' := g.symmetric'
+  det_not_nonpos_real := by
+    by_contra hcon
+    push_neg at hcon
+    obtain ⟨hre, him⟩ := hcon
+    rcases lt_or_eq_of_le hre with hlt | heq
+    · exact (volume_element_positive g (Module.finBasis ℝ V)).1 ⟨him, hlt⟩
+    · obtain ⟨w, hw2, hwre⟩ := (volume_element_positive g (Module.finBasis ℝ V)).2
+      have hdet0 : (Matrix.of fun i j =>
+          g.toForm (Module.finBasis ℝ V i) (Module.finBasis ℝ V j)).det = 0 :=
+        Complex.ext (by simpa using heq) (by simpa using him)
+      rw [hdet0, pow_eq_zero_iff (by norm_num : 2 ≠ 0)] at hw2
+      rw [hw2] at hwre
+      simp at hwre
+
+/-- Float-free tie of the projection: `toComplexMetric` does not change the underlying form. -/
+@[simp] theorem _root_.AllowableComplexMetric.toComplexMetric_toForm
+    (g : AllowableComplexMetric V) : g.toComplexMetric.toForm = g.toForm :=
+  rfl
+
 /-- Real part of the complex-valued form `g`, as a real bilinear form on `V`. -/
-noncomputable def reForm (g : AllowableComplexMetric V) : LinearMap.BilinForm ℝ V :=
+noncomputable def reForm (g : ComplexMetric V) : LinearMap.BilinForm ℝ V :=
   g.toForm.compr₂ Complex.reLm
 
 /-- Imaginary part of the complex-valued form `g`, as a real bilinear form on `V`. -/
-noncomputable def imForm (g : AllowableComplexMetric V) : LinearMap.BilinForm ℝ V :=
+noncomputable def imForm (g : ComplexMetric V) : LinearMap.BilinForm ℝ V :=
   g.toForm.compr₂ Complex.imLm
 
-/-- The ℂ-bilinear extension `g_ℂ` of an allowable complex metric `g` to the complexification
+/-- The ℂ-bilinear extension `g_ℂ` of a complex metric `g` to the complexification
 `V_ℂ = ℂ ⊗_ℝ V`. Built as `(Re g)_ℂ + i·(Im g)_ℂ`, the base changes of the real and imaginary
 parts of `g`. On `1 ⊗ v, 1 ⊗ w` it restricts to `g v w` (`gc_apply_tmul`), the float-free
 tie to `g`. -/
-noncomputable def gc (g : AllowableComplexMetric V) :
+noncomputable def gc (g : ComplexMetric V) :
     LinearMap.BilinForm ℂ (ℂ ⊗[ℝ] V) :=
   (reForm g).baseChange ℂ + Complex.I • (imForm g).baseChange ℂ
 
 /-- **Float-free tie of `g_ℂ` to `g`.** The ℂ-bilinear extension restricts to the original
 ℂ-valued form on the (real) generators `1 ⊗ v`. -/
-theorem gc_apply_tmul (g : AllowableComplexMetric V) (v w : V) :
+theorem gc_apply_tmul (g : ComplexMetric V) (v w : V) :
     gc g ((1 : ℂ) ⊗ₜ[ℝ] v) ((1 : ℂ) ⊗ₜ[ℝ] w) = g.toForm v w := by
   simp only [gc, reForm, imForm, LinearMap.add_apply, LinearMap.smul_apply,
     LinearMap.BilinForm.baseChange_tmul, LinearMap.compr₂_apply, Complex.reLm_coe,
@@ -840,7 +930,7 @@ theorem gc_apply_tmul (g : AllowableComplexMetric V) (v w : V) :
   linear_combination Complex.re_add_im (g.toForm v w)
 
 /-- **`g_ℂ` is symmetric**, inherited from `g`. -/
-theorem gc_isSymm (g : AllowableComplexMetric V) : (gc g).IsSymm := by
+theorem gc_isSymm (g : ComplexMetric V) : (gc g).IsSymm := by
   classical
   rw [LinearMap.BilinForm.isSymm_iff_basis ((Module.finBasis ℝ V).baseChange ℂ)]
   intro i j
@@ -849,64 +939,61 @@ theorem gc_isSymm (g : AllowableComplexMetric V) : (gc g).IsSymm := by
 
 /-- **`g_ℂ` is nondegenerate** (the load-bearing nondegeneracy). Its Gram matrix in the
 base-change basis `{1 ⊗ eᵢ}` is `g`'s complex Gram matrix `[g(eᵢ, eⱼ)]` (via `gc_apply_tmul`),
-whose determinant is nonzero because `volume_element_positive` exhibits a square root with
-positive real part. -/
-theorem gc_nondegenerate (g : AllowableComplexMetric V) : (gc g).Nondegenerate := by
+whose determinant is nonzero because the `det_not_nonpos_real` field keeps it off the closed
+negative real axis (KSTeX 126, `detGramReal_ne_zero`). -/
+theorem gc_nondegenerate (g : ComplexMetric V) : (gc g).Nondegenerate := by
   classical
-  set b := Module.finBasis ℝ V with hb
-  rw [LinearMap.BilinForm.nondegenerate_iff_det_ne_zero (b.baseChange ℂ)]
-  have hM : LinearMap.BilinForm.toMatrix (b.baseChange ℂ) (gc g)
-      = Matrix.of (fun i j => g.toForm (b i) (b j)) := by
+  rw [LinearMap.BilinForm.nondegenerate_iff_det_ne_zero ((Module.finBasis ℝ V).baseChange ℂ)]
+  have hM : LinearMap.BilinForm.toMatrix ((Module.finBasis ℝ V).baseChange ℂ) (gc g)
+      = Matrix.of (fun i j => g.toForm (Module.finBasis ℝ V i) (Module.finBasis ℝ V j)) := by
     ext i j
     simp only [LinearMap.BilinForm.toMatrix_apply, Module.Basis.baseChange_apply, gc_apply_tmul,
       Matrix.of_apply]
   rw [hM]
-  obtain ⟨w, hw, hwre⟩ := (volume_element_positive g b).2
-  rw [← hw]
-  exact pow_ne_zero 2 (fun h => by rw [h] at hwre; simp at hwre)
+  exact detGramReal_ne_zero g
 
 /-- The **complex induced form** `g_p^ℂ` on `⋀ᵖ(V_ℂ)`: the induced form (`inducedForm`) of the
 ℂ-bilinear extension `g_ℂ`. This is the object on which KS paper Definition 2.1 places its
 positivity condition (the quadratic form `α ↦ α ∧ ⋆α` builds on it). -/
-noncomputable def formC (g : AllowableComplexMetric V) (p : ℕ) :
+noncomputable def formC (g : ComplexMetric V) (p : ℕ) :
     LinearMap.BilinForm ℂ (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) :=
   inducedForm (gc g) (gc_nondegenerate g) p
 
 /-- Gram-determinant tie for the complex induced form (corollary of `inducedForm_apply_ιMulti`
 at `g_ℂ`), pinning `formC` to `g_ℂ`. -/
-theorem formC_apply_ιMulti (g : AllowableComplexMetric V) (p : ℕ)
+theorem formC_apply_ιMulti (g : ComplexMetric V) (p : ℕ)
     (v w : Fin p → ℂ ⊗[ℝ] V) :
     formC g p (ιMulti ℂ p v) (ιMulti ℂ p w) = (Matrix.of fun i j => gc g (v j) (w i)).det :=
   inducedForm_apply_ιMulti (gc g) (gc_nondegenerate g) p v w
 
 /-- The complex induced form is nondegenerate (corollary of `inducedForm_nondegenerate`). -/
-theorem formC_nondegenerate (g : AllowableComplexMetric V) (p : ℕ) :
+theorem formC_nondegenerate (g : ComplexMetric V) (p : ℕ) :
     (formC g p).Nondegenerate :=
   inducedForm_nondegenerate (gc g) (gc_nondegenerate g) p
 
 /-- The complex induced form is symmetric (corollary of `inducedForm_isSymm`, using `gc_isSymm`). -/
-theorem formC_isSymm (g : AllowableComplexMetric V) (p : ℕ) : (formC g p).IsSymm :=
+theorem formC_isSymm (g : ComplexMetric V) (p : ℕ) : (formC g p).IsSymm :=
   inducedForm_isSymm (gc g) (gc_nondegenerate g) (gc_isSymm g) p
 
-/-- **The Hodge star `⋆` of an allowable complex metric**, at degree `p` (`q = d − p`,
+/-- **The Hodge star `⋆` of a complex metric**, at degree `p` (`q = d − p`,
 `d = finrank ℂ (V_ℂ)`), acting on complex `p`-forms `⋀ᵖ(V_ℂ)`. This is the `⋆_g` of KS paper
 Definition 2.1: `⋆β` is the unique complex `(d−p)`-form with `γ ∧ ⋆β = g_p^ℂ(γ,β) · vol` for
 all `γ`. -/
-noncomputable def star (g : AllowableComplexMetric V) (p q : ℕ)
+noncomputable def star (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
     (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) →ₗ[ℂ] (⋀[ℂ]^q (ℂ ⊗[ℝ] V)) :=
   starOp (gc g) (gc_nondegenerate g) p q hpq
 
 /-- **The defining equation of `⋆_g`** (corollary of `starOp_wedge` at `g_ℂ`): the float-free
 pin `γ ∧ ⋆β = g_p^ℂ(γ,β) · vol`, tying `⋆_g` to `(formC, vol)`. -/
-theorem star_wedge (g : AllowableComplexMetric V) (p q : ℕ)
+theorem star_wedge (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (γ β : ⋀[ℂ]^p (ℂ ⊗[ℝ] V)) :
     wedgeTop hpq γ (star g p q hpq β) = formC g p γ β • volForm :=
   starOp_wedge (gc g) (gc_nondegenerate g) p q hpq γ β
 
 /-- **`⋆_g` is the unique** complex `(d−p)`-form with the defining property (corollary of
 `starOp_unique`). -/
-theorem star_unique (g : AllowableComplexMetric V) (p q : ℕ)
+theorem star_unique (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (β : ⋀[ℂ]^p (ℂ ⊗[ℝ] V))
     (x : ⋀[ℂ]^q (ℂ ⊗[ℝ] V))
     (hx : ∀ γ, wedgeTop hpq γ x = formC g p γ β • volForm) :
@@ -915,17 +1002,17 @@ theorem star_unique (g : AllowableComplexMetric V) (p q : ℕ)
 
 /-- **`⋆_g` is a linear equivalence** `⋀ᵖ(V_ℂ) ≃ₗ ⋀^{d−p}(V_ℂ)` (corollary of `starEquiv`,
 using nondegeneracy and symmetry of `g_ℂ`). -/
-noncomputable def starLinearEquiv (g : AllowableComplexMetric V) (p q : ℕ)
+noncomputable def starLinearEquiv (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
     (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) ≃ₗ[ℂ] (⋀[ℂ]^q (ℂ ⊗[ℝ] V)) :=
   starEquiv (gc g) (gc_nondegenerate g) p q hpq
 
-/-- **`⋆⋆ = (-1)^{p(d−p)} · g_d^ℂ(vol, vol) · id` for an allowable complex metric** (corollary of
+/-- **`⋆⋆ = (-1)^{p(d−p)} · g_d^ℂ(vol, vol) · id` for a complex metric** (corollary of
 `starOp_starOp` at `g_ℂ`). KS paper Definition 2.1: the Hodge star squares to `(-1)^{p(d−p)}` times
 the top-degree complex induced form of the volume form (the magnitude `g_d^ℂ(vol, vol)` is the
 unnormalized `det g_ℂ` factor; with the metric-normalized `vol_g` it would be `±1`). Note
 `p·q = p·(d−p)`, matching KS's exponent `(-1)^{p(d−p)}`. -/
-theorem star_star (g : AllowableComplexMetric V) (p q : ℕ)
+theorem star_star (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (hqp : q + p = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
     (star g q p hqp).comp (star g p q hpq)
       = (formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm)
@@ -950,7 +1037,7 @@ arbitrary square root, and every result below (`formC_vol_g_self`, `star_g_star_
 one-dimensional and `formC g d` is nondegenerate with `volForm ≠ 0`, the single Gram entry is
 nonzero. This is `det g_ℂ` (up to the finBasis change-of-basis square), the radicand of
 `detSqrt`. -/
-theorem formC_volForm_self_ne_zero (g : AllowableComplexMetric V) :
+theorem formC_volForm_self_ne_zero (g : ComplexMetric V) :
     formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm ≠ 0 := by
   intro h
   refine volForm_ne_zero (K := ℂ) (W := ℂ ⊗[ℝ] V) ?_
@@ -966,14 +1053,14 @@ the polar formula `√‖z‖ · exp(i·arg z / 2)`, so `detSqrt_sq` holds uncon
 arbitrary branch — the finBasis `volForm` is not a real coframe, so the positive-real-part branch of
 KSTeX line 126 is unavailable; it is also unused, every downstream result being
 branch-invariant.) -/
-noncomputable def detSqrt (g : AllowableComplexMetric V) : ℂ :=
+noncomputable def detSqrt (g : ComplexMetric V) : ℂ :=
   (Real.sqrt ‖formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm‖ : ℂ) *
     Complex.exp ((↑(Complex.arg
       (formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm) / 2) : ℂ) * Complex.I)
 
 /-- **`detSqrt` is a square root** of the top induced form (float-free tie): `(detSqrt g)² =
 g_d^ℂ(vol, vol)`. -/
-theorem detSqrt_sq (g : AllowableComplexMetric V) :
+theorem detSqrt_sq (g : ComplexMetric V) :
     (detSqrt g) ^ 2 = formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm := by
   set z := formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) volForm volForm with hz
   rw [detSqrt, mul_pow, ← Complex.ofReal_pow, Real.sq_sqrt (norm_nonneg z), pow_two,
@@ -983,7 +1070,7 @@ theorem detSqrt_sq (g : AllowableComplexMetric V) :
   exact Complex.norm_mul_exp_arg_mul_I z
 
 /-- `detSqrt g ≠ 0` (its square `g_d^ℂ(vol, vol)` is nonzero). -/
-theorem detSqrt_ne_zero (g : AllowableComplexMetric V) : detSqrt g ≠ 0 := by
+theorem detSqrt_ne_zero (g : ComplexMetric V) : detSqrt g ≠ 0 := by
   intro h
   apply formC_volForm_self_ne_zero g
   rw [← detSqrt_sq g, h]; ring
@@ -991,22 +1078,22 @@ theorem detSqrt_ne_zero (g : AllowableComplexMetric V) : detSqrt g ≠ 0 := by
 /-- The **metric volume element** `vol_g = (det g)^{-1/2} · |dx|` (KS paper (3)): the coordinate
 volume `volForm` rescaled by `detSqrt⁻¹`, normalized so `g_d^ℂ(vol_g, vol_g) = 1`
 (`formC_vol_g_self`). This is the `*1` of KS paper Definition 2.1 against which `⋆_g` wedges. -/
-noncomputable def vol_g (g : AllowableComplexMetric V) :
+noncomputable def vol_g (g : ComplexMetric V) :
     ⋀[ℂ]^(Module.finrank ℂ (ℂ ⊗[ℝ] V)) (ℂ ⊗[ℝ] V) :=
   (detSqrt g)⁻¹ • volForm
 
 /-- Float-free tie of the metric volume to the coordinate volume. -/
-theorem vol_g_eq (g : AllowableComplexMetric V) :
+theorem vol_g_eq (g : ComplexMetric V) :
     vol_g g = (detSqrt g)⁻¹ • volForm := rfl
 
 /-- The metric volume is nonzero. -/
-theorem vol_g_ne_zero (g : AllowableComplexMetric V) : vol_g g ≠ 0 :=
+theorem vol_g_ne_zero (g : ComplexMetric V) : vol_g g ≠ 0 :=
   smul_ne_zero (inv_ne_zero (detSqrt_ne_zero g)) volForm_ne_zero
 
 /-- **The metric volume is unit-normalized**: `g_d^ℂ(vol_g, vol_g) = 1` (KS paper (3): `vol_g =
 (det g)^{-1/2}|dx|` has unit norm). The two `detSqrt⁻¹` factors cancel `(detSqrt)² = g_d(vol, vol)`,
 so this is independent of the branch of `detSqrt`. -/
-theorem formC_vol_g_self (g : AllowableComplexMetric V) :
+theorem formC_vol_g_self (g : ComplexMetric V) :
     formC g (Module.finrank ℂ (ℂ ⊗[ℝ] V)) (vol_g g) (vol_g g) = 1 := by
   have hne := detSqrt_ne_zero g
   simp only [vol_g, map_smul, LinearMap.smul_apply, smul_eq_mul]
@@ -1014,7 +1101,7 @@ theorem formC_vol_g_self (g : AllowableComplexMetric V) :
 
 /-- **The normalized Hodge star `⋆_g`**: the committed `⋆` rescaled by `detSqrt⁻¹`, so it wedges
 against the metric volume `vol_g` (KS paper Definition 2.1). -/
-noncomputable def star_g (g : AllowableComplexMetric V) (p q : ℕ)
+noncomputable def star_g (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
     (⋀[ℂ]^p (ℂ ⊗[ℝ] V)) →ₗ[ℂ] (⋀[ℂ]^q (ℂ ⊗[ℝ] V)) :=
   (detSqrt g)⁻¹ • star g p q hpq
@@ -1022,7 +1109,7 @@ noncomputable def star_g (g : AllowableComplexMetric V) (p q : ℕ)
 /-- **The defining equation of the normalized Hodge star**: `γ ∧ ⋆_g β = g_p^ℂ(γ, β) · vol_g`, now
 against the metric volume `vol_g` (KS paper Definition 2.1, the form `α ↦ α ∧ ⋆α`). The `detSqrt⁻¹`
 rescaling of `⋆` lands exactly on `vol_g = detSqrt⁻¹ • volForm`. -/
-theorem star_g_wedge (g : AllowableComplexMetric V) (p q : ℕ)
+theorem star_g_wedge (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (γ β : ⋀[ℂ]^p (ℂ ⊗[ℝ] V)) :
     wedgeTop hpq γ (star_g g p q hpq β) = formC g p γ β • vol_g g := by
   simp only [star_g, LinearMap.smul_apply, map_smul]
@@ -1031,7 +1118,7 @@ theorem star_g_wedge (g : AllowableComplexMetric V) (p q : ℕ)
 /-- **`⋆⋆ = (-1)^{p(d−p)} · id` (normalized, clean).** With the metric volume the `det g` magnitude
 of `star_star` cancels against the two `detSqrt⁻¹` rescalings (`(detSqrt)² = g_d(vol, vol)`), giving
 KS paper Definition 2.1's `⋆⋆ = (-1)^{p(d−p)}·id`. Independent of the branch of `detSqrt`. -/
-theorem star_g_star_g (g : AllowableComplexMetric V) (p q : ℕ)
+theorem star_g_star_g (g : ComplexMetric V) (p q : ℕ)
     (hpq : p + q = Module.finrank ℂ (ℂ ⊗[ℝ] V)) (hqp : q + p = Module.finrank ℂ (ℂ ⊗[ℝ] V)) :
     (star_g g q p hqp).comp (star_g g p q hpq) = (-1 : ℂ) ^ (p * q) • LinearMap.id := by
   have hne := detSqrt_ne_zero g
@@ -1057,7 +1144,7 @@ principal branch — fine for the operator, unusable for Definition 2.1's positi
 /-- Polarization of the diagonal form (export of the computation inside
 `volume_element_positive`): a diagonalization `g(v,v) = ∑ᵢ λᵢ·(yᵢ v)²` of the quadratic values
 determines the full bilinear form, `g(v,w) = ∑ᵢ λᵢ·(yᵢ v)·(yᵢ w)`. -/
-theorem toForm_eq_sum_of_diag (g : AllowableComplexMetric V)
+theorem toForm_eq_sum_of_diag (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ}
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) (v w : V) :
@@ -1075,7 +1162,7 @@ theorem toForm_eq_sum_of_diag (g : AllowableComplexMetric V)
 
 /-- On a diagonalizing basis the Gram matrix of `g` is `Matrix.diagonal eig`: the diagonalizing
 basis is `g`-orthogonal with the `λᵢ` on the diagonal. -/
-theorem gram_eq_diagonal_of_diag (g : AllowableComplexMetric V)
+theorem gram_eq_diagonal_of_diag (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ}
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
@@ -1093,7 +1180,7 @@ theorem gram_eq_diagonal_of_diag (g : AllowableComplexMetric V)
 /-- **Change of real basis for the Gram matrix**: `M_b = Pᵀ·(M_c·P)` with `P` the (complexified)
 real change-of-basis matrix. The general-basis version of the computation inside
 `volume_element_positive`. -/
-theorem gramMatrix_basisChange (g : AllowableComplexMetric V)
+theorem gramMatrix_basisChange (g : ComplexMetric V)
     (b c : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V) :
     Matrix.of (fun i j => g.toForm (b i) (b j))
       = (Complex.ofRealHom.mapMatrix (c.toMatrix b)).transpose
@@ -1121,18 +1208,10 @@ theorem gramMatrix_basisChange (g : AllowableComplexMetric V)
     Matrix.of_apply, Module.Basis.toMatrix_apply, Complex.ofRealHom_eq_coe]
   ring
 
-/-- The determinant of the Gram matrix of `g` in the canonical REAL basis `Module.finBasis ℝ V`:
-KS's `det g` computed in a real coframe (KSTeX 126). A real change of basis multiplies it by a
-positive real square (`detGramReal_welldef`) — the twisted-line ambiguity — so "off the
-non-positive real axis" and the principal square root are well-defined for it. -/
-noncomputable def detGramReal (g : AllowableComplexMetric V) : ℂ :=
-  (Matrix.of fun i j =>
-    g.toForm (Module.finBasis ℝ V i) (Module.finBasis ℝ V j)).det
-
 /-- **Well-definedness of the real-coframe determinant.** Two real bases give Gram determinants
 differing by a positive real factor (the square of the real change-of-basis determinant), under
 which "not negative real" and the sign of `Re √·` are invariant. -/
-theorem detGramReal_welldef (g : AllowableComplexMetric V)
+theorem detGramReal_welldef (g : ComplexMetric V)
     (b c : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V) :
     ∃ r : ℝ, 0 < r ∧
       (Matrix.of fun i j => g.toForm (b i) (b j)).det
@@ -1150,39 +1229,64 @@ theorem detGramReal_welldef (g : AllowableComplexMetric V)
     ring
 
 /-- KS's first allowability condition (KSTeX 126) for the real-coframe determinant: it is not
-real and negative. Direct from `volume_element_positive` at the canonical real basis. -/
-theorem detGramReal_not_neg_real (g : AllowableComplexMetric V) :
+real and negative. On the bare type this is (part of) the `det_not_nonpos_real` field. -/
+theorem detGramReal_not_neg_real (g : ComplexMetric V) :
     ¬ ((detGramReal g).im = 0 ∧ (detGramReal g).re < 0) := by
-  obtain ⟨h, -⟩ := volume_element_positive g (Module.finBasis ℝ V)
-  exact h
+  rintro ⟨him, hre⟩
+  rcases detGramReal_not_nonpos_real g with h | h
+  · exact absurd hre (not_lt.mpr h.le)
+  · exact h him
 
 /-- The real-coframe determinant admits a principal square root (positive real part): KSTeX 126,
-"we choose `(det g)^{1/2}` to have positive real part". From `volume_element_positive`. -/
-theorem detGramReal_exists_principal_sqrt (g : AllowableComplexMetric V) :
+"we choose `(det g)^{1/2}` to have positive real part". Built in polar form
+`√‖det‖ · exp(i·arg(det)/2)`: the `det_not_nonpos_real` field puts `arg(det)` in the open
+interval `(−π, π)`, so the half-angle has positive cosine. -/
+theorem detGramReal_exists_principal_sqrt (g : ComplexMetric V) :
     ∃ w : ℂ, w ^ 2 = detGramReal g ∧ 0 < w.re := by
-  obtain ⟨-, h⟩ := volume_element_positive g (Module.finBasis ℝ V)
-  exact h
+  refine ⟨(Real.sqrt ‖detGramReal g‖ : ℂ) *
+    Complex.exp ((↑(Complex.arg (detGramReal g) / 2) : ℂ) * Complex.I), ?_, ?_⟩
+  · rw [mul_pow, ← Complex.ofReal_pow, Real.sq_sqrt (norm_nonneg _), pow_two, ← Complex.exp_add,
+      show (↑(Complex.arg (detGramReal g) / 2) : ℂ) * Complex.I
+          + (↑(Complex.arg (detGramReal g) / 2) : ℂ) * Complex.I
+          = (↑(Complex.arg (detGramReal g)) : ℂ) * Complex.I from by push_cast; ring]
+    exact Complex.norm_mul_exp_arg_mul_I _
+  · rw [Complex.re_ofReal_mul, Complex.exp_ofReal_mul_I_re]
+    have harg : |Complex.arg (detGramReal g)| < Real.pi := by
+      rcases lt_or_eq_of_le (Complex.abs_arg_le_pi (detGramReal g)) with h | h
+      · exact h
+      · exfalso
+        have hpi : Complex.arg (detGramReal g) = Real.pi := by
+          rcases abs_eq Real.pi_pos.le |>.mp h with h1 | h1
+          · exact h1
+          · exact absurd h1 (by linarith [Complex.neg_pi_lt_arg (detGramReal g)])
+        obtain ⟨hre, him⟩ := Complex.arg_eq_pi_iff.mp hpi
+        rcases detGramReal_not_nonpos_real g with hc | hc
+        · linarith
+        · exact hc him
+    obtain ⟨hlo, hhi⟩ := abs_lt.mp harg
+    exact mul_pos (Real.sqrt_pos.mpr (norm_pos_iff.mpr (detGramReal_ne_zero g)))
+      (Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩)
 
 /-- `(det g)^{1/2}`: THE principal square root (positive real part) of the real-coframe
 determinant `detGramReal` — the normalizing factor of KS's `vol_g = (det g)^{1/2}|dx|` read
 against a real coframe (KS paper (3), KSTeX 126). The principal branch exists precisely because
 the radicand is a real-coframe determinant (`volume_element_positive`); it is unique
 (`detSqrtReal_eq_of_sq`). -/
-noncomputable def detSqrtReal (g : AllowableComplexMetric V) : ℂ :=
+noncomputable def detSqrtReal (g : ComplexMetric V) : ℂ :=
   (detGramReal_exists_principal_sqrt g).choose
 
 /-- **`detSqrtReal` is a square root of the real-coframe determinant** (float-free tie). -/
-theorem detSqrtReal_sq (g : AllowableComplexMetric V) :
+theorem detSqrtReal_sq (g : ComplexMetric V) :
     detSqrtReal g ^ 2 = detGramReal g :=
   (detGramReal_exists_principal_sqrt g).choose_spec.1
 
 /-- **`detSqrtReal` is the principal branch**: its real part is positive (KSTeX 126). This is
 the branch condition that is provable on a real coframe and false for the finBasis-of-`ℂ⊗V`
 radicand of `detSqrt`. -/
-theorem detSqrtReal_re_pos (g : AllowableComplexMetric V) : 0 < (detSqrtReal g).re :=
+theorem detSqrtReal_re_pos (g : ComplexMetric V) : 0 < (detSqrtReal g).re :=
   (detGramReal_exists_principal_sqrt g).choose_spec.2
 
-theorem detSqrtReal_ne_zero (g : AllowableComplexMetric V) : detSqrtReal g ≠ 0 := by
+theorem detSqrtReal_ne_zero (g : ComplexMetric V) : detSqrtReal g ≠ 0 := by
   intro h
   have hre := detSqrtReal_re_pos g
   rw [h] at hre
@@ -1200,7 +1304,7 @@ theorem sq_eq_sq_re_pos_unique {w u : ℂ} (hw : 0 < w.re) (hu : 0 < u.re)
     linarith
 
 /-- Any square root of `detGramReal g` with positive real part is `detSqrtReal g`. -/
-theorem detSqrtReal_eq_of_sq (g : AllowableComplexMetric V) {u : ℂ} (hu : 0 < u.re)
+theorem detSqrtReal_eq_of_sq (g : ComplexMetric V) {u : ℂ} (hu : 0 < u.re)
     (h : u ^ 2 = detGramReal g) : detSqrtReal g = u :=
   sq_eq_sq_re_pos_unique (detSqrtReal_re_pos g) hu (by rw [detSqrtReal_sq g, h])
 
@@ -1208,7 +1312,7 @@ theorem detSqrtReal_eq_of_sq (g : AllowableComplexMetric V) {u : ℂ} (hu : 0 < 
 `(b, eig)` of `g`, `detGramReal g = r·∏ᵢ λᵢ` with `r > 0` real (the square of the
 change-of-basis determinant to the canonical basis). So `detSqrtReal g` squares to a positive
 real multiple of `∏ᵢ λᵢ` — KS's `(λ₁⋯λ_d)^{1/2}` up to the twisted-line ambiguity. -/
-theorem detGramReal_eq_prod_of_diag (g : AllowableComplexMetric V)
+theorem detGramReal_eq_prod_of_diag (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ}
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
@@ -1273,7 +1377,7 @@ theorem normalized_blade_re_pos_iff {d : ℕ} {w : ℂ} {r : ℝ} {eig : Fin d �
 For any diagonalization `(b, eig)` of `g`, the encoded blade value
 `(detSqrtReal g)⁻¹·∏_{i∈S}λᵢ` is a positive real multiple of KS's covector value
 `(det g)^{1/2}·∏_{i∈Sᶜ}λᵢ⁻¹` (KSTeX 202). -/
-theorem detSqrtReal_blade_eq_covector (g : AllowableComplexMetric V)
+theorem detSqrtReal_blade_eq_covector (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ} (hne : ∀ i, eig i ≠ 0)
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
@@ -1342,9 +1446,10 @@ real volume ray retains: the blade values of `(detSqrtReal g)⁻¹ · g_p^ℂ(·
 multiples of KS's `(λ₁⋯λ_d)^{1/2}·∏λᵢ⁻¹` (KSTeX 202) at the complementary blade — the proved
 translation `detSqrtReal_blade_eq_covector` (see the section header for the two conventions).
 
-Its equivalence with the working (angle-condition) definition is KS paper Theorem 2.2
-(`ComplexMetrics/Equivalence.lean`), deferred pending real simultaneous diagonalization. -/
-def IsAllowableHodge (g : AllowableComplexMetric V) : Prop :=
+Stated on the bare `ComplexMetric` type (angle condition NOT assumed). Its equivalence with
+the working (angle-condition) definition is KS paper Theorem 2.2, proved as the biconditional
+`defn_2_1_equiv_angle_condition` in `ComplexMetrics/Equivalence.lean`. -/
+def IsAllowableHodge (g : ComplexMetric V) : Prop :=
   ∀ (p : ℕ) (α : ⋀[ℝ]^p V), α ≠ 0 →
     0 < ((detSqrtReal g)⁻¹ * formC g p (realExtPow p α) (realExtPow p α)).re
 
@@ -1354,8 +1459,8 @@ KS's proof (KSTeX 199–205), forward half: with `g` diagonalized as `∑ λᵢ 
 `α ↦ α ∧ ⋆_g α` is diagonal on the basis blades with values of argument
 `½(∑_{i∈S} arg λᵢ − ∑_{i∉S} arg λᵢ)` (KSTeX 204), which lies in `(−π/2, π/2)` for every `S`
 as soon as `∑|arg λᵢ| < π` — the triangle inequality (`angle_sum_subset_bound`). The converse
-(the maximum over `S` is attained at `S = {i : θᵢ ≥ 0}`) belongs to the reverse direction and
-is not needed here. -/
+(the maximum over `S` is attained at `S = {i : θᵢ ≥ 0}`) is `angle_sum_subset_converse` in
+`ComplexMetrics/Equivalence.lean`, where the reverse direction is proved. -/
 
 /-- **The combinatorial half of KS condition (4)** (easy direction, KSTeX 204–205): if
 `∑ᵢ|θᵢ| < π` then for every subset `S` the signed sum `∑_{i∈S}θᵢ − ∑_{i∉S}θᵢ` has absolute
@@ -1396,7 +1501,7 @@ condition, every normalized blade value `(detSqrtReal g)⁻¹·∏_{i∈S}λᵢ`
 Its argument is `½(∑_{i∈S}θᵢ − ∑_{i∉S}θᵢ) ∈ (−π/2, π/2)` by `angle_sum_subset_bound`; the
 principal root is identified in polar form via `detSqrtReal_eq_of_sq`, with no arg-of-product
 computation (`prod_eq_norm_mul_exp_sum_arg` carries the sums). -/
-theorem blade_re_pos (g : AllowableComplexMetric V)
+theorem blade_re_pos (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ} (hAC : AngleCondition eig)
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
@@ -1467,7 +1572,7 @@ theorem blade_re_pos (g : AllowableComplexMetric V)
 `e` of the diagonalizing basis, `g_p^ℂ` on the blade `(1⊗b_{e 0}) ∧ ⋯ ∧ (1⊗b_{e (p−1)})` is
 `∏ᵢ λ_{e i}` (the diagonal Gram determinant, computed at the `tmul` level via
 `gc_apply_tmul` + `gram_eq_diagonal_of_diag`). -/
-theorem formC_tmul_blade_diag (g : AllowableComplexMetric V)
+theorem formC_tmul_blade_diag (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ}
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
@@ -1490,7 +1595,7 @@ theorem formC_tmul_blade_diag (g : AllowableComplexMetric V)
 
 /-- Gram value of complexified diagonalizing blades, separated case: if some `e' i₀` avoids the
 range of `e`, the Gram determinant has a zero row and `g_p^ℂ` vanishes on the pair of blades. -/
-theorem formC_tmul_blade_offdiag (g : AllowableComplexMetric V)
+theorem formC_tmul_blade_offdiag (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ}
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
@@ -1511,7 +1616,7 @@ theorem formC_tmul_blade_offdiag (g : AllowableComplexMetric V)
 201–202, in vector-side form): expanding a real `p`-form `α` over the exterior powers of the
 diagonalizing basis, `g_p^ℂ(α, α) = ∑_S a_S²·∏_{i∈S}λᵢ` with real coordinates `a_S` (the
 off-diagonal Gram values vanish). -/
-theorem formC_realExtPow_diag (g : AllowableComplexMetric V)
+theorem formC_realExtPow_diag (g : ComplexMetric V)
     {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
     {eig : Fin (Module.finrank ℝ V) → ℂ}
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
@@ -1583,18 +1688,19 @@ theorem formC_realExtPow_diag (g : AllowableComplexMetric V)
   · intro h
     exact absurd (Finset.mem_univ T) h
 
-/-- **The forward direction of KS Theorem 2.2** (KSTeX 199–205, the half provable without real
-simultaneous diagonalization): every allowable complex metric — i.e. every `g` satisfying the
-angle condition, which `AllowableComplexMetric` carries as `angle_cond` — satisfies KS
-Definition 2.1, `IsAllowableHodge g`. The quadratic form is a nonnegative real combination of
-the normalized blade values (`formC_realExtPow_diag`), each of positive real part
-(`blade_re_pos`), with a strictly positive coefficient since `α ≠ 0`. The REVERSE direction
-(Definition 2.1 ⇒ angle condition) requires stating Definition 2.1 for a bare symmetric
-nondegenerate ℂ-valued form (no angle condition assumed), a type this development does not yet
-have; it is deferred. -/
-theorem isAllowableHodge (g : AllowableComplexMetric V) : IsAllowableHodge g := by
+/-- **The forward direction of KS Theorem 2.2, diagonalized form** (KSTeX 201–205): if a
+complex metric `g` admits a real diagonalization `(b, eig)` whose coefficients satisfy the
+angle condition, then `g` satisfies KS Definition 2.1, `IsAllowableHodge g`. The quadratic
+form is a nonnegative real combination of the normalized blade values
+(`formC_realExtPow_diag`), each of positive real part (`blade_re_pos`), with a strictly
+positive coefficient since `α ≠ 0`. The reverse direction and the full biconditional of
+Theorem 2.2 are in `ComplexMetrics/Equivalence.lean` (`defn_2_1_equiv_angle_condition`). -/
+theorem isAllowableHodge_of_diag (g : ComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ} (hAC : AngleCondition eig)
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    IsAllowableHodge g := by
   classical
-  obtain ⟨b, eig, hAC, hdiag⟩ := g.angle_cond
   intro p α hα
   rw [formC_realExtPow_diag g hdiag p α, Finset.mul_sum, Complex.re_sum]
   have hrepr : (b.exteriorPower p).repr α ≠ 0 :=
@@ -1620,6 +1726,15 @@ theorem isAllowableHodge (g : AllowableComplexMetric V) : IsAllowableHodge g := 
         ring,
       Complex.re_ofReal_mul]
     exact mul_pos (sq_pos_of_ne_zero hT₀) (blade_re_pos g hAC hdiag _)
+
+/-- **The forward direction of KS Theorem 2.2** (KSTeX 199–205): every allowable complex
+metric — the working, angle-condition definition, which carries its diagonalization as
+`angle_cond` — satisfies KS Definition 2.1 along the projection to the bare type
+(`AllowableComplexMetric.toComplexMetric`). -/
+theorem isAllowableHodge (g : AllowableComplexMetric V) :
+    IsAllowableHodge g.toComplexMetric := by
+  obtain ⟨b, eig, hAC, hdiag⟩ := g.angle_cond
+  exact isAllowableHodge_of_diag g.toComplexMetric hAC hdiag
 
 end Complexification
 

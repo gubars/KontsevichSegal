@@ -272,6 +272,8 @@
     <span class="theorem_thmtitle">Equivalence of the two definitions; KS Theorem 2.2</span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
@@ -333,7 +335,7 @@
   </div>
   <div class="theorem_thmcontent">
   <p>    A quadratic form \(g \colon V \to \mathbb C\) satisfies Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> if and only if it can be written, in some basis of \(V\), as \(\sum _i \lambda _i y_i^2\) with nonzero coefficients \(\lambda _i\), not on the negative real axis, satisfying the angle condition (4) of Definition&#160;<a href="sect0001.html#def:allowable">2</a>. </p>
-<p>The forward direction (the angle condition implies Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a>) is formalized and proved. The reverse direction requires stating Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> for a bare symmetric nondegenerate \(\mathbb C\)-valued form, with no diagonalization assumed, together with the real simultaneous diagonalization step of the paper’s proof; that type is not yet available, so the biconditional is not yet stated in Lean. </p>
+<p>Here \(g\) ranges over the symmetric \(\mathbb C\)-valued forms on \(V\) whose Gram determinant in a real coframe is not on the closed negative real axis, the standing requirement of the paper’s Section&#160;2 under which the Hodge star and the principal branch of \((\det g)^{1/2}\) are defined; the diagonalizability of \(g\) is part of the conclusion, not an assumption. </p>
 
   </div>
 </div>
@@ -345,7 +347,7 @@
     <span class="expand-proof">▶</span>
   </div>
   <div class="proof_content">
-  <p> (Paper, p.&#160;10.) A form satisfying Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> with \(p = 1\) has \(\operatorname {Re}\bigl((\det g)^{-1/2} g\bigr)\) positive-definite, which allows simultaneous diagonalization of the real and imaginary parts of \(g\) over \(\mathbb R\). In a diagonalizing basis the form \(\alpha \mapsto \alpha \wedge *_g \alpha \) on \(\Lambda ^p(V^*)\) is diagonal with values \((\lambda _1 \cdots \lambda _d)^{1/2} \prod _{i \in S} \lambda _i^{-1}\) on the basis \(p\)-forms \(e_S^*\); positivity of all their real parts for every subset \(S\) is precisely condition (4). </p>
+  <p> (Paper, p.&#160;10.) A form satisfying Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> with \(p = 1\) has \(\operatorname {Re}\bigl((\det g)^{-1/2} g\bigr)\) positive-definite, which allows simultaneous diagonalization of the real and imaginary parts of \(g\) over \(\mathbb R\): the positive-definite combination is an inner product, either part is represented in it by a self-adjoint operator, and the spectral theorem provides an eigenbasis diagonalizing both parts at once. In a diagonalizing basis the form \(\alpha \mapsto \alpha \wedge *_g \alpha \) on \(\Lambda ^p(V^*)\) is diagonal with values \((\lambda _1 \cdots \lambda _d)^{1/2} \prod _{i \in S} \lambda _i^{-1}\) on the basis \(p\)-forms \(e_S^*\); positivity of all their real parts for every subset \(S\) is precisely condition (4). For the converse of this last step, the diagonal values lie in the open right half-plane, where principal arguments add exactly, with no correction by a multiple of \(2\pi \); comparing the subset \(S = \{ i : \arg \lambda _i \geq 0\} \) with its complement then bounds \(\sum _i |\arg \lambda _i|\) below \(\pi \), and no \(\lambda _i\) is negative real, its argument being a difference of two arguments in \((-\pi /2, \pi /2)\). </p>
 
   </div>
 </div>

@@ -98,7 +98,7 @@ in Sections~2 and~5.
 \begin{theorem}[Equivalence of the two definitions; KS Theorem 2.2]
   \label{thm:angle-equiv}
   \lean{defn_2_1_equiv_angle_condition}
-  \notready
+  \leanok
   \uses{def:allowable-hodge, def:allowable, found:hodge-star}
   A quadratic form $g \colon V \to \mathbb C$ satisfies
   Definition~\ref{def:allowable-hodge} if and only if it can be written, in
@@ -106,27 +106,34 @@ in Sections~2 and~5.
   $\lambda_i$, not on the negative real axis, satisfying the angle
   condition (4) of Definition~\ref{def:allowable}.
 
-  The forward direction (the angle condition implies
-  Definition~\ref{def:allowable-hodge}) is formalized and proved. The
-  reverse direction requires stating Definition~\ref{def:allowable-hodge}
-  for a bare symmetric nondegenerate $\mathbb C$-valued form, with no
-  diagonalization assumed, together with the real simultaneous
-  diagonalization step of the paper's proof; that type is not yet
-  available, so the biconditional is not yet stated in Lean.
+  Here $g$ ranges over the symmetric $\mathbb C$-valued forms on $V$ whose
+  Gram determinant in a real coframe is not on the closed negative real
+  axis, the standing requirement of the paper's Section~2 under which the
+  Hodge star and the principal branch of $(\det g)^{1/2}$ are defined; the
+  diagonalizability of $g$ is part of the conclusion, not an assumption.
 \end{theorem}
 
 \begin{proof}
-  \notready
+  \leanok
   \uses{def:allowable-hodge, def:allowable}
   (Paper, p.~10.) A form satisfying Definition~\ref{def:allowable-hodge} with
   $p = 1$ has $\operatorname{Re}\bigl((\det g)^{-1/2} g\bigr)$
   positive-definite, which allows simultaneous diagonalization of the real
-  and imaginary parts of $g$ over $\mathbb R$. In a diagonalizing basis the
+  and imaginary parts of $g$ over $\mathbb R$: the positive-definite
+  combination is an inner product, either part is represented in it by a
+  self-adjoint operator, and the spectral theorem provides an eigenbasis
+  diagonalizing both parts at once. In a diagonalizing basis the
   form $\alpha \mapsto \alpha \wedge *_g \alpha$ on $\Lambda^p(V^*)$ is
   diagonal with values
   $(\lambda_1 \cdots \lambda_d)^{1/2} \prod_{i \in S} \lambda_i^{-1}$ on the
   basis $p$-forms $e_S^*$; positivity of all their real parts for every
-  subset $S$ is precisely condition (4).
+  subset $S$ is precisely condition (4). For the converse of this last
+  step, the diagonal values lie in the open right half-plane, where
+  principal arguments add exactly, with no correction by a multiple of
+  $2\pi$; comparing the subset $S = \{i : \arg \lambda_i \geq 0\}$ with its
+  complement then bounds $\sum_i |\arg \lambda_i|$ below $\pi$, and no
+  $\lambda_i$ is negative real, its argument being a difference of two
+  arguments in $(-\pi/2, \pi/2)$.
 \end{proof}
 
 \begin{lemma}[Values form a convex cone; KS p.~9]
