@@ -1,35 +1,41 @@
 /- Equivalence between the working definition (angle condition, Theorem 2.2) and
-the original Definition 2.1 (Hodge star formulation). Deferred until Hodge star
-infrastructure is available in Mathlib.
+the original Definition 2.1 (Hodge star formulation).
 
 **Definition 2.1 of [KS]** states: a complex quadratic form g on V is allowable if,
 for all degrees p ≥ 0, the real part of the quadratic form on ∧ᵖ(V*) defined by
   α ↦ α ∧ ∗_g α
-is positive-definite, where ∗_g is the Hodge star operator associated to g.
+is positive-definite, where ∗_g is the Hodge star operator associated to g. This is
+formalized as `KontsevichSegal.Hodge.IsAllowableHodge`
+(`ComplexMetrics/HodgeScaffold.lean`), on the project's from-scratch Hodge star.
 
 **Theorem 2.2 of [KS]** (our working definition) characterizes the same class
 diagonally: g is allowable iff there is a basis in which g = ∑ᵢ λᵢ yᵢ² with
 each λᵢ nonzero, not on the negative real axis, and ∑ᵢ |arg λᵢ| < π.
 
-The equivalence of these two conditions is proved in [KS] but cannot yet be
-formalized here, as the Hodge star operator is not available in Mathlib.
+The FORWARD direction of the equivalence (angle condition ⇒ Definition 2.1) is
+proved here (`defn_2_1_equiv_angle_condition`, via
+`KontsevichSegal.Hodge.isAllowableHodge`). The REVERSE direction requires stating
+Definition 2.1 for a bare symmetric nondegenerate ℂ-valued form (no angle condition
+assumed) — a type this development does not yet have — together with the real
+simultaneous diagonalization step of KS's proof (KSTeX 199); it is deferred, so the
+biconditional of Theorem 2.2 is not yet stated.
 -/
 
 import KontsevichSegal.ComplexMetrics.Defs
+import KontsevichSegal.ComplexMetrics.HodgeScaffold
 
-/-- Placeholder for the equivalence between Definition 2.1 and the angle condition
-(Theorem 2.2) of [KS].
+/-- **Forward direction of the equivalence between Definition 2.1 and the angle
+condition (KS paper Theorem 2.2).** Every allowable complex metric — the working,
+angle-condition definition `AllowableComplexMetric` — satisfies KS Definition 2.1:
+for all degrees p ≥ 0, the real part of the quadratic form `α ↦ α ∧ ∗_g α` on real
+`p`-forms is positive-definite (`KontsevichSegal.Hodge.IsAllowableHodge`).
 
-The Hodge star side of the equivalence asserts: for all p ≥ 0, Re(α ∧ ∗_g α) > 0
-for all nonzero α ∈ ∧ᵖ(V*). This is equivalent to `AngleCondition` on the
-eigenvalues in any diagonal form of g, as shown in [KS, Section 2].
-
-Formalization is blocked on Hodge star infrastructure in Mathlib. -/
+The reverse direction (Definition 2.1 ⇒ the angle condition) needs Definition 2.1
+stated on a bare symmetric nondegenerate ℂ-valued form, with no diagonalization
+assumed, plus the real simultaneous diagonalization of KS's proof (KSTeX 199); it
+is deferred, so the biconditional of Theorem 2.2 is not yet stated in Lean. -/
 theorem defn_2_1_equiv_angle_condition
     {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
-    (_g : AllowableComplexMetric V) :
-    -- Placeholder: True stands for "g satisfies Definition 2.1 (Hodge star condition)"
-    -- which we cannot yet express. The real statement is a biconditional between
-    -- Definition 2.1 and the AngleCondition encoded in AllowableComplexMetric.
-    True := by
-  trivial
+    (g : AllowableComplexMetric V) :
+    KontsevichSegal.Hodge.IsAllowableHodge g :=
+  KontsevichSegal.Hodge.isAllowableHodge g

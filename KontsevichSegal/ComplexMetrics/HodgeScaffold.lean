@@ -1322,6 +1322,17 @@ noncomputable def realExtPow (p : ℕ) : ⋀[ℝ]^p V →ₗ[ℝ] ⋀[ℂ]^p (�
   exteriorPower.alternatingMapLinearEquiv
     ((ιMultiRestrict (V := V) p).compLinearMap ((TensorProduct.mk ℝ ℂ V) 1))
 
+omit [FiniteDimensional ℝ V] in
+/-- **`realExtPow` maps real blades to complex blades** (float-free tie of `realExtPow` to its
+defining extension of `v ↦ 1 ⊗ v`): on decomposables,
+`realExtPow p (v₁ ∧ ⋯ ∧ v_p) = (1⊗v₁) ∧ ⋯ ∧ (1⊗v_p)`. -/
+theorem realExtPow_ιMulti (p : ℕ) (v : Fin p → V) :
+    realExtPow p (exteriorPower.ιMulti ℝ p v)
+      = exteriorPower.ιMulti ℂ p (fun i => (1 : ℂ) ⊗ₜ[ℝ] v i) := by
+  unfold realExtPow
+  rw [exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
+  rfl
+
 /-- **Definition 2.1 of [KS]** (Hodge-star positivity; KSTeX 140–142). `g` is allowable iff for
 all degrees `p`, the real part of the quadratic form `α ↦ α ∧ ⋆_g α` on `⋀ᵖ(V*)`, read against
 the real positive volume ray of the twisted line `|⋀ᵈ(V*)|_ℂ` (KSTeX 130–131), is
@@ -1336,6 +1347,279 @@ Its equivalence with the working (angle-condition) definition is KS paper Theore
 def IsAllowableHodge (g : AllowableComplexMetric V) : Prop :=
   ∀ (p : ℕ) (α : ⋀[ℝ]^p V), α ≠ 0 →
     0 < ((detSqrtReal g)⁻¹ * formC g p (realExtPow p α) (realExtPow p α)).re
+
+/-! ### The forward direction of KS Theorem 2.2: angle condition ⇒ Definition 2.1
+
+KS's proof (KSTeX 199–205), forward half: with `g` diagonalized as `∑ λᵢ yᵢ²`, the form
+`α ↦ α ∧ ⋆_g α` is diagonal on the basis blades with values of argument
+`½(∑_{i∈S} arg λᵢ − ∑_{i∉S} arg λᵢ)` (KSTeX 204), which lies in `(−π/2, π/2)` for every `S`
+as soon as `∑|arg λᵢ| < π` — the triangle inequality (`angle_sum_subset_bound`). The converse
+(the maximum over `S` is attained at `S = {i : θᵢ ≥ 0}`) belongs to the reverse direction and
+is not needed here. -/
+
+/-- **The combinatorial half of KS condition (4)** (easy direction, KSTeX 204–205): if
+`∑ᵢ|θᵢ| < π` then for every subset `S` the signed sum `∑_{i∈S}θᵢ − ∑_{i∉S}θᵢ` has absolute
+value `< π` (triangle inequality). -/
+theorem angle_sum_subset_bound {d : ℕ} (θ : Fin d → ℝ) (S : Finset (Fin d))
+    (h : ∑ i, |θ i| < Real.pi) :
+    |(∑ i ∈ S, θ i) - ∑ i ∈ Sᶜ, θ i| < Real.pi := by
+  calc |(∑ i ∈ S, θ i) - ∑ i ∈ Sᶜ, θ i|
+      = |(∑ i ∈ S, θ i) + -(∑ i ∈ Sᶜ, θ i)| := by rw [sub_eq_add_neg]
+    _ ≤ |∑ i ∈ S, θ i| + |-(∑ i ∈ Sᶜ, θ i)| := abs_add_le _ _
+    _ = |∑ i ∈ S, θ i| + |∑ i ∈ Sᶜ, θ i| := by rw [abs_neg]
+    _ ≤ (∑ i ∈ S, |θ i|) + ∑ i ∈ Sᶜ, |θ i| :=
+        add_le_add (Finset.abs_sum_le_sum_abs _ _) (Finset.abs_sum_le_sum_abs _ _)
+    _ = ∑ i, |θ i| := Finset.sum_add_sum_compl S _
+    _ < Real.pi := h
+
+/-- Polar form of a finite product: `∏_{i∈S} zᵢ = (∏_{i∈S}‖zᵢ‖)·exp(i·∑_{i∈S} arg zᵢ)`.
+(Unconditional: each factor is `Complex.norm_mul_exp_arg_mul_I`.) -/
+theorem prod_eq_norm_mul_exp_sum_arg {d : ℕ} (z : Fin d → ℂ) (S : Finset (Fin d)) :
+    ∏ i ∈ S, z i
+      = ((∏ i ∈ S, ‖z i‖ : ℝ) : ℂ)
+        * Complex.exp ((↑(∑ i ∈ S, Complex.arg (z i)) : ℂ) * Complex.I) := by
+  have hexpsum : ∑ i ∈ S, (↑(Complex.arg (z i)) : ℂ) * Complex.I
+      = (↑(∑ i ∈ S, Complex.arg (z i)) : ℂ) * Complex.I := by
+    push_cast
+    rw [Finset.sum_mul]
+  calc ∏ i ∈ S, z i
+      = ∏ i ∈ S, ((‖z i‖ : ℂ) * Complex.exp ((↑(Complex.arg (z i)) : ℂ) * Complex.I)) :=
+        Finset.prod_congr rfl fun i _ => (Complex.norm_mul_exp_arg_mul_I _).symm
+    _ = (∏ i ∈ S, (‖z i‖ : ℂ))
+          * ∏ i ∈ S, Complex.exp ((↑(Complex.arg (z i)) : ℂ) * Complex.I) :=
+        Finset.prod_mul_distrib
+    _ = _ := by rw [← Complex.exp_sum, hexpsum, Complex.ofReal_prod]
+
+/-- **Positivity of the normalized blade values** (the per-`S` step of KS's Theorem-2.2 proof,
+KSTeX 202–205, forward half): for a diagonalization `(b, eig)` of `g` satisfying the angle
+condition, every normalized blade value `(detSqrtReal g)⁻¹·∏_{i∈S}λᵢ` has positive real part.
+Its argument is `½(∑_{i∈S}θᵢ − ∑_{i∉S}θᵢ) ∈ (−π/2, π/2)` by `angle_sum_subset_bound`; the
+principal root is identified in polar form via `detSqrtReal_eq_of_sq`, with no arg-of-product
+computation (`prod_eq_norm_mul_exp_sum_arg` carries the sums). -/
+theorem blade_re_pos (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ} (hAC : AngleCondition eig)
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (S : Finset (Fin (Module.finrank ℝ V))) :
+    0 < ((detSqrtReal g)⁻¹ * ∏ i ∈ S, eig i).re := by
+  obtain ⟨r, hr, hdet⟩ := detGramReal_eq_prod_of_diag g hdiag
+  have hnorm_pos : ∀ i, (0 : ℝ) < ‖eig i‖ := fun i => norm_pos_iff.mpr (hAC.nonzero i)
+  obtain ⟨hSlo, hShi⟩ := abs_lt.mp
+    (lt_of_le_of_lt (Finset.abs_sum_le_sum_abs _ _) hAC.sum_arg_lt_pi)
+  set c₀ : ℝ := Real.sqrt r * ∏ i, Real.sqrt ‖eig i‖ with hc₀def
+  have hc₀pos : 0 < c₀ :=
+    mul_pos (Real.sqrt_pos.mpr hr)
+      (Finset.prod_pos fun i _ => Real.sqrt_pos.mpr (hnorm_pos i))
+  -- the principal root in polar form
+  have hwid : detSqrtReal g
+      = (c₀ : ℂ) * Complex.exp ((↑((∑ i, Complex.arg (eig i)) / 2) : ℂ) * Complex.I) := by
+    apply detSqrtReal_eq_of_sq
+    · rw [Complex.re_ofReal_mul, Complex.exp_ofReal_mul_I_re]
+      exact mul_pos hc₀pos
+        (Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩)
+    · have hc₀sq : c₀ ^ 2 = r * ∏ i, ‖eig i‖ := by
+        rw [hc₀def, mul_pow, Real.sq_sqrt hr.le, ← Finset.prod_pow]
+        congr 1
+        exact Finset.prod_congr rfl fun i _ => Real.sq_sqrt (norm_nonneg _)
+      rw [mul_pow, ← Complex.ofReal_pow, hc₀sq,
+        show (Complex.exp ((↑((∑ i, Complex.arg (eig i)) / 2) : ℂ) * Complex.I)) ^ 2
+            = Complex.exp ((↑(∑ i, Complex.arg (eig i)) : ℂ) * Complex.I) from by
+          rw [pow_two, ← Complex.exp_add]
+          congr 1
+          push_cast
+          ring,
+        hdet, prod_eq_norm_mul_exp_sum_arg]
+      push_cast
+      ring
+  -- the value in polar form
+  have hhalf : (∑ i ∈ S, Complex.arg (eig i)) - (∑ i, Complex.arg (eig i)) / 2
+      = ((∑ i ∈ S, Complex.arg (eig i)) - ∑ i ∈ Sᶜ, Complex.arg (eig i)) / 2 := by
+    have hsplit := Finset.sum_add_sum_compl S (fun i => Complex.arg (eig i))
+    linarith
+  have hval : (detSqrtReal g)⁻¹ * ∏ i ∈ S, eig i
+      = ((c₀⁻¹ * ∏ i ∈ S, ‖eig i‖ : ℝ) : ℂ)
+        * Complex.exp
+            ((↑(((∑ i ∈ S, Complex.arg (eig i)) - ∑ i ∈ Sᶜ, Complex.arg (eig i)) / 2) : ℂ)
+              * Complex.I) := by
+    rw [hwid, prod_eq_norm_mul_exp_sum_arg, mul_inv, ← Complex.exp_neg, ← Complex.ofReal_inv,
+      show ((c₀⁻¹ : ℝ) : ℂ)
+            * Complex.exp (-((↑((∑ i, Complex.arg (eig i)) / 2) : ℂ) * Complex.I))
+            * (((∏ i ∈ S, ‖eig i‖ : ℝ) : ℂ)
+              * Complex.exp ((↑(∑ i ∈ S, Complex.arg (eig i)) : ℂ) * Complex.I))
+          = ((c₀⁻¹ * ∏ i ∈ S, ‖eig i‖ : ℝ) : ℂ)
+            * (Complex.exp (-((↑((∑ i, Complex.arg (eig i)) / 2) : ℂ) * Complex.I))
+              * Complex.exp ((↑(∑ i ∈ S, Complex.arg (eig i)) : ℂ) * Complex.I)) from by
+        push_cast
+        ring,
+      ← Complex.exp_add]
+    congr 2
+    rw [← hhalf]
+    push_cast
+    ring
+  rw [hval, Complex.re_ofReal_mul, Complex.exp_ofReal_mul_I_re]
+  obtain ⟨hlo, hhi⟩ := abs_lt.mp
+    (angle_sum_subset_bound (fun i => Complex.arg (eig i)) S hAC.sum_arg_lt_pi)
+  exact mul_pos
+    (mul_pos (inv_pos.mpr hc₀pos) (Finset.prod_pos fun i _ => hnorm_pos i))
+    (Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩)
+
+/-- Gram value of complexified diagonalizing blades, diagonal case: for an injective reindex
+`e` of the diagonalizing basis, `g_p^ℂ` on the blade `(1⊗b_{e 0}) ∧ ⋯ ∧ (1⊗b_{e (p−1)})` is
+`∏ᵢ λ_{e i}` (the diagonal Gram determinant, computed at the `tmul` level via
+`gc_apply_tmul` + `gram_eq_diagonal_of_diag`). -/
+theorem formC_tmul_blade_diag (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    {p : ℕ} {e : Fin p → Fin (Module.finrank ℝ V)} (he : Function.Injective e) :
+    formC g p (exteriorPower.ιMulti ℂ p (fun i => (1 : ℂ) ⊗ₜ[ℝ] b (e i)))
+        (exteriorPower.ιMulti ℂ p (fun i => (1 : ℂ) ⊗ₜ[ℝ] b (e i)))
+      = ∏ i, eig (e i) := by
+  rw [formC_apply_ιMulti]
+  have hM : (Matrix.of fun i j => gc g ((1 : ℂ) ⊗ₜ[ℝ] b (e j)) ((1 : ℂ) ⊗ₜ[ℝ] b (e i)))
+      = Matrix.diagonal (fun i => eig (e i)) := by
+    ext i j
+    have hentry := congrFun (congrFun (gram_eq_diagonal_of_diag g hdiag) (e j)) (e i)
+    rw [Matrix.of_apply] at hentry
+    rw [Matrix.of_apply, gc_apply_tmul, hentry, Matrix.diagonal_apply, Matrix.diagonal_apply]
+    by_cases hij : i = j
+    · subst hij
+      simp
+    · rw [if_neg hij, if_neg (show ¬ e j = e i from fun h => hij ((he h).symm))]
+  rw [hM, Matrix.det_diagonal]
+
+/-- Gram value of complexified diagonalizing blades, separated case: if some `e' i₀` avoids the
+range of `e`, the Gram determinant has a zero row and `g_p^ℂ` vanishes on the pair of blades. -/
+theorem formC_tmul_blade_offdiag (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    {p : ℕ} {e e' : Fin p → Fin (Module.finrank ℝ V)}
+    (hsep : ∃ i₀, ∀ j, e j ≠ e' i₀) :
+    formC g p (exteriorPower.ιMulti ℂ p (fun i => (1 : ℂ) ⊗ₜ[ℝ] b (e i)))
+        (exteriorPower.ιMulti ℂ p (fun i => (1 : ℂ) ⊗ₜ[ℝ] b (e' i)))
+      = 0 := by
+  obtain ⟨i₀, hi₀⟩ := hsep
+  rw [formC_apply_ιMulti]
+  apply Matrix.det_eq_zero_of_row_eq_zero i₀
+  intro j
+  have hentry := congrFun (congrFun (gram_eq_diagonal_of_diag g hdiag) (e j)) (e' i₀)
+  rw [Matrix.of_apply] at hentry
+  rw [Matrix.of_apply, gc_apply_tmul, hentry, Matrix.diagonal_apply, if_neg (hi₀ j)]
+
+/-- **Diagonal expansion of the quadratic form on real forms** (KS Theorem-2.2 proof, KSTeX
+201–202, in vector-side form): expanding a real `p`-form `α` over the exterior powers of the
+diagonalizing basis, `g_p^ℂ(α, α) = ∑_S a_S²·∏_{i∈S}λᵢ` with real coordinates `a_S` (the
+off-diagonal Gram values vanish). -/
+theorem formC_realExtPow_diag (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (p : ℕ) (α : ⋀[ℝ]^p V) :
+    formC g p (realExtPow p α) (realExtPow p α)
+      = ∑ T : Set.powersetCard (Fin (Module.finrank ℝ V)) p,
+          ((b.exteriorPower p).repr α T : ℂ) ^ 2
+            * ∏ j ∈ (T : Finset (Fin (Module.finrank ℝ V))), eig j := by
+  classical
+  set Y : Set.powersetCard (Fin (Module.finrank ℝ V)) p → ⋀[ℂ]^p (ℂ ⊗[ℝ] V) := fun T =>
+    exteriorPower.ιMulti ℂ p
+      (fun i => (1 : ℂ) ⊗ₜ[ℝ] b (Set.powersetCard.ofFinEmbEquiv.symm T i)) with hY
+  have hexpand : realExtPow p α = ∑ T, (b.exteriorPower p).repr α T • Y T := by
+    conv_lhs => rw [← (b.exteriorPower p).sum_repr α]
+    rw [map_sum]
+    refine Finset.sum_congr rfl fun T _ => ?_
+    rw [map_smul, exteriorPower_basis_apply_eq, realExtPow_ιMulti]
+    rfl
+  have hgram_diag : ∀ T : Set.powersetCard (Fin (Module.finrank ℝ V)) p,
+      formC g p (Y T) (Y T) = ∏ j ∈ (T : Finset (Fin (Module.finrank ℝ V))), eig j := by
+    intro T
+    have h1 : formC g p (Y T) (Y T)
+        = ∏ i, eig (Set.powersetCard.ofFinEmbEquiv.symm T i) :=
+      formC_tmul_blade_diag g hdiag (EmbeddingLike.injective _)
+    have himg : Finset.image (⇑(Set.powersetCard.ofFinEmbEquiv.symm T)) Finset.univ
+        = (T : Finset (Fin (Module.finrank ℝ V))) := by
+      ext x
+      simp only [Finset.mem_image, Finset.mem_univ, true_and]
+      constructor
+      · rintro ⟨i, rfl⟩
+        exact (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem T _).mp ⟨i, rfl⟩
+      · intro hx
+        exact (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem T x).mpr hx
+    rw [h1, ← himg, Finset.prod_image fun i _ j _ h => EmbeddingLike.injective _ h]
+  have hgram_off : ∀ T T' : Set.powersetCard (Fin (Module.finrank ℝ V)) p,
+      T ≠ T' → formC g p (Y T) (Y T') = 0 := by
+    intro T T' hTT'
+    refine formC_tmul_blade_offdiag g hdiag ?_
+    have hsub : ¬ ((T' : Finset (Fin (Module.finrank ℝ V)))
+        ⊆ (T : Finset (Fin (Module.finrank ℝ V)))) := by
+      intro hts
+      exact hTT' (Subtype.ext (Finset.eq_of_subset_of_card_le hts (by simp)).symm)
+    obtain ⟨x, hxT', hxT⟩ := Finset.not_subset.mp hsub
+    obtain ⟨i₀, hi₀⟩ := (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem T' x).mpr hxT'
+    refine ⟨i₀, fun j h => ?_⟩
+    rw [hi₀] at h
+    exact hxT (h ▸ (Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem T _).mp ⟨j, rfl⟩)
+  have expand1 : ∀ z, formC g p (realExtPow p α) z
+      = ∑ T, ((b.exteriorPower p).repr α T : ℂ) * formC g p (Y T) z := by
+    intro z
+    conv_lhs => rw [hexpand]
+    rw [map_sum, LinearMap.sum_apply]
+    exact Finset.sum_congr rfl fun T _ => by
+      rw [LinearMap.map_smul_of_tower, LinearMap.smul_apply, Complex.real_smul]
+  have expand2 : ∀ T, formC g p (Y T) (realExtPow p α)
+      = ∑ T', ((b.exteriorPower p).repr α T' : ℂ) * formC g p (Y T) (Y T') := by
+    intro T
+    conv_lhs => rw [hexpand]
+    rw [map_sum]
+    exact Finset.sum_congr rfl fun T' _ => by
+      rw [LinearMap.map_smul_of_tower, Complex.real_smul]
+  rw [expand1 (realExtPow p α)]
+  refine Finset.sum_congr rfl fun T _ => ?_
+  rw [expand2 T, Finset.mul_sum, Finset.sum_eq_single T]
+  · rw [hgram_diag T]
+    ring
+  · intro T' _ hT'
+    rw [hgram_off T T' (Ne.symm hT'), mul_zero, mul_zero]
+  · intro h
+    exact absurd (Finset.mem_univ T) h
+
+/-- **The forward direction of KS Theorem 2.2** (KSTeX 199–205, the half provable without real
+simultaneous diagonalization): every allowable complex metric — i.e. every `g` satisfying the
+angle condition, which `AllowableComplexMetric` carries as `angle_cond` — satisfies KS
+Definition 2.1, `IsAllowableHodge g`. The quadratic form is a nonnegative real combination of
+the normalized blade values (`formC_realExtPow_diag`), each of positive real part
+(`blade_re_pos`), with a strictly positive coefficient since `α ≠ 0`. The REVERSE direction
+(Definition 2.1 ⇒ angle condition) requires stating Definition 2.1 for a bare symmetric
+nondegenerate ℂ-valued form (no angle condition assumed), a type this development does not yet
+have; it is deferred. -/
+theorem isAllowableHodge (g : AllowableComplexMetric V) : IsAllowableHodge g := by
+  classical
+  obtain ⟨b, eig, hAC, hdiag⟩ := g.angle_cond
+  intro p α hα
+  rw [formC_realExtPow_diag g hdiag p α, Finset.mul_sum, Complex.re_sum]
+  have hrepr : (b.exteriorPower p).repr α ≠ 0 :=
+    fun h => hα ((b.exteriorPower p).repr.map_eq_zero_iff.mp h)
+  obtain ⟨T₀, hT₀⟩ := Finsupp.ne_iff.mp hrepr
+  simp only [Finsupp.coe_zero, Pi.zero_apply] at hT₀
+  refine Finset.sum_pos' (fun T _ => ?_) ⟨T₀, Finset.mem_univ _, ?_⟩
+  · rw [show (detSqrtReal g)⁻¹
+          * (((b.exteriorPower p).repr α T : ℂ) ^ 2
+            * ∏ j ∈ (T : Finset (Fin (Module.finrank ℝ V))), eig j)
+        = ((((b.exteriorPower p).repr α T : ℝ) ^ 2 : ℝ) : ℂ)
+          * ((detSqrtReal g)⁻¹ * ∏ j ∈ (T : Finset (Fin (Module.finrank ℝ V))), eig j) from by
+        push_cast
+        ring,
+      Complex.re_ofReal_mul]
+    exact mul_nonneg (sq_nonneg _) (blade_re_pos g hAC hdiag _).le
+  · rw [show (detSqrtReal g)⁻¹
+          * (((b.exteriorPower p).repr α T₀ : ℂ) ^ 2
+            * ∏ j ∈ (T₀ : Finset (Fin (Module.finrank ℝ V))), eig j)
+        = ((((b.exteriorPower p).repr α T₀ : ℝ) ^ 2 : ℝ) : ℂ)
+          * ((detSqrtReal g)⁻¹ * ∏ j ∈ (T₀ : Finset (Fin (Module.finrank ℝ V))), eig j) from by
+        push_cast
+        ring,
+      Complex.re_ofReal_mul]
+    exact mul_pos (sq_pos_of_ne_zero hT₀) (blade_re_pos g hAC hdiag _)
 
 end Complexification
 

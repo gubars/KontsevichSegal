@@ -147,6 +147,8 @@
     <span class="definition_thmtitle">Allowable complex metric, Hodge-star form; KS Definition 2.1</span>
     <div class="thm_header_extras">
 
+    
+    ✓
         </div>
     <div class="thm_header_hidden_extras">
 
@@ -174,15 +176,34 @@
 
     
     
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/KontsevichSegal.Hodge.IsAllowableHodge" class="lean_decl">KontsevichSegal.Hodge.IsAllowableHodge</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
         </div>
   </div>
   <div class="definition_thmcontent">
-  <p>   On a \(d\)-dimensional real vector space \(V\), a quadratic form \(g \colon V \to \mathbb C\) is an <em>allowable complex metric</em> if, for all degrees \(p \geq 0\), the real part of the quadratic form </p>
+  <p>    On a \(d\)-dimensional real vector space \(V\), a quadratic form \(g \colon V \to \mathbb C\) is an <em>allowable complex metric</em> if, for all degrees \(p \geq 0\), the real part of the quadratic form </p>
 <div class="displaymath" id="a0000000007">
   \[  \Lambda ^p(V^*) \longrightarrow |\Lambda ^d(V^*)|_{\mathbb C}, \qquad \alpha \mapsto \alpha \wedge *_g\,  \alpha  \]
 </div>
-<p> is positive-definite. Here \(*_g\) is the Hodge star operator of the complex metric \(g\), and \(|\Lambda ^d(V^*)|_{\mathbb C}\) is the complexified twisted determinant line, with orientation-reversing automorphisms of \(V\) acting antilinearly. </p>
-<p>The Hodge star operator for complex metrics, and the induced quadratic forms on the exterior powers \(\Lambda ^p(V^*)\), are not available in Mathlib. </p>
+<p> is positive-definite. Here \(*_g\) is the Hodge star operator of the complex metric \(g\), and \(|\Lambda ^d(V^*)|_{\mathbb C}\) is the complexified twisted determinant line, with orientation-reversing automorphisms of \(V\) acting antilinearly; the real part is positive when it lies on the ray of positive real volume elements of the twisted line. </p>
+<p>The formalization places the form on real \(p\)-vectors, mirrored from the \(p\)-covectors by the complementary-blade correspondence, and normalizes by the principal square root of the Gram determinant of \(g\) in a real coframe, which the twisted line determines up to a positive real factor. On the blades of a diagonalizing basis the values are positive real multiples of the paper’s values \((\lambda _1 \cdots \lambda _d)^{1/2} \prod _{i \in S} \lambda _i^{-1}\), so positive-definiteness of the real part is the same condition on both sides. </p>
 
   </div>
 </div>
@@ -312,7 +333,7 @@
   </div>
   <div class="theorem_thmcontent">
   <p>    A quadratic form \(g \colon V \to \mathbb C\) satisfies Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> if and only if it can be written, in some basis of \(V\), as \(\sum _i \lambda _i y_i^2\) with nonzero coefficients \(\lambda _i\), not on the negative real axis, satisfying the angle condition (4) of Definition&#160;<a href="sect0001.html#def:allowable">2</a>. </p>
-<p>The biconditional cannot yet be stated in Lean: the Hodge-star side (Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a>) is not expressible, pending the Hodge star operator and induced forms on exterior powers in Mathlib. </p>
+<p>The forward direction (the angle condition implies Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a>) is formalized and proved. The reverse direction requires stating Definition&#160;<a href="sect0001.html#def:allowable-hodge">1</a> for a bare symmetric nondegenerate \(\mathbb C\)-valued form, with no diagonalization assumed, together with the real simultaneous diagonalization step of the paper’s proof; that type is not yet available, so the biconditional is not yet stated in Lean. </p>
 
   </div>
 </div>

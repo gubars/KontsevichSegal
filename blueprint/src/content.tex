@@ -41,7 +41,8 @@ in Sections~2 and~5.
 
 \begin{definition}[Allowable complex metric, Hodge-star form; KS Definition 2.1]
   \label{def:allowable-hodge}
-  \notready
+  \lean{KontsevichSegal.Hodge.IsAllowableHodge}
+  \leanok
   \uses{found:hodge-star}
   On a $d$-dimensional real vector space $V$, a quadratic form
   $g \colon V \to \mathbb C$ is an \emph{allowable complex metric} if, for
@@ -53,11 +54,18 @@ in Sections~2 and~5.
   is positive-definite. Here $*_g$ is the Hodge star operator of the complex
   metric $g$, and $|\Lambda^d(V^*)|_{\mathbb C}$ is the complexified twisted
   determinant line, with orientation-reversing automorphisms of $V$ acting
-  antilinearly.
+  antilinearly; the real part is positive when it lies on the ray of
+  positive real volume elements of the twisted line.
 
-  The Hodge star operator for complex metrics, and the induced quadratic
-  forms on the exterior powers $\Lambda^p(V^*)$, are not available in
-  Mathlib.
+  The formalization places the form on real $p$-vectors, mirrored from the
+  $p$-covectors by the complementary-blade correspondence, and normalizes by
+  the principal square root of the Gram determinant of $g$ in a real
+  coframe, which the twisted line determines up to a positive real factor.
+  On the blades of a diagonalizing basis the values are positive real
+  multiples of the paper's values
+  $(\lambda_1 \cdots \lambda_d)^{1/2} \prod_{i \in S} \lambda_i^{-1}$, so
+  positive-definiteness of the real part is the same condition on both
+  sides.
 \end{definition}
 
 \begin{definition}[Allowable complex metric, working definition: the angle condition]
@@ -98,9 +106,13 @@ in Sections~2 and~5.
   $\lambda_i$, not on the negative real axis, satisfying the angle
   condition (4) of Definition~\ref{def:allowable}.
 
-  The biconditional cannot yet be stated in Lean: the Hodge-star side
-  (Definition~\ref{def:allowable-hodge}) is not expressible, pending the
-  Hodge star operator and induced forms on exterior powers in Mathlib.
+  The forward direction (the angle condition implies
+  Definition~\ref{def:allowable-hodge}) is formalized and proved. The
+  reverse direction requires stating Definition~\ref{def:allowable-hodge}
+  for a bare symmetric nondegenerate $\mathbb C$-valued form, with no
+  diagonalization assumed, together with the real simultaneous
+  diagonalization step of the paper's proof; that type is not yet
+  available, so the biconditional is not yet stated in Lean.
 \end{theorem}
 
 \begin{proof}
