@@ -203,13 +203,16 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
 
 \begin{definition}[The Hodge star on exterior powers]
   \label{found:hodge-star}
-  \notready
+  \lean{KontsevichSegal.Hodge.star_g, KontsevichSegal.Hodge.star_g_star_g}
+  \leanok
   The Hodge star operator $*_g$ for complex metrics and the induced quadratic forms on the
   exterior powers $\Lambda^p(V^*)$, with the twisted determinant line. This is exactly the
   machinery Definition~2.1 (the Hodge-star form of allowability) and Theorem~2.2 (its
   equivalence with the angle condition) need, and the $p=0$ branch of the two-copies
-  statement. The Hodge star at this generality is not in Mathlib. \emph{Grind to
-  Mathlib-scale.}
+  statement. The operator is built from scratch (Mathlib has no Hodge star at this
+  generality): the perfect wedge pairing on exterior powers, the metric-normalized volume
+  element, $*_g$ with $*_g*_g = (-1)^{p(d-p)}$, and the induced forms, are formalized in
+  \texttt{ComplexMetrics/HodgeScaffold.lean}.
 \end{definition}
 
 \begin{definition}[Homogeneous spaces, associated bundles and the $Q_{\mathbb C}$ topology]

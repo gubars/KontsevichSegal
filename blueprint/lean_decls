@@ -108,5 +108,7 @@ WickRotation.VacuumExpectationData.VkIsDomainOfHolomorphy
 WickRotation.VacuumExpectationData.Uk_subset_Vk
 WickRotation.HilbertCompletion
 WickRotation.hilbertCompletion
+KontsevichSegal.Hodge.star_g
+KontsevichSegal.Hodge.star_g_star_g
 WickRotation.MinkowskiLinear
 WickRotation.MinkowskiModel.minkowskiLinear
