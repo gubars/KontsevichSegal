@@ -113,6 +113,11 @@ HasNuclearDirectLimit
 HasCompletedNuclearTensor
 WickRotation.HilbertCompletion
 WickRotation.hilbertCompletion
+WickRotation.InducesUnitaryGH.checkIncl
+WickRotation.InducesUnitaryGH.hatIncl
+WickRotation.InducesUnitaryGH.factor
+WickRotation.InducesUnitaryGH.inner_eq
+WickRotation.HilbertCompletion
 KontsevichSegal.Hodge.star_g
 KontsevichSegal.Hodge.star_g_star_g
 WickRotation.MinkowskiLinear
