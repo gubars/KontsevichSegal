@@ -227,11 +227,24 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
   The $\mathrm{GL}(V)/\mathrm O(V)$ and $\mathrm O_{\mathbb C}(Z)$ homogeneous-space actions,
   the associated-bundle machinery, the real Grassmannian, and a topology on
   $Q_{\mathbb C}(V)$ (needed even to state contractibility). This is what Propositions~2.4
-  and~2.6 rest on, and what the two-dimensional polydisc description needs. The same node
-  carries the small linear-algebra sub-gap that blocks the Proposition~2.5 proof: the
-  Courant--Fischer min--max / eigenvalue-interlacing characterization of the critical angles,
-  which is one lemma rather than a body of theory. \emph{Grind to Mathlib-scale.}
+  and~2.6 rest on, and what the two-dimensional polydisc description needs.
+  \emph{Mathlib-scale.}
 \end{definition}
+
+\begin{lemma}[Courant--Fischer min--max and eigenvalue interlacing for allowable angles]
+  \label{lem:eigenvalue-minmax}
+  \notready
+  \uses{def:allowable, def:restrict-form}
+  For $g \in Q_{\mathbb C}(V)$, the ordered angles
+  $\theta_1 \geq \dots \geq \theta_d$ of $g$ are characterized by the min--max
+  \[
+    \theta_k \;=\; \sup_{\dim A = k}\ \inf_{v \in \mathbb P(A)} \arg g(v)
+             \;=\; \inf_{\dim A = d-k+1}\ \sup_{v \in \mathbb P(A)} \arg g(v).
+  \]
+  Consequently, if $W \leq V$ has codimension one, the angles
+  $\theta'_1 \geq \dots \geq \theta'_{d-1}$ of $g|_W$ interleave those of $g$:
+  $\theta_k \geq \theta'_k \geq \theta_{k+1}$.
+\end{lemma}
 
 \begin{definition}[Complexified Minkowski space]
   \label{found:minkowski-linear}
