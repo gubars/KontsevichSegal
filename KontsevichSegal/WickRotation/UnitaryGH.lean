@@ -171,7 +171,7 @@ structure InducesUnitaryGH [gc : CobordismGeometry] [dc : DualConjugateGeometry]
   With `checkIncl_injective`, this forces `B` positive-definite (an inner product is), i.e. `hU`'s
   reflection-positivity — the capstone rests on real unitarity. -/
   inner_eq : ∀ (σ : TimeSymmetricGerm) (x y : T.ECheck (WOC.cplx σ.1)),
-    @inner ℂ (EHilb σ) _ (checkIncl σ x) (checkIncl σ y)
+    @inner ℂ (EHilb σ) _ (checkIncl σ y) (checkIncl σ x)
       = pairing σ (T.toEHat (WOC.cplx σ.1) (T.fromECheck (WOC.cplx σ.1) x)) y
   /-- A real-analytic gh cobordism between time-symmetric germs induces a unitary ISOMORPHISM
   `E_{Σ_0}^Hilb → E_{Σ_1}^Hilb` (the iso is bijective — it IDENTIFIES the Hilbert spaces; per the
@@ -221,7 +221,7 @@ theorem InducesUnitaryGH.pairing_reflectionPositive [gc : CobordismGeometry]
   letI := W.hilbert
   refine ⟨fun x y => ?_, fun x => ?_, fun x hx => ?_⟩
   · rw [← W.inner_eq σ y x, ← W.inner_eq σ x y]
-    exact inner_conj_symm (𝕜 := ℂ) (W.checkIncl σ x) (W.checkIncl σ y)
+    exact inner_conj_symm (𝕜 := ℂ) (W.checkIncl σ y) (W.checkIncl σ x)
   · rw [← W.inner_eq σ x x]
     exact inner_self_nonneg (𝕜 := ℂ) (x := W.checkIncl σ x)
   · rw [← W.inner_eq σ x x] at hx
