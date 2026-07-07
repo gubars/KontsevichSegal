@@ -1351,3 +1351,420 @@ angle, in sorted order. -/
 example : Real.arctan (-1) + Real.pi / 12 = -(Real.pi / 6) := by
   rw [show ((-1 : ℝ)) = -(1 : ℝ) from rfl, Real.arctan_neg, Real.arctan_one]
   ring
+
+-- Codim-1 interlacing (Cauchy; phi-free)
+
+/-! ## Codim-1 interlacing of the KS angles
+
+KS paper Proposition 2.5 (p. 13): for a codimension-one subspace `W ≤ V` the critical
+angles of `arg (g|_W)` interleave those of `arg g`: `θ_j ≥ θ'_j ≥ θ_{j+1}`. Here the
+restricted angles are `ksAngleOn g W`, the same sup-inf ranged over subspaces of `V`
+contained in `W`. The upper bound is pure family inclusion; the lower bound intersects
+the span of the top `j+2` eigenvectors of the pencil with `W` (dimension count
+`(j+2) + (n−1) − n = j+1`) and extracts a `(j+1)`-dimensional witness inside the
+intersection. -/
+
+section Interlacing
+
+open Module
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+
+/-- The span of the top `k+1` pencil eigenvectors, with the `rotatedCore` instances
+internalized (checkpoint-2b device; realizes `lowSpan` as an instance-free function of
+`(g, φ, hpos)`). -/
+noncomputable def pencilLowSpan (g : AllowableComplexMetric V) (φ : ℝ)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x)
+    (k : Fin (Module.finrank ℝ V)) : Submodule ℝ V :=
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
+  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
+  lowSpan (isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ)
+    (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+      (nondegenerate_of_posDef (g.rotatedRe φ) hpos))
+    (fun _ _ => rfl) (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+    (fun x y => pencilOperator_pairing _ _ _ x y)) rfl k
+
+theorem finrank_pencilLowSpan (g : AllowableComplexMetric V) (φ : ℝ)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x)
+    (k : Fin (Module.finrank ℝ V)) :
+    finrank ℝ (pencilLowSpan g φ hpos k) = (k : ℕ) + 1 := by
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
+  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
+  have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+      (nondegenerate_of_posDef (g.rotatedRe φ) hpos)).IsSymmetric :=
+    isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
+      (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+      (fun a b => pencilOperator_pairing _ _ _ a b)
+  exact finrank_lowSpan hTsym rfl k
+
+/-- **STEP 1 (transported witness fact)**: on the span of the top `k+1` pencil
+eigenvectors, every nonzero vector has `arg g(x,x) ≥ ksAngle g k`. Transport of
+checkpoint 2a's `eigenvalue_le_rayleigh_of_mem_lowSpan` through `arctan` and the
+rotation, with `φ` cancelling against `ksAngle_eq_arctan_eigenvalue`. -/
+theorem ksAngle_le_arg_of_mem_pencilLowSpan (g : AllowableComplexMetric V) (φ : ℝ)
+    (hφ : |φ| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x)
+    (k : Fin (Module.finrank ℝ V)) {x : V}
+    (hx : x ∈ pencilLowSpan g φ hpos k) (hx0 : x ≠ 0) :
+    ksAngle g k ≤ Complex.arg (g.toForm x x) := by
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
+  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
+  have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+      (nondegenerate_of_posDef (g.rotatedRe φ) hpos)).IsSymmetric :=
+    isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
+      (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+      (fun a b => pencilOperator_pairing _ _ _ a b)
+  set T := pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+    (nondegenerate_of_posDef (g.rotatedRe φ) hpos) with hTdef
+  have h1 : hTsym.eigenvalues rfl k ≤ inner ℝ (T x) x / ‖x‖ ^ 2 :=
+    eigenvalue_le_rayleigh_of_mem_lowSpan hTsym rfl k hx hx0
+  have hray : inner ℝ (T x) x / ‖x‖ ^ 2
+      = g.rotatedIm φ x x / g.rotatedRe φ x x := by
+    have hA : inner ℝ (T x) x = g.rotatedIm φ x x :=
+      pencilOperator_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ x x
+    have hB : ‖x‖ ^ 2 = g.rotatedRe φ x x := by
+      rw [← real_inner_self_eq_norm_sq]
+      rfl
+    rw [hA, hB]
+  have h2 : Real.arctan (hTsym.eigenvalues rfl k)
+      ≤ Complex.arg (g.toForm x x) - φ := by
+    have h3 := Real.arctan_mono h1
+    rwa [hray, arctan_pencil_rayleigh_eq_arg_sub g φ hφ hpos hx0] at h3
+  rw [ksAngle_eq_arctan_eigenvalue g φ hφ hpos k]
+  have hpe : pencilEigenvalues g φ hpos rfl = hTsym.eigenvalues rfl := rfl
+  rw [hpe]
+  linarith
+
+/-- **STEP 0(a) build**: inside any submodule `U` there is a submodule of any smaller
+dimension, obtained by spanning the first `m` vectors of a basis of `U` pushed into
+`V`. -/
+theorem exists_finrank_eq_of_le {U : Submodule ℝ V} {m : ℕ}
+    (hm : m ≤ finrank ℝ U) :
+    ∃ A : Submodule ℝ V, A ≤ U ∧ finrank ℝ A = m := by
+  classical
+  have hli : LinearIndependent ℝ
+      (fun i : Fin m => ((Module.finBasis ℝ ↥U (Fin.castLE hm i) : ↥U) : V)) :=
+    ((Module.finBasis ℝ ↥U).linearIndependent.comp _
+      (Fin.castLE_injective hm)).map' U.subtype (Submodule.ker_subtype U)
+  refine ⟨Submodule.span ℝ (Set.range fun i : Fin m =>
+    ((Module.finBasis ℝ ↥U (Fin.castLE hm i) : ↥U) : V)), ?_, ?_⟩
+  · rw [Submodule.span_le]
+    rintro y ⟨i, rfl⟩
+    exact (Module.finBasis ℝ ↥U (Fin.castLE hm i)).2
+  · rw [finrank_span_eq_card hli, Fintype.card_fin]
+
+omit [FiniteDimensional ℝ V] in
+/-- A positive-dimensional submodule yields a nonempty nonzero-vector subtype (stated
+over the bare module, with no inner-product instances). -/
+theorem nonempty_subtype_mem_ne_zero {S : Submodule ℝ V} (h : 0 < finrank ℝ S) :
+    Nonempty {x : V // x ∈ S ∧ x ≠ 0} := by
+  have hbot : S ≠ ⊥ := by
+    intro hb
+    rw [hb, finrank_bot] at h
+    exact lt_irrefl 0 h
+  obtain ⟨x, hxS, hx0⟩ := (Submodule.ne_bot_iff S).mp hbot
+  exact ⟨⟨x, hxS, hx0⟩⟩
+
+/-- Argument families are bounded below by `-π`. -/
+theorem bddBelow_range_arg {ι : Sort*} (f : ι → ℂ) :
+    BddBelow (Set.range fun i => Complex.arg (f i)) := by
+  refine ⟨-Real.pi, ?_⟩
+  rintro r ⟨i, rfl⟩
+  exact (Complex.neg_pi_lt_arg _).le
+
+/-- Families of infima of argument families are bounded above by `π`. -/
+theorem bddAbove_range_iInf_arg {ι : Sort*} (g : AllowableComplexMetric V)
+    (F : ι → Submodule ℝ V)
+    (hne : ∀ i, Nonempty {x : V // x ∈ F i ∧ x ≠ 0}) :
+    BddAbove (Set.range fun i =>
+      ⨅ x : {x : V // x ∈ F i ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1)) := by
+  refine ⟨Real.pi, ?_⟩
+  rintro r ⟨i, rfl⟩
+  haveI := hne i
+  obtain ⟨x⟩ := hne i
+  exact le_trans (ciInf_le (bddBelow_range_arg _) x) (Complex.arg_le_pi _)
+
+/-- **STEP 2: the restricted KS angles** (KS paper Proposition 2.5): the same sup-inf
+of `arg g(x,x)`, ranged over subspaces of `V` contained in `W` (kept inside `V`, so
+dimension counts and intersections avoid coercions to `↥W`). -/
+noncomputable def ksAngleOn (g : AllowableComplexMetric V) (W : Submodule ℝ V)
+    (k : Fin (Module.finrank ℝ ↥W)) : ℝ :=
+  ⨆ S : {S : Submodule ℝ V // S ≤ W ∧ finrank ℝ S = (k : ℕ) + 1},
+    ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1)
+
+/-- **STEP 3 (upper bound, family inclusion)**: `ksAngleOn g W j ≤ ksAngle g j` (the
+index `j` viewed in `Fin n` via `finrank ↥W ≤ n`). Every subspace of the restricted
+family belongs to the ambient family with the identical inner infimum. -/
+theorem ksAngleOn_le_ksAngle (g : AllowableComplexMetric V) (W : Submodule ℝ V)
+    (j : Fin (Module.finrank ℝ ↥W)) :
+    ksAngleOn g W j ≤ ksAngle g (Fin.castLE (Submodule.finrank_le W) j) := by
+  classical
+  obtain ⟨A0, hA0le, hA0dim⟩ := exists_finrank_eq_of_le (U := W)
+    (Nat.succ_le_of_lt j.isLt)
+  haveI : Nonempty {S : Submodule ℝ V // S ≤ W ∧ finrank ℝ S = (j : ℕ) + 1} :=
+    ⟨⟨A0, hA0le, hA0dim⟩⟩
+  refine ciSup_le fun S => ?_
+  refine le_ciSup_of_le
+    (bddAbove_range_iInf_arg g (fun S' : {S' : Submodule ℝ V //
+        finrank ℝ S' = ((Fin.castLE (Submodule.finrank_le W) j : ℕ)) + 1} => S'.1)
+      (fun S' => nonempty_subtype_mem_ne_zero (by rw [S'.2]; omega)))
+    ⟨S.1, S.2.2⟩ le_rfl
+
+/-- **STEP 4 (lower bound, constructive)**: `ksAngle g (j+1) ≤ ksAngleOn g W j` for
+codimension-one `W`. The span `U` of the top `j+2` pencil eigenvectors meets `W` in
+dimension `≥ (j+2) + (n−1) − n = j+1`; a `(j+1)`-dimensional `A ≤ U ⊓ W` is a member
+of the restricted family on which `arg g ≥ ksAngle g (j+1)` pointwise (STEP 1). -/
+theorem ksAngle_le_ksAngleOn (g : AllowableComplexMetric V) (W : Submodule ℝ V)
+    (hcodim : finrank ℝ ↥W + 1 = Module.finrank ℝ V)
+    (j : Fin (Module.finrank ℝ ↥W)) :
+    ksAngle g ⟨(j : ℕ) + 1, by have := j.isLt; omega⟩ ≤ ksAngleOn g W j := by
+  classical
+  obtain ⟨φ, hφ, hpos⟩ := exists_rotation_posDef g
+  set jV1 : Fin (Module.finrank ℝ V) := ⟨(j : ℕ) + 1, by have := j.isLt; omega⟩
+    with hjV1
+  set U := pencilLowSpan g φ hpos jV1 with hU
+  have hUdim : finrank ℝ ↥U = (j : ℕ) + 2 := by
+    rw [hU, finrank_pencilLowSpan g φ hpos jV1]
+  have hinf : (j : ℕ) + 1 ≤ finrank ℝ ↥(U ⊓ W) := by
+    have h1 := Submodule.finrank_sup_add_finrank_inf_eq U W
+    have h2 : finrank ℝ ↥(U ⊔ W) ≤ finrank ℝ V := Submodule.finrank_le _
+    omega
+  obtain ⟨A, hAle, hAdim⟩ := exists_finrank_eq_of_le (U := U ⊓ W) hinf
+  have hAW : A ≤ W := le_trans hAle inf_le_right
+  have hAU : A ≤ U := le_trans hAle inf_le_left
+  haveI hAne : Nonempty {x : V // x ∈ A ∧ x ≠ 0} :=
+    nonempty_subtype_mem_ne_zero (by rw [hAdim]; omega)
+  have hAinf : ksAngle g jV1
+      ≤ ⨅ x : {x : V // x ∈ A ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1) :=
+    le_ciInf fun x =>
+      ksAngle_le_arg_of_mem_pencilLowSpan g φ hφ hpos jV1 (hAU x.2.1) x.2.2
+  refine le_trans hAinf (le_ciSup
+    (bddAbove_range_iInf_arg g (fun S : {S : Submodule ℝ V //
+        S ≤ W ∧ finrank ℝ S = (j : ℕ) + 1} => S.1)
+      (fun S => nonempty_subtype_mem_ne_zero (by rw [S.2.2]; omega)))
+    ⟨A, hAW, hAdim⟩)
+
+/-- **Codim-1 interlacing of the KS angles** (KS paper Proposition 2.5, p. 13):
+`θ_{j+1} ≤ θ'_j ≤ θ_j`, i.e. the restricted angles interleave the ambient ones,
+`θ_j ≥ θ'_j ≥ θ_{j+1}`. -/
+theorem ksAngle_interlace (g : AllowableComplexMetric V) (W : Submodule ℝ V)
+    (hcodim : finrank ℝ ↥W + 1 = Module.finrank ℝ V)
+    (j : Fin (Module.finrank ℝ ↥W)) :
+    ksAngle g ⟨(j : ℕ) + 1, by have := j.isLt; omega⟩ ≤ ksAngleOn g W j ∧
+      ksAngleOn g W j ≤ ksAngle g (Fin.castLE (Submodule.finrank_le W) j) :=
+  ⟨ksAngle_le_ksAngleOn g W hcodim j, ksAngleOn_le_ksAngle g W j⟩
+
+end Interlacing
+
+/-! ### Faithfulness gate for the interlacing
+
+`ksAngleOn` is `Submodule`-indexed through choice-based data and does not reduce; per
+the standing discipline the two checks are: (1) the compiled index/direction
+arithmetic of the witness construction (the off-by-one guard), and (2) a compiled
+SEMANTIC PROXY: eigenvalue interlacing of the concrete pencil `diag(3,1,−2)` against
+its top-left `2×2` compression `diag(3,1)`. The proxy exhibits the
+phenomenon+direction+index (`μ_k ≥ μ'_k ≥ μ_{k+1}`), which is equivalent to the angle
+interlacing under the monotone `arctan + φ` transport proven in checkpoint 2b; it is
+NOT a reduction of `ksAngleOn` itself, which cannot reduce. -/
+
+/-- Index/direction arithmetic (off-by-one guard): the lower-bound dimension count
+`(j+2) + (n−1) − n = j+1` over the valid range. -/
+example (n j : ℕ) (h : j + 1 < n) : (j + 2) + (n - 1) - n = j + 1 := by omega
+
+/-- Index pins: in `ksAngle_interlace` the `≥`-side index (`Fin.castLE`) has value `j`
+(the paper's `θ_j`) and the `≤`-side index has value `j+1` (the paper's `θ_{j+1}`):
+`θ_j ≥ θ'_j ≥ θ_{j+1}`. -/
+example {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+    (W : Submodule ℝ V) (hcodim : Module.finrank ℝ ↥W + 1 = Module.finrank ℝ V)
+    (j : Fin (Module.finrank ℝ ↥W)) :
+    ((Fin.castLE (Submodule.finrank_le W) j : Fin (Module.finrank ℝ V)) : ℕ) = (j : ℕ)
+      ∧ ((⟨(j : ℕ) + 1, by have := j.isLt; omega⟩ : Fin (Module.finrank ℝ V)) : ℕ)
+          = (j : ℕ) + 1 :=
+  ⟨rfl, rfl⟩
+
+/-- The top-left `2×2` compression `diag(3, 1)` of the concrete pencil
+`diag(3, 1, −2)`. -/
+noncomputable def diagTL2 : EuclideanSpace ℝ (Fin 2) →ₗ[ℝ] EuclideanSpace ℝ (Fin 2) :=
+  (WithLp.linearEquiv 2 ℝ (Fin 2 → ℝ)).symm.toLinearMap
+    ∘ₗ (LinearMap.pi fun i => (![3, 1] i : ℝ) • LinearMap.proj i)
+    ∘ₗ (WithLp.linearEquiv 2 ℝ (Fin 2 → ℝ)).toLinearMap
+
+@[simp] theorem diagTL2_apply (x : EuclideanSpace ℝ (Fin 2)) (i : Fin 2) :
+    diagTL2 x i = ![3, 1] i * x i := rfl
+
+/-- The compression is symmetric. -/
+theorem diagTL2_isSymmetric : diagTL2.IsSymmetric := by
+  intro x y
+  rw [real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 2) ℝ),
+    real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 2) ℝ)]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  simp only [EuclideanSpace.basisFun_repr, diagTL2_apply]
+  ring
+
+/-- `3` is an eigenvalue of the compression (eigenvector `e₀`). -/
+theorem diagTL2_hasEigenvalue_three : Module.End.HasEigenvalue diagTL2 3 := by
+  refine Module.End.hasEigenvalue_of_hasEigenvector
+    (x := EuclideanSpace.single 0 1) ⟨Module.End.mem_eigenspace_iff.mpr ?_, ?_⟩
+  · ext i
+    fin_cases i <;> simp [diagTL2_apply, EuclideanSpace.single_apply]
+  · intro h
+    have h0 := congrArg (fun v : EuclideanSpace ℝ (Fin 2) => v 0) h
+    simp [EuclideanSpace.single_apply] at h0
+
+/-- `1` is an eigenvalue of the compression (eigenvector `e₁`). -/
+theorem diagTL2_hasEigenvalue_one : Module.End.HasEigenvalue diagTL2 1 := by
+  refine Module.End.hasEigenvalue_of_hasEigenvector
+    (x := EuclideanSpace.single 1 1) ⟨Module.End.mem_eigenspace_iff.mpr ?_, ?_⟩
+  · ext i
+    fin_cases i <;> simp [diagTL2_apply, EuclideanSpace.single_apply]
+  · intro h
+    have h1 := congrArg (fun v : EuclideanSpace ℝ (Fin 2) => v 1) h
+    simp [EuclideanSpace.single_apply] at h1
+
+/-- The sorted eigenvalue vector of the compression is `![3, 1]`. -/
+theorem diagTL2_eigenvalues (hn : Module.finrank ℝ (EuclideanSpace ℝ (Fin 2)) = 2) :
+    diagTL2_isSymmetric.eigenvalues hn = ![3, 1] := by
+  obtain ⟨i1, hi1⟩ :=
+    diagTL2_isSymmetric.exists_eigenvalues_eq hn diagTL2_hasEigenvalue_three
+  obtain ⟨i2, hi2⟩ :=
+    diagTL2_isSymmetric.exists_eigenvalues_eq hn diagTL2_hasEigenvalue_one
+  have hne12 : i1 ≠ i2 := by
+    intro h
+    rw [h, hi2] at hi1
+    norm_num at hi1
+  have hle : diagTL2_isSymmetric.eigenvalues hn 1
+      ≤ diagTL2_isSymmetric.eigenvalues hn 0 :=
+    diagTL2_isSymmetric.eigenvalues_antitone hn (by decide : (0 : Fin 2) ≤ 1)
+  have hkey : diagTL2_isSymmetric.eigenvalues hn 0 = 3
+      ∧ diagTL2_isSymmetric.eigenvalues hn 1 = 1 := by
+    fin_cases i1 <;> fin_cases i2
+    · exact absurd rfl hne12
+    · exact ⟨hi1, hi2⟩
+    · have b1 : diagTL2_isSymmetric.eigenvalues hn 1 = 3 := hi1
+      have b2 : diagTL2_isSymmetric.eigenvalues hn 0 = 1 := hi2
+      constructor <;> linarith
+    · exact absurd rfl hne12
+  funext j
+  fin_cases j
+  · exact hkey.1
+  · exact hkey.2
+
+/-- `3` is an eigenvalue of `diag(3,1,−2)` (eigenvector `e₀`). -/
+theorem diagOp3_hasEigenvalue_three : Module.End.HasEigenvalue diagOp3 3 := by
+  refine Module.End.hasEigenvalue_of_hasEigenvector
+    (x := EuclideanSpace.single 0 1) ⟨Module.End.mem_eigenspace_iff.mpr ?_, ?_⟩
+  · ext i
+    fin_cases i <;> simp [diagOp3_apply, EuclideanSpace.single_apply]
+  · intro h
+    have h0 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 0) h
+    simp [EuclideanSpace.single_apply] at h0
+
+/-- `1` is an eigenvalue of `diag(3,1,−2)` (eigenvector `e₁`). -/
+theorem diagOp3_hasEigenvalue_one : Module.End.HasEigenvalue diagOp3 1 := by
+  refine Module.End.hasEigenvalue_of_hasEigenvector
+    (x := EuclideanSpace.single 1 1) ⟨Module.End.mem_eigenspace_iff.mpr ?_, ?_⟩
+  · ext i
+    fin_cases i <;> simp [diagOp3_apply, EuclideanSpace.single_apply]
+  · intro h
+    have h1 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 1) h
+    simp [EuclideanSpace.single_apply] at h1
+
+/-- `−2` is an eigenvalue of `diag(3,1,−2)` (eigenvector `e₂`). -/
+theorem diagOp3_hasEigenvalue_neg_two : Module.End.HasEigenvalue diagOp3 (-2) := by
+  have hc2 : (![(3 : ℝ), 1, -2]) 2 = -2 := rfl
+  refine Module.End.hasEigenvalue_of_hasEigenvector
+    (x := EuclideanSpace.single 2 1) ⟨Module.End.mem_eigenspace_iff.mpr ?_, ?_⟩
+  · ext i
+    fin_cases i <;>
+      simp [diagOp3_apply, EuclideanSpace.single_apply, Fin.ext_iff, hc2]
+  · intro h
+    have h2 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 2) h
+    simp [EuclideanSpace.single_apply] at h2
+
+/-- Every eigenvalue of `diag(3,1,−2)` is one of `3, 1, −2` (coordinate extraction on
+an eigenvector). -/
+theorem diagOp3_eigenvalue_mem {μ : ℝ} (h : Module.End.HasEigenvalue diagOp3 μ) :
+    μ = 3 ∨ μ = 1 ∨ μ = -2 := by
+  obtain ⟨v, hv⟩ := h.exists_hasEigenvector
+  have heq : diagOp3 v = μ • v := Module.End.mem_eigenspace_iff.mp hv.1
+  have hex : ∃ i, v i ≠ 0 := by
+    by_contra hall
+    push_neg at hall
+    exact hv.2 (by ext i; exact hall i)
+  obtain ⟨i, hi⟩ := hex
+  have hcoord := congrArg (fun w : EuclideanSpace ℝ (Fin 3) => w i) heq
+  simp only [diagOp3_apply, PiLp.smul_apply, smul_eq_mul] at hcoord
+  have hμ : μ = ![3, 1, -2] i := mul_right_cancel₀ hi hcoord.symm
+  fin_cases i
+  · exact Or.inl (by simpa using hμ)
+  · exact Or.inr (Or.inl (by simpa using hμ))
+  · exact Or.inr (Or.inr (by rw [hμ]; rfl))
+
+/-- The sorted eigenvalue vector of `diag(3,1,−2)` is `![3, 1, −2]`. -/
+theorem diagOp3_eigenvalues (hn : Module.finrank ℝ (EuclideanSpace ℝ (Fin 3)) = 3) :
+    diagOp3_isSymmetric.eigenvalues hn = ![3, 1, -2] := by
+  obtain ⟨i3, hi3⟩ :=
+    diagOp3_isSymmetric.exists_eigenvalues_eq hn diagOp3_hasEigenvalue_three
+  obtain ⟨i1, hi1⟩ :=
+    diagOp3_isSymmetric.exists_eigenvalues_eq hn diagOp3_hasEigenvalue_one
+  obtain ⟨i2, hi2⟩ :=
+    diagOp3_isSymmetric.exists_eigenvalues_eq hn diagOp3_hasEigenvalue_neg_two
+  have hanti := diagOp3_isSymmetric.eigenvalues_antitone hn
+  have hmem : ∀ j, diagOp3_isSymmetric.eigenvalues hn j = 3
+      ∨ diagOp3_isSymmetric.eigenvalues hn j = 1
+      ∨ diagOp3_isSymmetric.eigenvalues hn j = -2 := fun j =>
+    diagOp3_eigenvalue_mem (diagOp3_isSymmetric.hasEigenvalue_eigenvalues hn j)
+  have h0 : diagOp3_isSymmetric.eigenvalues hn 0 = 3 := by
+    have hge : (3 : ℝ) ≤ diagOp3_isSymmetric.eigenvalues hn 0 :=
+      hi3 ▸ hanti (Fin.zero_le i3)
+    rcases hmem 0 with h | h | h
+    · exact h
+    · linarith
+    · linarith
+  have h2 : diagOp3_isSymmetric.eigenvalues hn 2 = -2 := by
+    have hle : diagOp3_isSymmetric.eigenvalues hn 2 ≤ -2 :=
+      hi2 ▸ hanti (Fin.le_last i2)
+    rcases hmem 2 with h | h | h
+    · linarith
+    · linarith
+    · exact h
+  have h1 : diagOp3_isSymmetric.eigenvalues hn 1 = 1 := by
+    have hne0 : i1 ≠ 0 := by
+      intro h
+      rw [h, h0] at hi1
+      norm_num at hi1
+    have hne2 : i1 ≠ 2 := by
+      intro h
+      rw [h, h2] at hi1
+      norm_num at hi1
+    have hi1eq : i1 = 1 := by
+      have hv := i1.isLt
+      have hv0 : (i1 : ℕ) ≠ 0 := fun hh => hne0 (Fin.ext (by simpa using hh))
+      have hv2 : (i1 : ℕ) ≠ 2 := fun hh => hne2 (Fin.ext (by simpa using hh))
+      apply Fin.ext
+      simp only [Fin.val_one]
+      omega
+    rw [← hi1eq]
+    exact hi1
+  funext j
+  fin_cases j
+  · exact h0
+  · exact h1
+  · exact h2
+
+/-- **SEMANTIC PROXY** for the interlacing: the sorted eigenvalues of the pencil
+`diag(3,1,−2)` and of its compression `diag(3,1)` interlace,
+`μ_k ≥ μ'_k ≥ μ_{k+1}`: `3 ≥ 3 ≥ 1` and `1 ≥ 1 ≥ −2`. -/
+example (hn3 : Module.finrank ℝ (EuclideanSpace ℝ (Fin 3)) = 3)
+    (hn2 : Module.finrank ℝ (EuclideanSpace ℝ (Fin 2)) = 2) :
+    (diagTL2_isSymmetric.eigenvalues hn2 0 ≤ diagOp3_isSymmetric.eigenvalues hn3 0
+      ∧ diagOp3_isSymmetric.eigenvalues hn3 1 ≤ diagTL2_isSymmetric.eigenvalues hn2 0)
+    ∧ (diagTL2_isSymmetric.eigenvalues hn2 1 ≤ diagOp3_isSymmetric.eigenvalues hn3 1
+      ∧ diagOp3_isSymmetric.eigenvalues hn3 2
+          ≤ diagTL2_isSymmetric.eigenvalues hn2 1) := by
+  have hc2 : (![(3 : ℝ), 1, -2]) 2 = -2 := rfl
+  rw [diagOp3_eigenvalues hn3, diagTL2_eigenvalues hn2]
+  norm_num [hc2]
