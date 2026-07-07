@@ -5,6 +5,7 @@ import KontsevichSegal.Cobordism.Category
 import KontsevichSegal.ComplexMetrics
 import KontsevichSegal.ComplexMetrics.Defs
 import KontsevichSegal.ComplexMetrics.Domain
+import KontsevichSegal.ComplexMetrics.EigenvalueMinmax
 import KontsevichSegal.ComplexMetrics.Equivalence
 import KontsevichSegal.ComplexMetrics.HodgeScaffold
 import KontsevichSegal.ComplexMetrics.Restriction
