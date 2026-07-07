@@ -476,3 +476,412 @@ example :
     ring
   rw [hcomb, arg_exp_ofReal_mul_I ⟨by linarith, by linarith⟩, Real.tan_neg,
     Real.tan_pi_div_four]
+
+-- General Courant-Fischer (Mathlib-side; no Kontsevich-Segal content)
+
+/-! ## General Courant-Fischer min-max for a symmetric operator
+
+Pure spectral-theorem content over the reals: for `T : E ->l[R] E` symmetric on a
+finite-dimensional real inner product space, the `k`-th eigenvalue of Mathlib's
+decreasing enumeration `hT.eigenvalues hn` is characterized as a sup-inf (over
+subspaces of dimension `k + 1`) and as an inf-sup (over subspaces of dimension
+`n - k`) of the Rayleigh quotient `inner R (T x) x / ‖x‖ ^ 2`. The index sets are
+encoded as subtypes so that no vacuous supremum or infimum of an empty family enters:
+every index is a genuinely qualifying subspace, every inner family is nonempty, and
+the Rayleigh quotient is uniformly bounded by the extreme eigenvalues. -/
+
+section CourantFischer
+
+open Module
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+/-- Real inner product expanded over an orthonormal basis:
+`inner R x y = ∑ i, (repr x i) * (repr y i)`. -/
+theorem real_inner_eq_sum_repr {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι ℝ E)
+    (x y : E) : inner ℝ x y = ∑ i, b.repr x i * b.repr y i := by
+  conv_lhs => rw [← b.sum_repr x]
+  rw [sum_inner]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [real_inner_smul_left, ← b.repr_apply_apply]
+
+/-- Norm squared expanded over an orthonormal basis: `‖x‖^2 = ∑ i, (repr x i)^2`. -/
+theorem norm_sq_eq_sum_repr {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι ℝ E)
+    (x : E) : ‖x‖ ^ 2 = ∑ i, b.repr x i ^ 2 := by
+  rw [← real_inner_self_eq_norm_sq, real_inner_eq_sum_repr b x x]
+  exact Finset.sum_congr rfl fun i _ => (pow_two _).symm
+
+/-- For `x ≠ 0` the coordinate square sum is strictly positive. -/
+theorem sum_repr_sq_pos {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι ℝ E) {x : E}
+    (hx : x ≠ 0) : 0 < ∑ i, b.repr x i ^ 2 := by
+  rw [← norm_sq_eq_sum_repr b x]
+  exact pow_pos (norm_pos_iff.mpr hx) 2
+
+/-- A vector in the span of part of an orthonormal basis has vanishing coordinates
+outside that part. -/
+theorem repr_eq_zero_of_mem_span {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι ℝ E)
+    {m : ℕ} (f : Fin m → ι) {x : E}
+    (hx : x ∈ Submodule.span ℝ (Set.range fun i => b (f i))) {j : ι}
+    (hj : ∀ i, f i ≠ j) : b.repr x j = 0 := by
+  obtain ⟨c, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun ℝ).mp hx
+  rw [b.repr_apply_apply, inner_sum]
+  refine Finset.sum_eq_zero fun i _ => ?_
+  rw [real_inner_smul_right, b.orthonormal.2 (Ne.symm (hj i)), mul_zero]
+
+/-- The span of `m` distinct vectors of an orthonormal basis has dimension `m`. -/
+theorem finrank_span_orthonormal_comp {ι : Type*} [Fintype ι]
+    (b : OrthonormalBasis ι ℝ E) {m : ℕ} (f : Fin m → ι) (hf : Function.Injective f) :
+    finrank ℝ (Submodule.span ℝ (Set.range fun i => b (f i))) = m := by
+  have hli : LinearIndependent ℝ fun i => b (f i) :=
+    (b.orthonormal.linearIndependent).comp f hf
+  rw [finrank_span_eq_card hli, Fintype.card_fin]
+
+variable [FiniteDimensional ℝ E] {n : ℕ} {T : E →ₗ[ℝ] E}
+
+omit [FiniteDimensional ℝ E] in
+/-- A submodule of positive dimension contains a nonzero vector. -/
+theorem exists_ne_zero_mem_of_finrank_pos {S : Submodule ℝ E}
+    (h : 0 < finrank ℝ S) : ∃ x : E, x ∈ S ∧ x ≠ 0 := by
+  have hbot : S ≠ ⊥ := by
+    intro hb
+    rw [hb, finrank_bot] at h
+    exact lt_irrefl 0 h
+  obtain ⟨x, hxS, hx0⟩ := (Submodule.ne_bot_iff S).mp hbot
+  exact ⟨x, hxS, hx0⟩
+
+/-- **The dimension crux**: two subspaces whose dimensions add to more than `dim E`
+intersect in a nonzero vector. -/
+theorem exists_ne_zero_mem_inf_of_finrank_add (S W : Submodule ℝ E)
+    (h : finrank ℝ E < finrank ℝ S + finrank ℝ W) :
+    ∃ x : E, x ∈ S ⊓ W ∧ x ≠ 0 := by
+  refine exists_ne_zero_mem_of_finrank_pos ?_
+  have h1 := Submodule.finrank_sup_add_finrank_inf_eq S W
+  have h2 : finrank ℝ ↥(S ⊔ W) ≤ finrank ℝ E := Submodule.finrank_le _
+  omega
+
+/-- Coordinates of `T x` in the eigenbasis: `repr (T x) i = (eigenvalue i) * repr x i`. -/
+theorem eigenvectorBasis_repr_T_apply (hT : T.IsSymmetric) (hn : finrank ℝ E = n)
+    (x : E) (i : Fin n) :
+    (hT.eigenvectorBasis hn).repr (T x) i
+      = hT.eigenvalues hn i * (hT.eigenvectorBasis hn).repr x i := by
+  rw [(hT.eigenvectorBasis hn).repr_apply_apply,
+    ← hT (hT.eigenvectorBasis hn i) x, hT.apply_eigenvectorBasis,
+    real_inner_smul_left]
+  simp [(hT.eigenvectorBasis hn).repr_apply_apply, RCLike.ofReal_real_eq_id]
+
+/-- **The Rayleigh quotient on the eigenbasis** (the workhorse): for every `x`,
+`inner R (T x) x / ‖x‖^2 = (∑ i, μ_i (repr x i)^2) / (∑ i, (repr x i)^2)`. -/
+theorem rayleigh_eq_sum (hT : T.IsSymmetric) (hn : finrank ℝ E = n) (x : E) :
+    inner ℝ (T x) x / ‖x‖ ^ 2
+      = (∑ i, hT.eigenvalues hn i * (hT.eigenvectorBasis hn).repr x i ^ 2)
+        / ∑ i, (hT.eigenvectorBasis hn).repr x i ^ 2 := by
+  rw [real_inner_eq_sum_repr (hT.eigenvectorBasis hn) (T x) x,
+    norm_sq_eq_sum_repr (hT.eigenvectorBasis hn) x]
+  congr 1
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [eigenvectorBasis_repr_T_apply hT hn x i, pow_two]
+  ring
+
+/-- The Rayleigh quotient is bounded above by the largest eigenvalue. -/
+theorem rayleigh_le_sup' (hT : T.IsSymmetric) (hn : finrank ℝ E = n)
+    (hne : (Finset.univ : Finset (Fin n)).Nonempty) {x : E} (hx : x ≠ 0) :
+    inner ℝ (T x) x / ‖x‖ ^ 2 ≤ Finset.univ.sup' hne (hT.eigenvalues hn) := by
+  rw [rayleigh_eq_sum hT hn x,
+    div_le_iff₀ (sum_repr_sq_pos (hT.eigenvectorBasis hn) hx)]
+  calc (∑ i, hT.eigenvalues hn i * (hT.eigenvectorBasis hn).repr x i ^ 2)
+      ≤ ∑ i, Finset.univ.sup' hne (hT.eigenvalues hn)
+          * (hT.eigenvectorBasis hn).repr x i ^ 2 :=
+        Finset.sum_le_sum fun i _ =>
+          mul_le_mul_of_nonneg_right (Finset.le_sup' _ (Finset.mem_univ i)) (sq_nonneg _)
+    _ = Finset.univ.sup' hne (hT.eigenvalues hn)
+          * ∑ i, (hT.eigenvectorBasis hn).repr x i ^ 2 := by rw [Finset.mul_sum]
+
+/-- The Rayleigh quotient is bounded below by the smallest eigenvalue. -/
+theorem inf'_le_rayleigh (hT : T.IsSymmetric) (hn : finrank ℝ E = n)
+    (hne : (Finset.univ : Finset (Fin n)).Nonempty) {x : E} (hx : x ≠ 0) :
+    Finset.univ.inf' hne (hT.eigenvalues hn) ≤ inner ℝ (T x) x / ‖x‖ ^ 2 := by
+  rw [rayleigh_eq_sum hT hn x,
+    le_div_iff₀ (sum_repr_sq_pos (hT.eigenvectorBasis hn) hx)]
+  calc Finset.univ.inf' hne (hT.eigenvalues hn)
+        * ∑ i, (hT.eigenvectorBasis hn).repr x i ^ 2
+      = ∑ i, Finset.univ.inf' hne (hT.eigenvalues hn)
+          * (hT.eigenvectorBasis hn).repr x i ^ 2 := by rw [Finset.mul_sum]
+    _ ≤ ∑ i, hT.eigenvalues hn i * (hT.eigenvectorBasis hn).repr x i ^ 2 :=
+        Finset.sum_le_sum fun i _ =>
+          mul_le_mul_of_nonneg_right (Finset.inf'_le _ (Finset.mem_univ i)) (sq_nonneg _)
+
+/-- The span of the top `k + 1` eigenvectors (indices `0, …, k`). -/
+noncomputable def lowSpan (hT : T.IsSymmetric) (hn : finrank ℝ E = n) (k : Fin n) :
+    Submodule ℝ E :=
+  Submodule.span ℝ
+    (Set.range fun i : Fin ((k : ℕ) + 1) => hT.eigenvectorBasis hn (Fin.castLE k.isLt i))
+
+/-- The index embedding `Fin (n - k) → Fin n`, `i ↦ k + i`, onto indices `≥ k`. -/
+def highIdx (k : Fin n) (i : Fin (n - (k : ℕ))) : Fin n :=
+  ⟨(k : ℕ) + i.1, by have h1 := i.2; have h2 := k.isLt; omega⟩
+
+/-- The span of the bottom `n - k` eigenvectors (indices `k, …, n - 1`). -/
+noncomputable def highSpan (hT : T.IsSymmetric) (hn : finrank ℝ E = n) (k : Fin n) :
+    Submodule ℝ E :=
+  Submodule.span ℝ (Set.range fun i => hT.eigenvectorBasis hn (highIdx k i))
+
+theorem finrank_lowSpan (hT : T.IsSymmetric) (hn : finrank ℝ E = n) (k : Fin n) :
+    finrank ℝ (lowSpan hT hn k) = (k : ℕ) + 1 :=
+  finrank_span_orthonormal_comp _ _ (Fin.castLE_injective k.isLt)
+
+theorem finrank_highSpan (hT : T.IsSymmetric) (hn : finrank ℝ E = n) (k : Fin n) :
+    finrank ℝ (highSpan hT hn k) = n - (k : ℕ) := by
+  refine finrank_span_orthonormal_comp _ _ fun a b hab => ?_
+  have hval : (k : ℕ) + a.1 = (k : ℕ) + b.1 := congrArg Fin.val hab
+  exact Fin.ext (by omega)
+
+/-- On the span of the top `k + 1` eigenvectors the Rayleigh quotient is at least the
+`k`-th eigenvalue (the coordinates live where the eigenvalues are `≥ μ_k`). -/
+theorem eigenvalue_le_rayleigh_of_mem_lowSpan (hT : T.IsSymmetric)
+    (hn : finrank ℝ E = n) (k : Fin n) {x : E} (hx : x ∈ lowSpan hT hn k)
+    (hx0 : x ≠ 0) : hT.eigenvalues hn k ≤ inner ℝ (T x) x / ‖x‖ ^ 2 := by
+  rw [rayleigh_eq_sum hT hn x,
+    le_div_iff₀ (sum_repr_sq_pos (hT.eigenvectorBasis hn) hx0), Finset.mul_sum]
+  refine Finset.sum_le_sum fun i _ => ?_
+  rcases eq_or_ne ((hT.eigenvectorBasis hn).repr x i) 0 with h0 | h0
+  · rw [h0]
+    simp
+  · refine mul_le_mul_of_nonneg_right ?_ (sq_nonneg _)
+    have hex : ∃ i' : Fin ((k : ℕ) + 1), Fin.castLE k.isLt i' = i := by
+      by_contra hno
+      push_neg at hno
+      exact h0 (repr_eq_zero_of_mem_span (hT.eigenvectorBasis hn)
+        (Fin.castLE k.isLt) hx hno)
+    obtain ⟨i', rfl⟩ := hex
+    have hle : Fin.castLE k.isLt i' ≤ k := by
+      rw [Fin.le_def]
+      simpa using Nat.lt_succ_iff.mp i'.isLt
+    exact hT.eigenvalues_antitone hn hle
+
+/-- On the span of the bottom `n - k` eigenvectors the Rayleigh quotient is at most
+the `k`-th eigenvalue (the coordinates live where the eigenvalues are `≤ μ_k`). -/
+theorem rayleigh_le_eigenvalue_of_mem_highSpan (hT : T.IsSymmetric)
+    (hn : finrank ℝ E = n) (k : Fin n) {x : E} (hx : x ∈ highSpan hT hn k)
+    (hx0 : x ≠ 0) : inner ℝ (T x) x / ‖x‖ ^ 2 ≤ hT.eigenvalues hn k := by
+  rw [rayleigh_eq_sum hT hn x,
+    div_le_iff₀ (sum_repr_sq_pos (hT.eigenvectorBasis hn) hx0), Finset.mul_sum]
+  refine Finset.sum_le_sum fun i _ => ?_
+  rcases eq_or_ne ((hT.eigenvectorBasis hn).repr x i) 0 with h0 | h0
+  · rw [h0]
+    simp
+  · refine mul_le_mul_of_nonneg_right ?_ (sq_nonneg _)
+    have hex : ∃ i' : Fin (n - (k : ℕ)), highIdx k i' = i := by
+      by_contra hno
+      push_neg at hno
+      exact h0 (repr_eq_zero_of_mem_span (hT.eigenvectorBasis hn) (highIdx k) hx hno)
+    obtain ⟨i', rfl⟩ := hex
+    have hle : k ≤ highIdx k i' := by
+      rw [Fin.le_def]
+      exact Nat.le_add_right _ _
+    exact hT.eigenvalues_antitone hn hle
+
+/-- **Courant-Fischer, sup-inf form**: the `k`-th eigenvalue (decreasing order) is the
+supremum over `(k+1)`-dimensional subspaces `S` of the infimum of the Rayleigh
+quotient over nonzero vectors of `S`. -/
+theorem eigenvalues_eq_iSup_iInf_rayleigh (hT : T.IsSymmetric)
+    (hn : finrank ℝ E = n) (k : Fin n) :
+    hT.eigenvalues hn k
+      = ⨆ S : {S : Submodule ℝ E // finrank ℝ S = (k : ℕ) + 1},
+          ⨅ x : {x : E // x ∈ S.1 ∧ x ≠ 0}, inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2 := by
+  have hne : (Finset.univ : Finset (Fin n)).Nonempty := ⟨k, Finset.mem_univ k⟩
+  haveI hSne : Nonempty {S : Submodule ℝ E // finrank ℝ S = (k : ℕ) + 1} :=
+    ⟨⟨lowSpan hT hn k, finrank_lowSpan hT hn k⟩⟩
+  have hxne : ∀ S : {S : Submodule ℝ E // finrank ℝ S = (k : ℕ) + 1},
+      Nonempty {x : E // x ∈ S.1 ∧ x ≠ 0} := by
+    intro S
+    obtain ⟨x, hxS, hx0⟩ := exists_ne_zero_mem_of_finrank_pos (S := S.1)
+      (by rw [S.2]; omega)
+    exact ⟨⟨x, hxS, hx0⟩⟩
+  have hbdd : ∀ S : {S : Submodule ℝ E // finrank ℝ S = (k : ℕ) + 1},
+      BddBelow (Set.range fun x : {x : E // x ∈ S.1 ∧ x ≠ 0} =>
+        inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    intro S
+    refine ⟨Finset.univ.inf' hne (hT.eigenvalues hn), ?_⟩
+    rintro r ⟨x, rfl⟩
+    exact inf'_le_rayleigh hT hn hne x.2.2
+  have houter : BddAbove (Set.range
+      fun S : {S : Submodule ℝ E // finrank ℝ S = (k : ℕ) + 1} =>
+        ⨅ x : {x : E // x ∈ S.1 ∧ x ≠ 0}, inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    refine ⟨Finset.univ.sup' hne (hT.eigenvalues hn), ?_⟩
+    rintro r ⟨S, rfl⟩
+    obtain ⟨x⟩ := hxne S
+    exact le_trans (ciInf_le (hbdd S) x) (rayleigh_le_sup' hT hn hne x.2.2)
+  refine le_antisymm ?_ ?_
+  · refine le_ciSup_of_le houter ⟨lowSpan hT hn k, finrank_lowSpan hT hn k⟩ ?_
+    haveI := hxne ⟨lowSpan hT hn k, finrank_lowSpan hT hn k⟩
+    exact le_ciInf fun x =>
+      eigenvalue_le_rayleigh_of_mem_lowSpan hT hn k x.2.1 x.2.2
+  · refine ciSup_le fun S => ?_
+    obtain ⟨x, hx, hx0⟩ := exists_ne_zero_mem_inf_of_finrank_add S.1
+      (highSpan hT hn k)
+      (by rw [S.2, finrank_highSpan hT hn k, hn]; have := k.isLt; omega)
+    obtain ⟨hxS, hxW⟩ := Submodule.mem_inf.mp hx
+    exact le_trans (ciInf_le (hbdd S) ⟨x, hxS, hx0⟩)
+      (rayleigh_le_eigenvalue_of_mem_highSpan hT hn k hxW hx0)
+
+/-- **Courant-Fischer, inf-sup form**: the `k`-th eigenvalue (decreasing order) is the
+infimum over `(n-k)`-dimensional subspaces `S` of the supremum of the Rayleigh
+quotient over nonzero vectors of `S`. Proved directly by the symmetric dimension
+count (not by reflection through `-T`). -/
+theorem eigenvalues_eq_iInf_iSup_rayleigh (hT : T.IsSymmetric)
+    (hn : finrank ℝ E = n) (k : Fin n) :
+    hT.eigenvalues hn k
+      = ⨅ S : {S : Submodule ℝ E // finrank ℝ S = n - (k : ℕ)},
+          ⨆ x : {x : E // x ∈ S.1 ∧ x ≠ 0}, inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2 := by
+  have hne : (Finset.univ : Finset (Fin n)).Nonempty := ⟨k, Finset.mem_univ k⟩
+  haveI hSne : Nonempty {S : Submodule ℝ E // finrank ℝ S = n - (k : ℕ)} :=
+    ⟨⟨highSpan hT hn k, finrank_highSpan hT hn k⟩⟩
+  have hxne : ∀ S : {S : Submodule ℝ E // finrank ℝ S = n - (k : ℕ)},
+      Nonempty {x : E // x ∈ S.1 ∧ x ≠ 0} := by
+    intro S
+    obtain ⟨x, hxS, hx0⟩ := exists_ne_zero_mem_of_finrank_pos (S := S.1)
+      (by rw [S.2]; have := k.isLt; omega)
+    exact ⟨⟨x, hxS, hx0⟩⟩
+  have hbdd : ∀ S : {S : Submodule ℝ E // finrank ℝ S = n - (k : ℕ)},
+      BddAbove (Set.range fun x : {x : E // x ∈ S.1 ∧ x ≠ 0} =>
+        inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    intro S
+    refine ⟨Finset.univ.sup' hne (hT.eigenvalues hn), ?_⟩
+    rintro r ⟨x, rfl⟩
+    exact rayleigh_le_sup' hT hn hne x.2.2
+  have houter : BddBelow (Set.range
+      fun S : {S : Submodule ℝ E // finrank ℝ S = n - (k : ℕ)} =>
+        ⨆ x : {x : E // x ∈ S.1 ∧ x ≠ 0}, inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    refine ⟨Finset.univ.inf' hne (hT.eigenvalues hn), ?_⟩
+    rintro r ⟨S, rfl⟩
+    obtain ⟨x⟩ := hxne S
+    exact le_trans (inf'_le_rayleigh hT hn hne x.2.2) (le_ciSup (hbdd S) x)
+  refine le_antisymm ?_ ?_
+  · refine le_ciInf fun S => ?_
+    obtain ⟨x, hx, hx0⟩ := exists_ne_zero_mem_inf_of_finrank_add S.1
+      (lowSpan hT hn k)
+      (by rw [S.2, finrank_lowSpan hT hn k, hn]; have := k.isLt; omega)
+    obtain ⟨hxS, hxW⟩ := Submodule.mem_inf.mp hx
+    exact le_trans (eigenvalue_le_rayleigh_of_mem_lowSpan hT hn k hxW hx0)
+      (le_ciSup (hbdd S) ⟨x, hxS, hx0⟩)
+  · refine ciInf_le_of_le houter ⟨highSpan hT hn k, finrank_highSpan hT hn k⟩ ?_
+    haveI := hxne ⟨highSpan hT hn k, finrank_highSpan hT hn k⟩
+    exact ciSup_le fun x =>
+      rayleigh_le_eigenvalue_of_mem_highSpan hT hn k x.2.1 x.2.2
+
+end CourantFischer
+
+/-! ### Faithfulness gate for the min-max
+
+The abstract statements are indexed by `Submodule`s of an abstract `E` and pass
+through Mathlib's choice-based `eigenvalues`, so they do not reduce under
+`decide`/`norm_num`. The checks below therefore evaluate the min-max content on the
+concrete diagonal operator `(3, 1, -2)` on `EuclideanSpace ℝ (Fin 3)` (eigenvalues
+already in decreasing order, middle eigenvalue `1` at `k = 1`):
+
+* on the achieving `2`-dimensional plane `{x | x 2 = 0}` (= sup-inf witness for
+  `k = 1`, dimension `k + 1 = 2`) the Rayleigh quotient is `≥ 1`, with value exactly
+  `1` at `e₁` — the max-min at `k = 1` is `1`, not the extremes `3` or `-2`;
+* the plane `{x | x 0 = 0}` (= inf-sup witness for `k = 1`, dimension `n - k = 2`)
+  has Rayleigh quotient `≤ 1`, again with value `1` at `e₁`;
+* a wrong plane (`span {e₀, e₂}`) contains `e₂` with Rayleigh value `-2 < 1`, so its
+  inf does not beat the achieving plane. -/
+
+/-- The diagonal operator `(3, 1, -2)` on `EuclideanSpace ℝ (Fin 3)`. -/
+noncomputable def diagOp3 : EuclideanSpace ℝ (Fin 3) →ₗ[ℝ] EuclideanSpace ℝ (Fin 3) :=
+  (WithLp.linearEquiv 2 ℝ (Fin 3 → ℝ)).symm.toLinearMap
+    ∘ₗ (LinearMap.pi fun i => (![3, 1, -2] i : ℝ) • LinearMap.proj i)
+    ∘ₗ (WithLp.linearEquiv 2 ℝ (Fin 3 → ℝ)).toLinearMap
+
+@[simp] theorem diagOp3_apply (x : EuclideanSpace ℝ (Fin 3)) (i : Fin 3) :
+    diagOp3 x i = ![3, 1, -2] i * x i := rfl
+
+/-- The diagonal operator is symmetric. -/
+theorem diagOp3_isSymmetric : diagOp3.IsSymmetric := by
+  intro x y
+  rw [real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ)]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  simp only [EuclideanSpace.basisFun_repr, diagOp3_apply]
+  ring
+
+/-- On the sup-inf witness plane `{x | x 2 = 0}` (dimension `k + 1 = 2` for `k = 1`)
+the Rayleigh quotient of `diag (3, 1, -2)` is at least the middle eigenvalue `1`. -/
+example {x : EuclideanSpace ℝ (Fin 3)} (h2 : x 2 = 0) (hx : x ≠ 0) :
+    1 ≤ inner ℝ (diagOp3 x) x / ‖x‖ ^ 2 := by
+  have hden : 0 < x 0 ^ 2 + x 1 ^ 2 := by
+    rcases eq_or_ne (x 0) 0 with h0 | h0
+    · rcases eq_or_ne (x 1) 0 with h1 | h1
+      · exfalso
+        apply hx
+        ext i
+        fin_cases i
+        · exact h0
+        · exact h1
+        · exact h2
+      · have := lt_of_le_of_ne (sq_nonneg (x 1)) (Ne.symm (pow_ne_zero 2 h1))
+        nlinarith [sq_nonneg (x 0)]
+    · have := lt_of_le_of_ne (sq_nonneg (x 0)) (Ne.symm (pow_ne_zero 2 h0))
+      nlinarith [sq_nonneg (x 1)]
+  rw [real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    norm_sq_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  simp only [EuclideanSpace.basisFun_repr, diagOp3_apply, h2, mul_zero,
+    add_zero, Matrix.cons_val_zero, Matrix.cons_val_one, ne_eq,
+    OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
+  rw [le_div_iff₀ (by nlinarith [hden])]
+  nlinarith [sq_nonneg (x 0), sq_nonneg (x 1)]
+
+/-- On the inf-sup witness plane `{x | x 0 = 0}` (dimension `n - k = 2` for `k = 1`)
+the Rayleigh quotient of `diag (3, 1, -2)` is at most the middle eigenvalue `1`. -/
+example {x : EuclideanSpace ℝ (Fin 3)} (h0 : x 0 = 0) (hx : x ≠ 0) :
+    inner ℝ (diagOp3 x) x / ‖x‖ ^ 2 ≤ 1 := by
+  have hden : 0 < x 1 ^ 2 + x 2 ^ 2 := by
+    rcases eq_or_ne (x 1) 0 with h1 | h1
+    · rcases eq_or_ne (x 2) 0 with h2 | h2
+      · exfalso
+        apply hx
+        ext i
+        fin_cases i
+        · exact h0
+        · exact h1
+        · exact h2
+      · have := lt_of_le_of_ne (sq_nonneg (x 2)) (Ne.symm (pow_ne_zero 2 h2))
+        nlinarith [sq_nonneg (x 1)]
+    · have := lt_of_le_of_ne (sq_nonneg (x 1)) (Ne.symm (pow_ne_zero 2 h1))
+      nlinarith [sq_nonneg (x 2)]
+  rw [real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    norm_sq_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  have hc2 : (![(3 : ℝ), 1, -2]) 2 = -2 := rfl
+  simp only [EuclideanSpace.basisFun_repr, diagOp3_apply, h0, mul_zero,
+    zero_add, Matrix.cons_val_zero, Matrix.cons_val_one, hc2, ne_eq,
+    OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
+  rw [div_le_iff₀ (by nlinarith [hden])]
+  nlinarith [sq_nonneg (x 1), sq_nonneg (x 2)]
+
+/-- The middle eigenvalue is attained at `e₁`: Rayleigh value exactly `1`. -/
+example :
+    inner ℝ (diagOp3 (EuclideanSpace.single 1 1)) (EuclideanSpace.single 1 1)
+      / ‖(EuclideanSpace.single 1 1 : EuclideanSpace ℝ (Fin 3))‖ ^ 2 = 1 := by
+  rw [real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    norm_sq_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  have hc2 : (![(3 : ℝ), 1, -2]) 2 = -2 := rfl
+  have h21 : ¬((2 : Fin 3) = 1) := by decide
+  norm_num [EuclideanSpace.basisFun_repr, diagOp3_apply, EuclideanSpace.single_apply,
+    hc2, h21]
+
+/-- A wrong plane cannot beat the max-min: `span {e₀, e₂}` contains `e₂`, whose
+Rayleigh value is `-2 < 1`, so the infimum over that plane is `< 1`. -/
+example :
+    inner ℝ (diagOp3 (EuclideanSpace.single 2 1)) (EuclideanSpace.single 2 1)
+      / ‖(EuclideanSpace.single 2 1 : EuclideanSpace ℝ (Fin 3))‖ ^ 2 = -2 := by
+  rw [real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    norm_sq_eq_sum_repr (EuclideanSpace.basisFun (Fin 3) ℝ),
+    Fin.sum_univ_three, Fin.sum_univ_three]
+  have hc2 : (![(3 : ℝ), 1, -2]) 2 = -2 := rfl
+  have h02 : ¬((0 : Fin 3) = 2) := by decide
+  have h12 : ¬((1 : Fin 3) = 2) := by decide
+  norm_num [EuclideanSpace.basisFun_repr, diagOp3_apply, EuclideanSpace.single_apply,
+    hc2, h02, h12]
