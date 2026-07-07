@@ -27,6 +27,8 @@ import KontsevichSegal.ComplexMetrics.Defs
 import KontsevichSegal.ComplexMetrics.Equivalence
 import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Topology.Order.Monotone
 
 /-! ## Polarization: a diagonal quadratic form has a diagonal bilinear form
 
@@ -885,3 +887,467 @@ example :
   have h12 : ¬((1 : Fin 3) = 2) := by decide
   norm_num [EuclideanSpace.basisFun_repr, diagOp3_apply, EuclideanSpace.single_apply,
     hc2, h02, h12]
+
+-- KS angle min-max (phi-free; transport of Courant-Fischer)
+
+/-! ## KS angle min-max: transport of Courant-Fischer through `arctan` and the rotation
+
+KS paper Proposition 2.5 (p. 13): the critical angles of `v ↦ arg g(v)` are
+characterized by a min-max over subspaces. `ksAngle` below is that min-max, stated
+canonically (choice-free, a function of `g` alone). For any global rotation `φ` of the
+angle condition the pointwise identity
+`arg g(x,x) = arctan(⟪T x, x⟫/‖x‖²) + φ` holds for the pencil operator `T` of
+`(ĝ_R, ĝ_I)`, so the Courant-Fischer characterizations of checkpoint 2a transport
+through the monotone continuous `arctan` and the constant shift `φ`: the `k`-th KS
+angle is `arctan(μ_k) + φ` (with `μ` the decreasing eigenvalues of `T`), and equals the
+dual inf-sup of `arg g` — with `φ` absent from both statements' interfaces. -/
+
+section KSAngleMinmax
+
+open Module
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+
+/-- Every allowable metric admits a rotation making `ĝ_R` positive-definite
+(packaging `AngleCondition.exists_rotation` + `rotatedRe_posDef` over the
+`angle_cond` witness). -/
+theorem exists_rotation_posDef (g : AllowableComplexMetric V) :
+    ∃ φ : ℝ, |φ| < Real.pi / 2 ∧ ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x := by
+  obtain ⟨b, eig, hAC, hdiag⟩ := g.angle_cond
+  obtain ⟨φ, hφ, -, hposI⟩ := hAC.exists_rotation
+  exact ⟨φ, hφ, fun x hx => g.rotatedRe_posDef φ b eig hdiag hposI x hx⟩
+
+/-- The rotated value `e^{-iφ}·g(x,x)` has argument in `(-π/2, π/2)` for `x ≠ 0`
+(STEP 2(i): positivity of `ĝ_R` is positivity of the rotated real part). -/
+theorem abs_arg_rotated_lt_pi_div_two (g : AllowableComplexMetric V) (φ : ℝ)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {x : V} (hx : x ≠ 0) :
+    |Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x)| < Real.pi / 2 := by
+  refine Complex.abs_arg_lt_pi_div_two_iff.mpr (Or.inl ?_)
+  have h := hpos x hx
+  rwa [g.rotatedRe_apply] at h
+
+/-- STEP 2(ii): the rotation shifts the argument exactly, with no `2π` wrap:
+`arg g(x,x) = arg(e^{-iφ}·g(x,x)) + φ`. Both the rotated argument and `φ` lie in
+`(-π/2, π/2)`, so their sum stays in `(-π, π)` and `Complex.arg_mul` applies. -/
+theorem arg_toForm_eq_arg_rotated_add (g : AllowableComplexMetric V) (φ : ℝ)
+    (hφ : |φ| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {x : V} (hx : x ≠ 0) :
+    Complex.arg (g.toForm x x)
+      = Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x) + φ := by
+  set w := Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x with hw
+  have hwre : 0 < w.re := by
+    have h := hpos x hx
+    rwa [g.rotatedRe_apply] at h
+  have hwne : w ≠ 0 := fun h => by rw [h] at hwre; simp at hwre
+  have hargw : |w.arg| < Real.pi / 2 :=
+    Complex.abs_arg_lt_pi_div_two_iff.mpr (Or.inl hwre)
+  have hπ := Real.pi_pos
+  have h1 := abs_lt.mp hφ
+  have h2 := abs_lt.mp hargw
+  have hargexp : (Complex.exp ((φ : ℂ) * Complex.I)).arg = φ :=
+    arg_exp_ofReal_mul_I ⟨by linarith, by linarith⟩
+  have hz : g.toForm x x = Complex.exp ((φ : ℂ) * Complex.I) * w := by
+    rw [hw, ← mul_assoc, ← Complex.exp_add,
+      show (φ : ℂ) * Complex.I + -(φ : ℂ) * Complex.I = 0 by ring,
+      Complex.exp_zero, one_mul]
+  rw [hz, Complex.arg_mul (Complex.exp_ne_zero _) hwne
+    (by rw [hargexp]; exact ⟨by linarith, by linarith⟩), hargexp]
+  exact add_comm φ w.arg
+
+/-- STEP 1: the Rayleigh quotient of the pencil is the tangent of the rotated
+argument, `ĝ_I(x,x)/ĝ_R(x,x) = tan(arg(e^{-iφ}·g(x,x)))`. Under the `posDefCore`
+instances of `ĝ_R` the left side is `⟪T x, x⟫/‖x‖²` for the pencil operator `T`
+(used in that form inside the transport theorems). -/
+theorem pencil_rayleigh_eq_tan (g : AllowableComplexMetric V) (φ : ℝ) (x : V) :
+    g.rotatedIm φ x x / g.rotatedRe φ x x
+      = Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x)) := by
+  rw [g.rotatedIm_apply, g.rotatedRe_apply, Complex.tan_arg]
+
+/-- STEP 2(iii): `arctan(ĝ_I(x,x)/ĝ_R(x,x)) = arg g(x,x) − φ` for `x ≠ 0`. -/
+theorem arctan_pencil_rayleigh_eq_arg_sub (g : AllowableComplexMetric V) (φ : ℝ)
+    (hφ : |φ| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {x : V} (hx : x ≠ 0) :
+    Real.arctan (g.rotatedIm φ x x / g.rotatedRe φ x x)
+      = Complex.arg (g.toForm x x) - φ := by
+  have hargw := abs_arg_rotated_lt_pi_div_two g φ hpos hx
+  rw [pencil_rayleigh_eq_tan g φ x,
+    Real.arctan_tan (abs_lt.mp hargw).1 (abs_lt.mp hargw).2,
+    arg_toForm_eq_arg_rotated_add g φ hφ hpos hx]
+  ring
+
+end KSAngleMinmax
+
+/-! ### `arctan` and constant shifts through conditional suprema and infima -/
+
+section ArctanTransport
+
+/-- `arctan` commutes with a bounded-below conditional infimum. -/
+theorem arctan_ciInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ)
+    (hb : BddBelow (Set.range f)) :
+    Real.arctan (⨅ i, f i) = ⨅ i, Real.arctan (f i) :=
+  Monotone.map_ciInf_of_continuousAt (f := Real.arctan)
+    (Real.continuous_arctan.continuousAt) Real.arctan_mono hb
+
+/-- `arctan` commutes with a bounded-above conditional supremum. -/
+theorem arctan_ciSup {ι : Sort*} [Nonempty ι] (f : ι → ℝ)
+    (hb : BddAbove (Set.range f)) :
+    Real.arctan (⨆ i, f i) = ⨆ i, Real.arctan (f i) :=
+  Monotone.map_ciSup_of_continuousAt (f := Real.arctan)
+    (Real.continuous_arctan.continuousAt) Real.arctan_mono hb
+
+/-- Adding a constant commutes with a bounded-below conditional infimum. -/
+theorem ciInf_add_const {ι : Sort*} [Nonempty ι] (f : ι → ℝ) (c : ℝ)
+    (hb : BddBelow (Set.range f)) :
+    (⨅ i, f i) + c = ⨅ i, (f i + c) :=
+  Monotone.map_ciInf_of_continuousAt (f := fun r : ℝ => r + c)
+    ((continuous_id.add continuous_const).continuousAt)
+    (fun _ _ h => by exact add_le_add h le_rfl) hb
+
+/-- Adding a constant commutes with a bounded-above conditional supremum. -/
+theorem ciSup_add_const {ι : Sort*} [Nonempty ι] (f : ι → ℝ) (c : ℝ)
+    (hb : BddAbove (Set.range f)) :
+    (⨆ i, f i) + c = ⨆ i, (f i + c) :=
+  Monotone.map_ciSup_of_continuousAt (f := fun r : ℝ => r + c)
+    ((continuous_id.add continuous_const).continuousAt)
+    (fun _ _ h => by exact add_le_add h le_rfl) hb
+
+/-- The range of an `arctan`-composed family is bounded below by `-π/2`. -/
+theorem bddBelow_range_arctan {ι : Sort*} (f : ι → ℝ) :
+    BddBelow (Set.range fun i => Real.arctan (f i)) := by
+  refine ⟨-(Real.pi / 2), ?_⟩
+  rintro r ⟨i, rfl⟩
+  exact (Real.arctan_mem_Ioo _).1.le
+
+/-- The range of an `arctan`-composed family is bounded above by `π/2`. -/
+theorem bddAbove_range_arctan {ι : Sort*} (f : ι → ℝ) :
+    BddAbove (Set.range fun i => Real.arctan (f i)) := by
+  refine ⟨Real.pi / 2, ?_⟩
+  rintro r ⟨i, rfl⟩
+  exact (Real.arctan_mem_Ioo _).2.le
+
+end ArctanTransport
+
+/-! ### The phi-free KS angle min-max -/
+
+section KSAngleMain
+
+open Module
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+
+/-- The decreasing eigenvalues of the pencil operator of `(ĝ_R, ĝ_I)`, with the
+`posDefCore` inner-product instances of `ĝ_R` installed locally (this realizes
+`hT.eigenvalues hn` as an instance-free function of `(g, φ, hpos)`). -/
+noncomputable def pencilEigenvalues (g : AllowableComplexMetric V) (φ : ℝ)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {n : ℕ}
+    (hn : Module.finrank ℝ V = n) : Fin n → ℝ :=
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
+  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
+  LinearMap.IsSymmetric.eigenvalues
+    (isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ)
+      (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+        (nondegenerate_of_posDef (g.rotatedRe φ) hpos))
+      (fun _ _ => rfl) (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+      (fun x y => pencilOperator_pairing _ _ _ x y)) hn
+
+/-- **The KS critical angles** (KS paper Proposition 2.5): the `k`-th angle of
+`v ↦ arg g(v)`, defined canonically (choice-free) as the sup-inf of `arg g(x,x)` over
+`(k+1)`-dimensional subspaces, in the same junk-free subtype encoding as the
+Courant-Fischer theorems. -/
+noncomputable def ksAngle (g : AllowableComplexMetric V)
+    (k : Fin (Module.finrank ℝ V)) : ℝ :=
+  ⨆ S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1},
+    ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1)
+
+/-- **The KS angles are arctangents of the pencil eigenvalues, shifted by the
+rotation** (KS paper Proposition 2.5, sup-inf form): `ksAngle g k = arctan(μ_k) + φ`
+for any rotation `φ` with `ĝ_R` positive-definite. This transports checkpoint 2a's
+`eigenvalues_eq_iSup_iInf_rayleigh` through `arctan` and the constant shift `φ`. -/
+theorem ksAngle_eq_arctan_eigenvalue (g : AllowableComplexMetric V) (φ : ℝ)
+    (hφ : |φ| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x)
+    (k : Fin (Module.finrank ℝ V)) :
+    ksAngle g k = Real.arctan (pencilEigenvalues g φ hpos rfl k) + φ := by
+  classical
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
+  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
+  have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+      (nondegenerate_of_posDef (g.rotatedRe φ) hpos)).IsSymmetric :=
+    isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
+      (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+      (fun x y => pencilOperator_pairing _ _ _ x y)
+  set T := pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+    (nondegenerate_of_posDef (g.rotatedRe φ) hpos) with hTdef
+  have hpe : pencilEigenvalues g φ hpos rfl = hTsym.eigenvalues rfl := rfl
+  -- the Rayleigh quotient of `T` is the `ĝ` ratio
+  have hray : ∀ x : V, inner ℝ (T x) x / ‖x‖ ^ 2
+      = g.rotatedIm φ x x / g.rotatedRe φ x x := by
+    intro x
+    have h1 : inner ℝ (T x) x = g.rotatedIm φ x x :=
+      pencilOperator_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ x x
+    have h2 : ‖x‖ ^ 2 = g.rotatedRe φ x x := by
+      rw [← real_inner_self_eq_norm_sq]
+      rfl
+    rw [h1, h2]
+  -- pointwise: arg g(x,x) = arctan (Rayleigh x) + φ
+  have hpt : ∀ (x : V), x ≠ 0 →
+      Complex.arg (g.toForm x x)
+        = Real.arctan (inner ℝ (T x) x / ‖x‖ ^ 2) + φ := by
+    intro x hx
+    rw [hray x, arctan_pencil_rayleigh_eq_arg_sub g φ hφ hpos hx]
+    ring
+  -- side facts for the transport
+  have hne : (Finset.univ : Finset (Fin (Module.finrank ℝ V))).Nonempty :=
+    ⟨k, Finset.mem_univ k⟩
+  haveI hSne : Nonempty {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1} :=
+    ⟨⟨lowSpan hTsym rfl k, finrank_lowSpan hTsym rfl k⟩⟩
+  have hxne : ∀ S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1},
+      Nonempty {x : V // x ∈ S.1 ∧ x ≠ 0} := by
+    intro S
+    obtain ⟨x, hxS, hx0⟩ := exists_ne_zero_mem_of_finrank_pos (S := S.1)
+      (by rw [S.2]; omega)
+    exact ⟨⟨x, hxS, hx0⟩⟩
+  have hbddR : ∀ S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1},
+      BddBelow (Set.range fun x : {x : V // x ∈ S.1 ∧ x ≠ 0} =>
+        inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    intro S
+    refine ⟨Finset.univ.inf' hne (hTsym.eigenvalues rfl), ?_⟩
+    rintro r ⟨x, rfl⟩
+    exact inf'_le_rayleigh hTsym rfl hne x.2.2
+  -- inner transport, per subspace
+  have hInner : ∀ S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1},
+      (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+        = Real.arctan (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0},
+            inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ := by
+    intro S
+    haveI := hxne S
+    have hfx : (fun x : {x : V // x ∈ S.1 ∧ x ≠ 0} =>
+        Complex.arg (g.toForm x.1 x.1))
+        = fun x => Real.arctan (inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ :=
+      funext fun x => hpt x.1 x.2.2
+    rw [hfx, ← ciInf_add_const _ φ (bddBelow_range_arctan _),
+      ← arctan_ciInf _ (hbddR S)]
+  -- outer transport
+  have hfS : (fun S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1} =>
+      ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+      = fun S => Real.arctan (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0},
+          inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ :=
+    funext hInner
+  have hbddU : BddAbove (Set.range
+      fun S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1} =>
+        ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    refine ⟨Finset.univ.sup' hne (hTsym.eigenvalues rfl), ?_⟩
+    rintro r ⟨S, rfl⟩
+    obtain ⟨x⟩ := hxne S
+    exact le_trans (ciInf_le (hbddR S) x) (rayleigh_le_sup' hTsym rfl hne x.2.2)
+  unfold ksAngle
+  rw [hfS, ← ciSup_add_const _ φ (bddAbove_range_arctan _),
+    ← arctan_ciSup _ hbddU, ← eigenvalues_eq_iSup_iInf_rayleigh hTsym rfl k, hpe]
+
+/-- **The dual inf-sup characterization of the KS angles** (φ-free): the `k`-th angle
+is also the inf-sup of `arg g(x,x)` over `(n−k)`-dimensional subspaces, transporting
+checkpoint 2a's `eigenvalues_eq_iInf_iSup_rayleigh`. This is the form the interlacing
+lower bound consumes. -/
+theorem ksAngle_eq_iInf_iSup (g : AllowableComplexMetric V)
+    (k : Fin (Module.finrank ℝ V)) :
+    ksAngle g k
+      = ⨅ S : {S : Submodule ℝ V // finrank ℝ S = Module.finrank ℝ V - (k : ℕ)},
+          ⨆ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1) := by
+  classical
+  obtain ⟨φ, hφ, hpos⟩ := exists_rotation_posDef g
+  rw [ksAngle_eq_arctan_eigenvalue g φ hφ hpos k]
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
+  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
+  have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+      (nondegenerate_of_posDef (g.rotatedRe φ) hpos)).IsSymmetric :=
+    isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
+      (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+      (fun x y => pencilOperator_pairing _ _ _ x y)
+  set T := pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+    (nondegenerate_of_posDef (g.rotatedRe φ) hpos) with hTdef
+  have hpe : pencilEigenvalues g φ hpos rfl = hTsym.eigenvalues rfl := rfl
+  have hray : ∀ x : V, inner ℝ (T x) x / ‖x‖ ^ 2
+      = g.rotatedIm φ x x / g.rotatedRe φ x x := by
+    intro x
+    have h1 : inner ℝ (T x) x = g.rotatedIm φ x x :=
+      pencilOperator_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ x x
+    have h2 : ‖x‖ ^ 2 = g.rotatedRe φ x x := by
+      rw [← real_inner_self_eq_norm_sq]
+      rfl
+    rw [h1, h2]
+  have hpt : ∀ (x : V), x ≠ 0 →
+      Complex.arg (g.toForm x x)
+        = Real.arctan (inner ℝ (T x) x / ‖x‖ ^ 2) + φ := by
+    intro x hx
+    rw [hray x, arctan_pencil_rayleigh_eq_arg_sub g φ hφ hpos hx]
+    ring
+  have hne : (Finset.univ : Finset (Fin (Module.finrank ℝ V))).Nonempty :=
+    ⟨k, Finset.mem_univ k⟩
+  haveI hSne : Nonempty
+      {S : Submodule ℝ V // finrank ℝ S = Module.finrank ℝ V - (k : ℕ)} :=
+    ⟨⟨highSpan hTsym rfl k, finrank_highSpan hTsym rfl k⟩⟩
+  have hxne : ∀ S : {S : Submodule ℝ V //
+      finrank ℝ S = Module.finrank ℝ V - (k : ℕ)},
+      Nonempty {x : V // x ∈ S.1 ∧ x ≠ 0} := by
+    intro S
+    obtain ⟨x, hxS, hx0⟩ := exists_ne_zero_mem_of_finrank_pos (S := S.1)
+      (by rw [S.2]; have := k.isLt; omega)
+    exact ⟨⟨x, hxS, hx0⟩⟩
+  have hbddR : ∀ S : {S : Submodule ℝ V //
+      finrank ℝ S = Module.finrank ℝ V - (k : ℕ)},
+      BddAbove (Set.range fun x : {x : V // x ∈ S.1 ∧ x ≠ 0} =>
+        inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    intro S
+    refine ⟨Finset.univ.sup' hne (hTsym.eigenvalues rfl), ?_⟩
+    rintro r ⟨x, rfl⟩
+    exact rayleigh_le_sup' hTsym rfl hne x.2.2
+  have hInner : ∀ S : {S : Submodule ℝ V //
+      finrank ℝ S = Module.finrank ℝ V - (k : ℕ)},
+      (⨆ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+        = Real.arctan (⨆ x : {x : V // x ∈ S.1 ∧ x ≠ 0},
+            inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ := by
+    intro S
+    haveI := hxne S
+    have hfx : (fun x : {x : V // x ∈ S.1 ∧ x ≠ 0} =>
+        Complex.arg (g.toForm x.1 x.1))
+        = fun x => Real.arctan (inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ :=
+      funext fun x => hpt x.1 x.2.2
+    rw [hfx, ← ciSup_add_const _ φ (bddAbove_range_arctan _),
+      ← arctan_ciSup _ (hbddR S)]
+  have hfS : (fun S : {S : Submodule ℝ V //
+      finrank ℝ S = Module.finrank ℝ V - (k : ℕ)} =>
+      ⨆ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+      = fun S => Real.arctan (⨆ x : {x : V // x ∈ S.1 ∧ x ≠ 0},
+          inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ :=
+    funext hInner
+  have hbddU : BddBelow (Set.range
+      fun S : {S : Submodule ℝ V //
+        finrank ℝ S = Module.finrank ℝ V - (k : ℕ)} =>
+        ⨆ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) := by
+    refine ⟨Finset.univ.inf' hne (hTsym.eigenvalues rfl), ?_⟩
+    rintro r ⟨S, rfl⟩
+    obtain ⟨x⟩ := hxne S
+    exact le_trans (inf'_le_rayleigh hTsym rfl hne x.2.2) (le_ciSup (hbddR S) x)
+  rw [hfS, ← ciInf_add_const _ φ (bddBelow_range_arctan _),
+    ← arctan_ciInf _ hbddU, ← eigenvalues_eq_iInf_iSup_rayleigh hTsym rfl k, hpe]
+
+/-- The KS angles are decreasing in `k` (φ-free statement): `arctan` is monotone, the
+pencil eigenvalues are antitone, and the shift is constant. -/
+theorem ksAngle_antitone (g : AllowableComplexMetric V) : Antitone (ksAngle g) := by
+  obtain ⟨φ, hφ, hpos⟩ := exists_rotation_posDef g
+  intro k l hkl
+  rw [ksAngle_eq_arctan_eigenvalue g φ hφ hpos k,
+    ksAngle_eq_arctan_eigenvalue g φ hφ hpos l]
+  have hmono : pencilEigenvalues g φ hpos rfl l ≤ pencilEigenvalues g φ hpos rfl k := by
+    letI : NormedAddCommGroup V :=
+      @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
+    letI : InnerProductSpace ℝ V :=
+      InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
+    have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+        (nondegenerate_of_posDef (g.rotatedRe φ) hpos)).IsSymmetric :=
+      isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
+        (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+        (fun x y => pencilOperator_pairing _ _ _ x y)
+    exact hTsym.eigenvalues_antitone rfl hkl
+  exact add_le_add (Real.arctan_mono hmono) le_rfl
+
+end KSAngleMain
+
+/-! ### Faithfulness gate for the angle min-max
+
+The abstract `ksAngle` is `Submodule`-indexed through choice-based eigenvalues and
+does not reduce. The checks below pin the symbolic chain on the checkpoint-1 concrete
+pair `eig = (e^{iπ/3}, e^{-iπ/6})` with rotation `φ = π/12`: the rotated tangents are
+`tan(π/4) = 1` and `tan(-π/4) = -1` (compiled checkpoint-1 examples), the sorted
+eigenvalue vector of the corresponding diagonal pencil `diag (1, -1)` is `![1, -1]`
+(proved below via the eigen-equations, `exists_eigenvalues_eq`, and antitonicity), and
+the chain `ksAngle k = arctan(μ_k) + φ` evaluates to `arctan 1 + π/12 = π/3` at
+`k = 0` and `arctan (-1) + π/12 = -π/6` at `k = 1` — landing `k = 0` on the LARGER
+angle `π/3`, i.e. the sorted order of the two `arg(eig i)` with no index flip. -/
+
+/-- The diagonal operator `(1, -1)` on `EuclideanSpace ℝ (Fin 2)` (the concrete
+pencil of the checkpoint-1 pair after rotation by `φ = π/12`). -/
+noncomputable def diagOp2 : EuclideanSpace ℝ (Fin 2) →ₗ[ℝ] EuclideanSpace ℝ (Fin 2) :=
+  (WithLp.linearEquiv 2 ℝ (Fin 2 → ℝ)).symm.toLinearMap
+    ∘ₗ (LinearMap.pi fun i => (![1, -1] i : ℝ) • LinearMap.proj i)
+    ∘ₗ (WithLp.linearEquiv 2 ℝ (Fin 2 → ℝ)).toLinearMap
+
+@[simp] theorem diagOp2_apply (x : EuclideanSpace ℝ (Fin 2)) (i : Fin 2) :
+    diagOp2 x i = ![1, -1] i * x i := rfl
+
+/-- The concrete diagonal pencil is symmetric. -/
+theorem diagOp2_isSymmetric : diagOp2.IsSymmetric := by
+  intro x y
+  rw [real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 2) ℝ),
+    real_inner_eq_sum_repr (EuclideanSpace.basisFun (Fin 2) ℝ)]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  simp only [EuclideanSpace.basisFun_repr, diagOp2_apply]
+  ring
+
+/-- `1` is an eigenvalue of the concrete pencil (eigenvector `e₀`). -/
+theorem diagOp2_hasEigenvalue_one : Module.End.HasEigenvalue diagOp2 1 := by
+  refine Module.End.hasEigenvalue_of_hasEigenvector
+    (x := EuclideanSpace.single 0 1) ⟨Module.End.mem_eigenspace_iff.mpr ?_, ?_⟩
+  · ext i
+    fin_cases i <;>
+      simp [diagOp2_apply, EuclideanSpace.single_apply]
+  · intro h
+    have h0 := congrArg (fun v : EuclideanSpace ℝ (Fin 2) => v 0) h
+    simp [EuclideanSpace.single_apply] at h0
+
+/-- `-1` is an eigenvalue of the concrete pencil (eigenvector `e₁`). -/
+theorem diagOp2_hasEigenvalue_neg_one : Module.End.HasEigenvalue diagOp2 (-1) := by
+  refine Module.End.hasEigenvalue_of_hasEigenvector
+    (x := EuclideanSpace.single 1 1) ⟨Module.End.mem_eigenspace_iff.mpr ?_, ?_⟩
+  · ext i
+    fin_cases i <;>
+      simp [diagOp2_apply, EuclideanSpace.single_apply]
+  · intro h
+    have h1 := congrArg (fun v : EuclideanSpace ℝ (Fin 2) => v 1) h
+    simp [EuclideanSpace.single_apply] at h1
+
+/-- **The sorted eigenvalue vector of the concrete pencil is `![1, -1]`**: both values
+occur among the two eigenvalues (`exists_eigenvalues_eq`), they are distinct, and
+Mathlib's enumeration is antitone, so index `0` carries `1` and index `1` carries
+`-1` — the sorted decreasing order, no index flip. -/
+theorem diagOp2_eigenvalues (hn : Module.finrank ℝ (EuclideanSpace ℝ (Fin 2)) = 2) :
+    diagOp2_isSymmetric.eigenvalues hn = ![1, -1] := by
+  obtain ⟨i1, hi1⟩ :=
+    diagOp2_isSymmetric.exists_eigenvalues_eq hn diagOp2_hasEigenvalue_one
+  obtain ⟨i2, hi2⟩ :=
+    diagOp2_isSymmetric.exists_eigenvalues_eq hn diagOp2_hasEigenvalue_neg_one
+  have hne12 : i1 ≠ i2 := by
+    intro h
+    rw [h, hi2] at hi1
+    norm_num at hi1
+  have hle : diagOp2_isSymmetric.eigenvalues hn 1
+      ≤ diagOp2_isSymmetric.eigenvalues hn 0 :=
+    diagOp2_isSymmetric.eigenvalues_antitone hn (by decide : (0 : Fin 2) ≤ 1)
+  have hkey : diagOp2_isSymmetric.eigenvalues hn 0 = 1
+      ∧ diagOp2_isSymmetric.eigenvalues hn 1 = -1 := by
+    fin_cases i1 <;> fin_cases i2
+    · exact absurd rfl hne12
+    · exact ⟨hi1, hi2⟩
+    · have b1 : diagOp2_isSymmetric.eigenvalues hn 1 = 1 := hi1
+      have b2 : diagOp2_isSymmetric.eigenvalues hn 0 = -1 := hi2
+      constructor <;> linarith
+    · exact absurd rfl hne12
+  funext j
+  fin_cases j
+  · exact hkey.1
+  · exact hkey.2
+
+/-- Symbolic chain, `k = 0`: `arctan(μ₀) + φ = arctan 1 + π/12 = π/3` — the sup-inf at
+`k = 0` lands on the larger angle `π/3`. -/
+example : Real.arctan 1 + Real.pi / 12 = Real.pi / 3 := by
+  rw [Real.arctan_one]
+  ring
+
+/-- Symbolic chain, `k = 1`: `arctan(μ₁) + φ = arctan(-1) + π/12 = -π/6` — the smaller
+angle, in sorted order. -/
+example : Real.arctan (-1) + Real.pi / 12 = -(Real.pi / 6) := by
+  rw [show ((-1 : ℝ)) = -(1 : ℝ) from rfl, Real.arctan_neg, Real.arctan_one]
+  ring
