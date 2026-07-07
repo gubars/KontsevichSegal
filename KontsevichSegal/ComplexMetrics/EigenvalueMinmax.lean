@@ -29,6 +29,9 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.Topology.Order.Monotone
+import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+import Mathlib.Algebra.Polynomial.Roots
 
 /-! ## Polarization: a diagonal quadratic form has a diagonal bilinear form
 
@@ -1768,3 +1771,229 @@ example (hn3 : Module.finrank ℝ (EuclideanSpace ℝ (Fin 3)) = 3)
   have hc2 : (![(3 : ℝ), 1, -2]) 2 = -2 := rfl
   rw [diagOp3_eigenvalues hn3, diagTL2_eigenvalues hn2]
   norm_num [hc2]
+
+-- Spectrum reconciliation (ksAngle = angle_cond angles)
+
+/-! ## Spectrum reconciliation: the KS angles are the angle-condition angles
+
+KS paper Proposition 2.5: the min-max critical angles of `v ↦ arg g(v)` are exactly
+the arguments of the diagonal coefficients of any `angle_cond` witness, as a multiset.
+The route: the witness basis `b` is an eigenbasis of the pencil operator with
+eigenvalues `tan(arg(eig i) − φ)`; the characteristic polynomial is basis-independent,
+so its root multiset equals both the multiset of these tangents and the multiset of
+Mathlib's sorted `eigenvalues`; applying the order-embedding `arctan · + φ` termwise
+turns the tangent multiset into `{arg(eig i)}` and the sorted eigenvalues into
+`{ksAngle g k}` (checkpoint 2b). Summing absolute values gives the checkpoint-4 input
+`∑ₖ |ksAngle g k| = ∑ᵢ |arg(eig i)|`. -/
+
+section SpectrumReconciliation
+
+open Module
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+
+/-- Rotating a value whose argument is within `π/2` of `φ` subtracts `φ` from the
+argument exactly (per-eigenvalue version of the checkpoint-2b shift, no `2π` wrap). -/
+theorem arg_rotated_eig (φ : ℝ) (hφ : |φ| < Real.pi / 2) {z : ℂ} (hz : z ≠ 0)
+    (hzarg : |Complex.arg z - φ| < Real.pi / 2) :
+    Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * z) = Complex.arg z - φ := by
+  have h1 := abs_lt.mp hφ
+  have h2 := abs_lt.mp hzarg
+  have hπ := Real.pi_pos
+  have hargexp : (Complex.exp (((-φ : ℝ) : ℂ) * Complex.I)).arg = -φ :=
+    arg_exp_ofReal_mul_I ⟨by linarith, by linarith⟩
+  rw [show -(φ : ℂ) * Complex.I = ((-φ : ℝ) : ℂ) * Complex.I by push_cast; ring,
+    Complex.arg_mul (Complex.exp_ne_zero _) hz
+      (by rw [hargexp]; exact ⟨by linarith, by linarith⟩), hargexp]
+  ring
+
+/-- **STEP 1**: the `angle_cond` basis is an eigenbasis of the pencil operator with
+eigenvalues the tangents of the shifted angles, `T bᵢ = tan(arg(eig i) − φ) • bᵢ`.
+(Checkpoint 1's `pencilOperator_eigen_basis` is already stated on this basis; this
+wrapper only rewrites its eigenvalue through `arg_rotated_eig`.) -/
+theorem pencil_apply_angle_cond_basis (g : AllowableComplexMetric V) (φ : ℝ)
+    (hφ : |φ| < Real.pi / 2)
+    {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ V) (eig : ι → ℂ)
+    (hnz : ∀ i, eig i ≠ 0)
+    (hang : ∀ i, |Complex.arg (eig i) - φ| < Real.pi / 2)
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hpos : ∀ i, 0 < (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re)
+    (hnd : (g.rotatedRe φ).Nondegenerate) (i : ι) :
+    pencilOperator (g.rotatedRe φ) (g.rotatedIm φ) hnd (b i)
+      = Real.tan (Complex.arg (eig i) - φ) • b i := by
+  rw [← arg_rotated_eig φ hφ (hnz i) (hang i)]
+  exact pencilOperator_eigen_basis g φ b eig hdiag hpos hnd i
+
+omit [FiniteDimensional ℝ V] in
+/-- A basis on which `T` acts diagonally represents `T` by the diagonal matrix of the
+eigenvalue function. -/
+theorem toMatrix_eq_diagonal_of_apply {N : ℕ} (T : V →ₗ[ℝ] V)
+    (b : Module.Basis (Fin N) ℝ V) (lam : Fin N → ℝ)
+    (hb : ∀ i, T (b i) = lam i • b i) :
+    LinearMap.toMatrix b b T = Matrix.diagonal lam := by
+  ext i j
+  rw [LinearMap.toMatrix_apply, hb j, map_smul]
+  rcases eq_or_ne i j with rfl | hij
+  · simp [Module.Basis.repr_self]
+  · simp [Module.Basis.repr_self, Ne.symm hij, Matrix.diagonal_apply_ne _ hij]
+
+/-- The root multiset of `∏ᵢ (X − C (f i))` is the multiset of the values of `f`. -/
+theorem roots_prod_X_sub_C_fin {N : ℕ} (f : Fin N → ℝ) :
+    (∏ i, (Polynomial.X - Polynomial.C (f i))).roots
+      = Multiset.map f Finset.univ.val := by
+  calc (∏ i, (Polynomial.X - Polynomial.C (f i))).roots
+      = ((Multiset.map f Finset.univ.val).map
+          fun a => Polynomial.X - Polynomial.C a).prod.roots := by
+        rw [Multiset.map_map]
+        rfl
+    _ = Multiset.map f Finset.univ.val :=
+        Polynomial.roots_multiset_prod_X_sub_C _
+
+/-- **STEP 2 engine**: two diagonalizing bases of the same operator carry the same
+eigenvalue multiset — both equal the root multiset of the (basis-independent)
+characteristic polynomial. -/
+theorem multiset_map_eq_of_diag {N M : ℕ} (T : V →ₗ[ℝ] V)
+    (b : Module.Basis (Fin N) ℝ V) (lam : Fin N → ℝ)
+    (hb : ∀ i, T (b i) = lam i • b i)
+    (c : Module.Basis (Fin M) ℝ V) (mu : Fin M → ℝ)
+    (hc : ∀ k, T (c k) = mu k • c k) :
+    Multiset.map lam Finset.univ.val = Multiset.map mu Finset.univ.val := by
+  classical
+  have hchar1 : T.charpoly = ∏ i, (Polynomial.X - Polynomial.C (lam i)) := by
+    rw [← LinearMap.charpoly_toMatrix T b, toMatrix_eq_diagonal_of_apply T b lam hb,
+      Matrix.charpoly_diagonal]
+  have hchar2 : T.charpoly = ∏ k, (Polynomial.X - Polynomial.C (mu k)) := by
+    rw [← LinearMap.charpoly_toMatrix T c, toMatrix_eq_diagonal_of_apply T c mu hc,
+      Matrix.charpoly_diagonal]
+  have hro := congrArg Polynomial.roots (hchar1.symm.trans hchar2)
+  rwa [roots_prod_X_sub_C_fin, roots_prod_X_sub_C_fin] at hro
+
+/-- **STEP 2**: the multiset of pencil eigenvalues equals the multiset of tangents of
+the shifted `angle_cond` angles. -/
+theorem pencil_eigenvalues_multiset_eq (g : AllowableComplexMetric V) (φ : ℝ)
+    (hφ : |φ| < Real.pi / 2)
+    (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+    (eig : Fin (Module.finrank ℝ V) → ℂ)
+    (hnz : ∀ i, eig i ≠ 0)
+    (hang : ∀ i, |Complex.arg (eig i) - φ| < Real.pi / 2)
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hposI : ∀ i, 0 < (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re)
+    (hposV : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) :
+    Multiset.map (pencilEigenvalues g φ hposV rfl) Finset.univ.val
+      = Multiset.map (fun i => Real.tan (Complex.arg (eig i) - φ))
+          Finset.univ.val := by
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hposV)
+  letI : InnerProductSpace ℝ V :=
+    InnerProductSpace.ofCore (g.rotatedCore φ hposV).toCore
+  have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+      (nondegenerate_of_posDef (g.rotatedRe φ) hposV)).IsSymmetric :=
+    isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
+      (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+      (fun a b' => pencilOperator_pairing _ _ _ a b')
+  set T := pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
+    (nondegenerate_of_posDef (g.rotatedRe φ) hposV) with hTdef
+  have hb : ∀ i, T (b i) = Real.tan (Complex.arg (eig i) - φ) • b i := fun i =>
+    pencil_apply_angle_cond_basis g φ hφ b eig hnz hang hdiag hposI _ i
+  have hc : ∀ k, T ((hTsym.eigenvectorBasis rfl).toBasis k)
+      = hTsym.eigenvalues rfl k • (hTsym.eigenvectorBasis rfl).toBasis k := by
+    intro k
+    rw [OrthonormalBasis.coe_toBasis]
+    exact hTsym.apply_eigenvectorBasis rfl k
+  have hM := multiset_map_eq_of_diag T b _ hb
+    (hTsym.eigenvectorBasis rfl).toBasis _ hc
+  have hpe : pencilEigenvalues g φ hposV rfl = hTsym.eigenvalues rfl := rfl
+  rw [hpe]
+  exact hM.symm
+
+/-- **The KS angles are the `angle_cond` angles, as a multiset** (KS paper
+Proposition 2.5): for any `angle_cond` witness `(b, eig)` of `g`,
+`{ksAngle g k} = {arg(eig i)}`. -/
+theorem ksAngle_multiset_eq_angle_cond (g : AllowableComplexMetric V)
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+    (hAC : AngleCondition eig)
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    Multiset.map (fun k => ksAngle g k) Finset.univ.val
+      = Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val := by
+  obtain ⟨φ, hφ, hang, hposI⟩ := hAC.exists_rotation
+  have hposV : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x :=
+    fun x hx => g.rotatedRe_posDef φ b eig hdiag hposI x hx
+  have hM := pencil_eigenvalues_multiset_eq g φ hφ b eig hAC.nonzero hang hdiag
+    hposI hposV
+  have h1 : Multiset.map (fun k => ksAngle g k) Finset.univ.val
+      = Multiset.map (fun r => Real.arctan r + φ)
+          (Multiset.map (pencilEigenvalues g φ hposV rfl) Finset.univ.val) := by
+    rw [Multiset.map_map]
+    exact Multiset.map_congr rfl fun k _ =>
+      ksAngle_eq_arctan_eigenvalue g φ hφ hposV k
+  have h2 : Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val
+      = Multiset.map (fun r => Real.arctan r + φ)
+          (Multiset.map (fun i => Real.tan (Complex.arg (eig i) - φ))
+            Finset.univ.val) := by
+    rw [Multiset.map_map]
+    refine Multiset.map_congr rfl fun i _ => ?_
+    change Complex.arg (eig i)
+      = Real.arctan (Real.tan (Complex.arg (eig i) - φ)) + φ
+    rw [Real.arctan_tan (abs_lt.mp (hang i)).1 (abs_lt.mp (hang i)).2]
+    ring
+  rw [h1, h2, hM]
+
+/-- **Equality of the absolute-angle sums** (KS paper Proposition 2.5, the
+checkpoint-4 input): for any `angle_cond` witness `(b, eig)` of `g`,
+`∑ₖ |ksAngle g k| = ∑ᵢ |arg(eig i)|`. -/
+theorem sum_abs_ksAngle_eq_sum_abs_angle_cond (g : AllowableComplexMetric V)
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+    (hAC : AngleCondition eig)
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    ∑ k, |ksAngle g k| = ∑ i, |Complex.arg (eig i)| := by
+  have hM := ksAngle_multiset_eq_angle_cond g b hAC hdiag
+  have h1 : ∑ k, |ksAngle g k|
+      = (Multiset.map (fun r => |r|)
+          (Multiset.map (fun k => ksAngle g k) Finset.univ.val)).sum := by
+    rw [Multiset.map_map]
+    rfl
+  have h2 : ∑ i, |Complex.arg (eig i)|
+      = (Multiset.map (fun r => |r|)
+          (Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val)).sum := by
+    rw [Multiset.map_map]
+    rfl
+  rw [h1, h2, hM]
+
+end SpectrumReconciliation
+
+/-! ### Faithfulness gate for the reconciliation
+
+The abstract theorems cannot reduce (`Submodule`-indexed, choice-based eigenvalues);
+the compiled checks below pin the concrete chain on the checkpoint-1/2b pair
+`eig = (e^{iπ/3}, e^{-iπ/6})`, `φ = π/12`: the tangent multiset is `{1, -1}`, matching
+`pencilEigenvalues = ![1, -1]` (2b's `diagOp2_eigenvalues` on the concrete pencil
+`diag(1,-1)`), and both absolute-angle sums equal `π/2` — the semantic anchor the
+codim-1 bound compares against `π` in checkpoint 4. -/
+
+/-- Concrete tangent multiset: `{tan(π/3 − π/12), tan(−π/6 − π/12)} = {1, −1}`,
+matching the concrete pencil's sorted eigenvalues `![1, -1]`. -/
+example : ({Real.tan (Real.pi / 3 - Real.pi / 12),
+    Real.tan (-(Real.pi / 6) - Real.pi / 12)} : Multiset ℝ) = {1, -1} := by
+  rw [show Real.pi / 3 - Real.pi / 12 = Real.pi / 4 by ring,
+    show -(Real.pi / 6) - Real.pi / 12 = -(Real.pi / 4) by ring,
+    Real.tan_pi_div_four, Real.tan_neg, Real.tan_pi_div_four]
+
+/-- Concrete angle-side abs-sum: `|π/3| + |−π/6| = π/2`. -/
+example : |Real.pi / 3| + |-(Real.pi / 6)| = Real.pi / 2 := by
+  have hπ := Real.pi_pos
+  rw [abs_of_pos (by positivity), abs_neg, abs_of_pos (by positivity)]
+  ring
+
+/-- Concrete ksAngle-side abs-sum equals the angle-side abs-sum (both `π/2`): the
+ksAngle values are `arctan(±1) + π/12` (2b chain), and
+`|arctan 1 + π/12| + |arctan(−1) + π/12| = |π/3| + |−π/6|`. -/
+example : |Real.arctan 1 + Real.pi / 12| + |Real.arctan (-1) + Real.pi / 12|
+    = |Real.pi / 3| + |-(Real.pi / 6)| := by
+  have hπ := Real.pi_pos
+  rw [Real.arctan_one, show ((-1 : ℝ)) = -(1 : ℝ) from rfl, Real.arctan_neg,
+    Real.arctan_one]
+  rw [abs_of_pos (by positivity), abs_of_neg (by linarith), abs_of_pos (by positivity),
+    abs_neg, abs_of_pos (by positivity)]
+  ring
