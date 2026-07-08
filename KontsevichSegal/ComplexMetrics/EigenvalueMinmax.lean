@@ -2608,3 +2608,118 @@ example : |Real.pi / 3| + |-(Real.pi / 6)| < Real.pi := by
   have hπ := Real.pi_pos
   rw [abs_of_pos (by positivity), abs_neg, abs_of_pos (by positivity)]
   linarith
+
+-- Flag-induction steps (checkpoint 4c)
+
+/-! ## The hyperplane-above step and the witness transport
+
+The two carrier-independent ingredients of the codimension induction of KS paper
+Proposition 2.5 (checkpoint 4c): every proper subspace sits inside a subspace of one
+dimension more (`exists_hyperplane_above`), and a diagonal `angle_cond` witness
+moves across any value-compatible linear equivalence
+(`angle_cond_witness_transport`) — the only nested-subtype plumbing the flag
+induction needs, kept Prop-level (the witness bundle transports, never a structure
+transport of `AllowableComplexMetric`). -/
+
+section FlagStep
+
+open Module
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+
+/-- **The hyperplane above** (checkpoint 4c, flag step): every proper subspace `W`
+is contained in a subspace `W'` of exactly one dimension more, namely `W ⊔ ℝ ∙ x`
+for any `x ∉ W`. -/
+theorem exists_hyperplane_above (W : Submodule ℝ V) (hW : W ≠ ⊤) :
+    ∃ W' : Submodule ℝ V, W < W' ∧
+      Module.finrank ℝ ↥W' = Module.finrank ℝ ↥W + 1 := by
+  obtain ⟨x, -, hxW⟩ := SetLike.exists_of_lt (lt_top_iff_ne_top.mpr hW)
+  have hx0 : x ≠ 0 := fun h => hxW (h ▸ W.zero_mem)
+  have hinf : W ⊓ (ℝ ∙ x) = ⊥ := by
+    rw [eq_bot_iff]
+    intro y hy
+    obtain ⟨hyW, hyx⟩ := Submodule.mem_inf.mp hy
+    obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.mp hyx
+    rcases eq_or_ne c 0 with rfl | hc
+    · simp
+    · exfalso
+      apply hxW
+      have h1 := W.smul_mem c⁻¹ hyW
+      rwa [smul_smul, inv_mul_cancel₀ hc, one_smul] at h1
+  refine ⟨W ⊔ ℝ ∙ x, ?_, ?_⟩
+  · rw [SetLike.lt_iff_le_and_exists]
+    exact ⟨le_sup_left, x,
+      Submodule.mem_sup_right (Submodule.mem_span_singleton_self x), hxW⟩
+  · have hsum := Submodule.finrank_sup_add_finrank_inf_eq W (ℝ ∙ x)
+    rw [hinf, finrank_bot, finrank_span_singleton hx0] at hsum
+    omega
+
+omit [FiniteDimensional ℝ V] in
+/-- **Witness transport along a value-compatible equivalence** (checkpoint 4c, flag
+step): a diagonal `angle_cond` witness for `B` on `U` transports across any linear
+equivalence `e : U ≃ₗ[ℝ] U'` whose target form agrees on quadratic values,
+`B'(e u, e u) = B(u, u)`. The basis moves by `Module.Basis.map` and a `finCongr`
+reindex; the coefficients and all three `AngleCondition` fields are unchanged up to
+the index bijection (the angle sum is permutation-invariant). -/
+theorem angle_cond_witness_transport {U U' : Type*}
+    [AddCommGroup U] [Module ℝ U] [AddCommGroup U'] [Module ℝ U']
+    (B : U →ₗ[ℝ] U →ₗ[ℝ] ℂ) (B' : U' →ₗ[ℝ] U' →ₗ[ℝ] ℂ) (e : U ≃ₗ[ℝ] U')
+    (hcompat : ∀ u : U, B' (e u) (e u) = B u u)
+    (h : ∃ (b : Module.Basis (Fin (Module.finrank ℝ U)) ℝ U)
+        (eig : Fin (Module.finrank ℝ U) → ℂ),
+        AngleCondition eig ∧ ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    ∃ (b' : Module.Basis (Fin (Module.finrank ℝ U')) ℝ U')
+      (eig' : Fin (Module.finrank ℝ U') → ℂ),
+      AngleCondition eig' ∧ ∀ v, B' v v = ∑ i, eig' i * (b'.repr v i : ℂ) ^ 2 := by
+  obtain ⟨b, eig, hAC, hdiag⟩ := h
+  have hfr : Module.finrank ℝ U = Module.finrank ℝ U' := e.finrank_eq
+  refine ⟨(b.map e).reindex (finCongr hfr), fun i => eig (finCongr hfr.symm i),
+    ⟨fun i => hAC.nonzero _, fun i => hAC.not_nonpos_real _, ?_⟩, ?_⟩
+  · -- the angle sum is invariant under the index bijection
+    exact lt_of_eq_of_lt
+      (Fintype.sum_equiv (finCongr hfr.symm)
+        (fun i' => |Complex.arg (eig (finCongr hfr.symm i'))|)
+        (fun i => |Complex.arg (eig i)|) fun x => rfl)
+      hAC.sum_arg_lt_pi
+  · intro v
+    have h1 := hdiag (e.symm v)
+    rw [← hcompat (e.symm v), e.apply_symm_apply] at h1
+    rw [h1]
+    have hrepr : ∀ i, (((b.map e).reindex (finCongr hfr)).repr v) (finCongr hfr i)
+        = (b.repr (e.symm v)) i := by
+      intro i
+      simp [Module.Basis.repr_reindex, Module.Basis.map_repr]
+    have hidx : ∀ i : Fin (Module.finrank ℝ U),
+        finCongr hfr.symm (finCongr hfr i) = i := fun i => Fin.ext (by simp)
+    refine Fintype.sum_equiv (finCongr hfr) _ _ fun i => ?_
+    simp only [hidx i, hrepr i]
+
+end FlagStep
+
+/-! ### Faithfulness gate for the flag steps
+
+`exists_hyperplane_above` and the transported witnesses do not reduce (spectral
+choice, `Submodule`-indexed min-max); the compiled checks pin the concrete codim-1
+value: restricting the checkpoint-1 pair `eig = (e^{i pi/3}, e^{-i pi/6})` to the
+second axis leaves the single coefficient `e^{-i pi/6}`, whose witness abs-sum is
+`pi/6 < pi` — the flag's codim-1 output on the concrete pair. -/
+
+/-- The concrete restricted witness angle: `|arg(e^{-i pi/6})| = pi/6`. -/
+example : |Complex.arg (Complex.exp (((-(Real.pi / 6) : ℝ) : ℂ) * Complex.I))|
+    = Real.pi / 6 := by
+  have hπ := Real.pi_pos
+  rw [arg_exp_ofReal_mul_I ⟨by linarith, by linarith⟩, abs_neg,
+    abs_of_pos (by positivity)]
+
+/-- The concrete restricted witness abs-sum over its 1-element index:
+`∑_{Fin 1} |arg(e^{-i pi/6})| = pi/6`. -/
+example : ∑ i : Fin 1,
+    |Complex.arg ((![Complex.exp (((-(Real.pi / 6) : ℝ) : ℂ) * Complex.I)]) i)|
+    = Real.pi / 6 := by
+  have hπ := Real.pi_pos
+  rw [Fin.sum_univ_one, Matrix.cons_val_zero,
+    arg_exp_ofReal_mul_I ⟨by linarith, by linarith⟩, abs_neg,
+    abs_of_pos (by positivity)]
+
+/-- And `pi/6 < pi`: the codim-1 restricted witness satisfies the angle bound. -/
+example : Real.pi / 6 < Real.pi := by linarith [Real.pi_pos]
