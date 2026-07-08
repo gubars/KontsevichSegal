@@ -96,6 +96,35 @@ theorem bilin_basis_apply_self (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
   · intro h
     exact absurd (Finset.mem_univ i) h
 
+/-- **Diagonal expansion on an orthogonal basis** (converse polarization): if the
+basis `rb` is orthogonal for `B` (off-diagonal values vanish), the quadratic values
+expand diagonally, `B(v,v) = sum_i B(rb i, rb i) * (rb.repr v i)^2`. Bare-form
+counterpart of `KontsevichSegal.Hodge.toForm_diag_of_orthogonal`; uses only
+bilinearity, no symmetry. -/
+theorem bilin_diag_of_orthogonal (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (rb : Module.Basis ι ℝ V)
+    (horth : ∀ i j, i ≠ j → B (rb i) (rb j) = 0) (v : V) :
+    B v v = ∑ i, B (rb i) (rb i) * (rb.repr v i : ℂ) ^ 2 := by
+  classical
+  suffices hbil : ∀ v w : V, B v w
+      = ∑ i, B (rb i) (rb i) * (rb.repr v i : ℂ) * (rb.repr w i : ℂ) by
+    rw [hbil v v]
+    exact Finset.sum_congr rfl fun i _ => by ring
+  intro v w
+  have expand2 : ∀ i, B (rb i) w = (rb.repr w i : ℂ) * B (rb i) (rb i) := by
+    intro i
+    conv_lhs => rw [show w = ∑ j, rb.repr w j • rb j from (rb.sum_repr w).symm]
+    rw [map_sum, Finset.sum_eq_single i]
+    · rw [map_smul, Complex.real_smul]
+    · intro j _ hj
+      rw [map_smul, Complex.real_smul, horth i j (Ne.symm hj), mul_zero]
+    · intro hmem
+      exact absurd (Finset.mem_univ i) hmem
+  conv_lhs => rw [show v = ∑ i, rb.repr v i • rb i from (rb.sum_repr v).symm]
+  rw [map_sum, LinearMap.sum_apply]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [map_smul, LinearMap.smul_apply, Complex.real_smul, expand2 i]
+  ring
+
 end Polarization
 
 /-! ## The global rotation
@@ -191,18 +220,19 @@ section RotatedForms
 
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
 
-/-- The real part `ĝ_R = Re(e^{-iφ}·g)` of the rotated form, as a real bilinear form on
-`V` (KS paper Proposition 2.5: the positive-definite form of the pencil). -/
-noncomputable def AllowableComplexMetric.rotatedRe (g : AllowableComplexMetric V)
-    (φ : ℝ) : LinearMap.BilinForm ℝ V where
+/-- The real part `Re(e^{-i phi} * B)` of a rotated complex bilinear form, for a bare
+form `B` (bare-form core of `AllowableComplexMetric.rotatedRe`; KS paper
+Proposition 2.5: the positive-definite form of the pencil). -/
+noncomputable def rotatedReOfForm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ) :
+    LinearMap.BilinForm ℝ V where
   toFun v :=
-    { toFun := fun w => (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm v w).re
-      map_add' := fun w₁ w₂ => by rw [map_add, mul_add, Complex.add_re]
+    { toFun := fun w => (Complex.exp (-(phi : ℂ) * Complex.I) * B v w).re
+      map_add' := fun w1 w2 => by rw [map_add, mul_add, Complex.add_re]
       map_smul' := fun r w => by
         simp only [map_smul, Complex.real_smul, RingHom.id_apply, smul_eq_mul,
           Complex.mul_re, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im]
         ring }
-  map_add' v₁ v₂ := by
+  map_add' v1 v2 := by
     ext w
     simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply, map_add, mul_add,
       Complex.add_re]
@@ -213,18 +243,19 @@ noncomputable def AllowableComplexMetric.rotatedRe (g : AllowableComplexMetric V
       Complex.ofReal_re, Complex.ofReal_im]
     ring
 
-/-- The imaginary part `ĝ_I = Im(e^{-iφ}·g)` of the rotated form, as a real bilinear
-form on `V` (KS paper Proposition 2.5: the second form of the pencil). -/
-noncomputable def AllowableComplexMetric.rotatedIm (g : AllowableComplexMetric V)
-    (φ : ℝ) : LinearMap.BilinForm ℝ V where
+/-- The imaginary part `Im(e^{-i phi} * B)` of a rotated complex bilinear form, for a
+bare form `B` (bare-form core of `AllowableComplexMetric.rotatedIm`; KS paper
+Proposition 2.5: the second form of the pencil). -/
+noncomputable def rotatedImOfForm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ) :
+    LinearMap.BilinForm ℝ V where
   toFun v :=
-    { toFun := fun w => (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm v w).im
-      map_add' := fun w₁ w₂ => by rw [map_add, mul_add, Complex.add_im]
+    { toFun := fun w => (Complex.exp (-(phi : ℂ) * Complex.I) * B v w).im
+      map_add' := fun w1 w2 => by rw [map_add, mul_add, Complex.add_im]
       map_smul' := fun r w => by
         simp only [map_smul, Complex.real_smul, RingHom.id_apply, smul_eq_mul,
           Complex.mul_re, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im]
         ring }
-  map_add' v₁ v₂ := by
+  map_add' v1 v2 := by
     ext w
     simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply, map_add, mul_add,
       Complex.add_im]
@@ -234,6 +265,82 @@ noncomputable def AllowableComplexMetric.rotatedIm (g : AllowableComplexMetric V
       smul_eq_mul, map_smul, Complex.real_smul, Complex.mul_re, Complex.mul_im,
       Complex.ofReal_re, Complex.ofReal_im]
     ring
+
+omit [FiniteDimensional ℝ V] in
+@[simp] theorem rotatedReOfForm_apply (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ) (v w : V) :
+    rotatedReOfForm B phi v w
+      = (Complex.exp (-(phi : ℂ) * Complex.I) * B v w).re := rfl
+
+omit [FiniteDimensional ℝ V] in
+@[simp] theorem rotatedImOfForm_apply (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ) (v w : V) :
+    rotatedImOfForm B phi v w
+      = (Complex.exp (-(phi : ℂ) * Complex.I) * B v w).im := rfl
+
+omit [FiniteDimensional ℝ V] in
+/-- The rotated real part of a symmetric form is symmetric (bare-form core). -/
+theorem rotatedReOfForm_symm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (v w : V) :
+    rotatedReOfForm B phi v w = rotatedReOfForm B phi w v := by
+  rw [rotatedReOfForm_apply, rotatedReOfForm_apply, hsymm v w]
+
+omit [FiniteDimensional ℝ V] in
+/-- The rotated imaginary part of a symmetric form is symmetric (bare-form core). -/
+theorem rotatedImOfForm_symm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (v w : V) :
+    rotatedImOfForm B phi v w = rotatedImOfForm B phi w v := by
+  rw [rotatedImOfForm_apply, rotatedImOfForm_apply, hsymm v w]
+
+omit [FiniteDimensional ℝ V] in
+/-- Diagonal expansion of the rotated real part on a diagonalizing basis of `B`
+(bare-form core of `AllowableComplexMetric.rotatedRe_apply_self`). -/
+theorem rotatedReOfForm_apply_self (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ)
+    {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ V) (eig : ι → ℂ)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) (v : V) :
+    rotatedReOfForm B phi v v
+      = ∑ i, (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re * (b.repr v i) ^ 2 := by
+  rw [rotatedReOfForm_apply, hdiag v, Finset.mul_sum, Complex.re_sum]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [← mul_assoc, ← Complex.ofReal_pow, Complex.mul_re, Complex.ofReal_re,
+    Complex.ofReal_im, mul_zero, sub_zero]
+
+omit [FiniteDimensional ℝ V] in
+/-- **The rotated real part is positive-definite** when every rotated coefficient
+lies in the open right half-plane (bare-form core of
+`AllowableComplexMetric.rotatedRe_posDef`). -/
+theorem rotatedReOfForm_posDef (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ)
+    {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ V) (eig : ι → ℂ)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hpos : ∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re)
+    (v : V) (hv : v ≠ 0) : 0 < rotatedReOfForm B phi v v := by
+  rw [rotatedReOfForm_apply_self B phi b eig hdiag v]
+  have hrepr : b.repr v ≠ 0 := fun h => hv (b.repr.map_eq_zero_iff.mp h)
+  obtain ⟨i0, hi0⟩ := Finsupp.ne_iff.mp hrepr
+  simp only [Finsupp.coe_zero, Pi.zero_apply] at hi0
+  refine Finset.sum_pos' (fun i _ => mul_nonneg (hpos i).le (sq_nonneg _))
+    ⟨i0, Finset.mem_univ _, ?_⟩
+  exact mul_pos (hpos i0)
+    (lt_of_le_of_ne (sq_nonneg _) (Ne.symm (pow_ne_zero 2 hi0)))
+
+/-- The inner-product core of the rotated real part of a bare symmetric form
+(bare-form core of `AllowableComplexMetric.rotatedCore`). -/
+noncomputable def rotatedCoreOfForm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ)
+    (hpos : ∀ v, v ≠ 0 → 0 < rotatedReOfForm B phi v v) :
+    InnerProductSpace.Core ℝ V :=
+  KontsevichSegal.Hodge.posDefCore (rotatedReOfForm B phi)
+    (rotatedReOfForm_symm B hsymm phi) hpos
+
+/-- The real part `ĝ_R = Re(e^{-iφ}·g)` of the rotated form, as a real bilinear form on
+`V` (KS paper Proposition 2.5: the positive-definite form of the pencil). -/
+noncomputable def AllowableComplexMetric.rotatedRe (g : AllowableComplexMetric V)
+    (φ : ℝ) : LinearMap.BilinForm ℝ V :=
+  rotatedReOfForm g.toForm φ
+
+/-- The imaginary part `ĝ_I = Im(e^{-iφ}·g)` of the rotated form, as a real bilinear
+form on `V` (KS paper Proposition 2.5: the second form of the pencil). -/
+noncomputable def AllowableComplexMetric.rotatedIm (g : AllowableComplexMetric V)
+    (φ : ℝ) : LinearMap.BilinForm ℝ V :=
+  rotatedImOfForm g.toForm φ
 
 @[simp] theorem AllowableComplexMetric.rotatedRe_apply (g : AllowableComplexMetric V)
     (φ : ℝ) (v w : V) :
@@ -245,13 +352,13 @@ noncomputable def AllowableComplexMetric.rotatedIm (g : AllowableComplexMetric V
 
 /-- `ĝ_R` is symmetric (from the symmetry of `g`). -/
 theorem AllowableComplexMetric.rotatedRe_symm (g : AllowableComplexMetric V) (φ : ℝ)
-    (v w : V) : g.rotatedRe φ v w = g.rotatedRe φ w v := by
-  rw [g.rotatedRe_apply, g.rotatedRe_apply, g.symmetric' v w]
+    (v w : V) : g.rotatedRe φ v w = g.rotatedRe φ w v :=
+  rotatedReOfForm_symm g.toForm g.symmetric' φ v w
 
 /-- `ĝ_I` is symmetric (from the symmetry of `g`). -/
 theorem AllowableComplexMetric.rotatedIm_symm (g : AllowableComplexMetric V) (φ : ℝ)
-    (v w : V) : g.rotatedIm φ v w = g.rotatedIm φ w v := by
-  rw [g.rotatedIm_apply, g.rotatedIm_apply, g.symmetric' v w]
+    (v w : V) : g.rotatedIm φ v w = g.rotatedIm φ w v :=
+  rotatedImOfForm_symm g.toForm g.symmetric' φ v w
 
 /-- Diagonal expansion of `ĝ_R` on a diagonalizing basis of `g`:
 `ĝ_R(v,v) = ∑ᵢ Re(e^{-iφ}λᵢ)·(yᵢ v)²`. -/
@@ -259,11 +366,8 @@ theorem AllowableComplexMetric.rotatedRe_apply_self (g : AllowableComplexMetric 
     (φ : ℝ) {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ V) (eig : ι → ℂ)
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) (v : V) :
     g.rotatedRe φ v v
-      = ∑ i, (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re * (b.repr v i) ^ 2 := by
-  rw [g.rotatedRe_apply, hdiag v, Finset.mul_sum, Complex.re_sum]
-  refine Finset.sum_congr rfl fun i _ => ?_
-  rw [← mul_assoc, ← Complex.ofReal_pow, Complex.mul_re, Complex.ofReal_re,
-    Complex.ofReal_im, mul_zero, sub_zero]
+      = ∑ i, (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re * (b.repr v i) ^ 2 :=
+  rotatedReOfForm_apply_self g.toForm φ b eig hdiag v
 
 /-- **`ĝ_R` is positive-definite** (KS paper Proposition 2.5): with every rotated
 coefficient in the open right half-plane, the diagonal expansion of `ĝ_R` is a sum of
@@ -272,22 +376,15 @@ theorem AllowableComplexMetric.rotatedRe_posDef (g : AllowableComplexMetric V) (
     {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ V) (eig : ι → ℂ)
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
     (hpos : ∀ i, 0 < (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re)
-    (v : V) (hv : v ≠ 0) : 0 < g.rotatedRe φ v v := by
-  rw [g.rotatedRe_apply_self φ b eig hdiag v]
-  have hrepr : b.repr v ≠ 0 := fun h => hv (b.repr.map_eq_zero_iff.mp h)
-  obtain ⟨i₀, hi₀⟩ := Finsupp.ne_iff.mp hrepr
-  simp only [Finsupp.coe_zero, Pi.zero_apply] at hi₀
-  refine Finset.sum_pos' (fun i _ => mul_nonneg (hpos i).le (sq_nonneg _))
-    ⟨i₀, Finset.mem_univ _, ?_⟩
-  exact mul_pos (hpos i₀)
-    (lt_of_le_of_ne (sq_nonneg _) (Ne.symm (pow_ne_zero 2 hi₀)))
+    (v : V) (hv : v ≠ 0) : 0 < g.rotatedRe φ v v :=
+  rotatedReOfForm_posDef g.toForm φ b eig hdiag hpos v hv
 
 /-- The inner-product core of `ĝ_R`, fed to `posDefCore` as-is (KS paper
 Proposition 2.5: `ĝ_R` is the inner product of the pencil). -/
 noncomputable def AllowableComplexMetric.rotatedCore (g : AllowableComplexMetric V)
     (φ : ℝ) (hpos : ∀ v, v ≠ 0 → 0 < g.rotatedRe φ v v) :
     InnerProductSpace.Core ℝ V :=
-  KontsevichSegal.Hodge.posDefCore (g.rotatedRe φ) (g.rotatedRe_symm φ) hpos
+  rotatedCoreOfForm g.toForm g.symmetric' φ hpos
 
 omit [FiniteDimensional ℝ V] in
 /-- A positive-definite bilinear form is nondegenerate (both slots separate points).
@@ -338,6 +435,68 @@ theorem isSymmetric_of_pairing {E : Type*} [NormedAddCommGroup E]
   change inner ℝ (T x) y = inner ℝ x (T y)
   rw [hinner, hinner, hT, hPsymm x (T y), hT, hAsymm y x]
 
+/-- **The eigenvalue bridge, bare-form core** (KS paper Proposition 2.5): on a
+diagonalizing basis `b` of a bare symmetric form `B` with rotated coefficients in the
+open right half-plane, the pencil operator of the rotated pair acts diagonally with
+eigenvalues the tangents of the rotated angles. -/
+theorem pencilOperator_eigen_basis_of_form {ι : Type*} [Fintype ι]
+    (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (hsymm : ∀ v w, B v w = B w v) (phi : ℝ)
+    (b : Module.Basis ι ℝ V) (eig : ι → ℂ)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hpos : ∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re)
+    (hnd : (rotatedReOfForm B phi).Nondegenerate) (i : ι) :
+    pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi) hnd (b i)
+      = Real.tan (Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * eig i)) • b i := by
+  classical
+  -- `B` is diagonal on `b` (polarization).
+  have hoff : ∀ p q, p ≠ q → B (b p) (b q) = 0 := fun p q hpq =>
+    bilin_basis_eq_zero_of_ne B hsymm b eig hdiag hpq
+  have hdd : ∀ p, B (b p) (b p) = eig p := fun p =>
+    bilin_basis_apply_self B b eig hdiag p
+  -- Basis pairings of the rotated forms.
+  have hRoff : ∀ p q, p ≠ q → rotatedReOfForm B phi (b p) (b q) = 0 := by
+    intro p q hpq
+    rw [rotatedReOfForm_apply, hoff p q hpq, mul_zero, Complex.zero_re]
+  have hIoff : ∀ p q, p ≠ q → rotatedImOfForm B phi (b p) (b q) = 0 := by
+    intro p q hpq
+    rw [rotatedImOfForm_apply, hoff p q hpq, mul_zero, Complex.zero_im]
+  have hRdd : ∀ p, rotatedReOfForm B phi (b p) (b p)
+      = (Complex.exp (-(phi : ℂ) * Complex.I) * eig p).re := by
+    intro p
+    rw [rotatedReOfForm_apply, hdd p]
+  have hIdd : ∀ p, rotatedImOfForm B phi (b p) (b p)
+      = (Complex.exp (-(phi : ℂ) * Complex.I) * eig p).im := by
+    intro p
+    rw [rotatedImOfForm_apply, hdd p]
+  -- The tangent identity `tan(arg z)·Re z = Im z` on the right half-plane.
+  have htan : Real.tan (Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * eig i))
+      * (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re
+      = (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).im := by
+    rw [Complex.tan_arg]
+    exact div_mul_cancel₀ _ (hpos i).ne'
+  -- `T bᵢ − tan(arg(e^{-iφ}λᵢ))·bᵢ` pairs to zero against every basis vector.
+  have hzero : ∀ j, rotatedReOfForm B phi
+      (pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi) hnd (b i)
+        - Real.tan (Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * eig i)) • b i)
+      (b j) = 0 := by
+    intro j
+    rw [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
+      pencilOperator_pairing, smul_eq_mul]
+    rcases eq_or_ne j i with rfl | hji
+    · rw [hIdd j, hRdd j, htan, sub_self]
+    · rw [hIoff i j (Ne.symm hji), hRoff i j (Ne.symm hji), mul_zero, sub_zero]
+  -- Vanishing against a basis and nondegeneracy give the eigen-equation.
+  have hfun : rotatedReOfForm B phi
+      (pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi) hnd (b i)
+        - Real.tan (Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * eig i)) • b i)
+      = 0 :=
+    b.ext fun j => by rw [hzero j, LinearMap.zero_apply]
+  have hker : pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi) hnd (b i)
+      - Real.tan (Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * eig i)) • b i
+      = 0 :=
+    hnd.1 _ fun y => by rw [hfun, LinearMap.zero_apply]
+  exact sub_eq_zero.mp hker
+
 /-- **The eigenvalue bridge** (KS paper Proposition 2.5): on a diagonalizing basis `b`
 of an allowable metric `g` with rotated coefficients in the open right half-plane, the
 pencil operator of `(ĝ_R, ĝ_I)` acts diagonally with eigenvalues the tangents of the
@@ -351,56 +510,8 @@ theorem pencilOperator_eigen_basis {ι : Type*} [Fintype ι]
     (hpos : ∀ i, 0 < (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re)
     (hnd : (g.rotatedRe φ).Nondegenerate) (i : ι) :
     pencilOperator (g.rotatedRe φ) (g.rotatedIm φ) hnd (b i)
-      = Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * eig i)) • b i := by
-  classical
-  -- `g.toForm` is diagonal on `b` (polarization).
-  have hoff : ∀ p q, p ≠ q → g.toForm (b p) (b q) = 0 := fun p q hpq =>
-    bilin_basis_eq_zero_of_ne g.toForm g.symmetric' b eig hdiag hpq
-  have hdd : ∀ p, g.toForm (b p) (b p) = eig p := fun p =>
-    bilin_basis_apply_self g.toForm b eig hdiag p
-  -- Basis pairings of the rotated forms.
-  have hRoff : ∀ p q, p ≠ q → g.rotatedRe φ (b p) (b q) = 0 := by
-    intro p q hpq
-    rw [g.rotatedRe_apply, hoff p q hpq, mul_zero, Complex.zero_re]
-  have hIoff : ∀ p q, p ≠ q → g.rotatedIm φ (b p) (b q) = 0 := by
-    intro p q hpq
-    rw [g.rotatedIm_apply, hoff p q hpq, mul_zero, Complex.zero_im]
-  have hRdd : ∀ p, g.rotatedRe φ (b p) (b p)
-      = (Complex.exp (-(φ : ℂ) * Complex.I) * eig p).re := by
-    intro p
-    rw [g.rotatedRe_apply, hdd p]
-  have hIdd : ∀ p, g.rotatedIm φ (b p) (b p)
-      = (Complex.exp (-(φ : ℂ) * Complex.I) * eig p).im := by
-    intro p
-    rw [g.rotatedIm_apply, hdd p]
-  -- The tangent identity `tan(arg z)·Re z = Im z` on the right half-plane.
-  have htan : Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * eig i))
-      * (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re
-      = (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).im := by
-    rw [Complex.tan_arg]
-    exact div_mul_cancel₀ _ (hpos i).ne'
-  -- `T bᵢ − tan(arg(e^{-iφ}λᵢ))·bᵢ` pairs to zero against every basis vector.
-  have hzero : ∀ j, g.rotatedRe φ
-      (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ) hnd (b i)
-        - Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * eig i)) • b i)
-      (b j) = 0 := by
-    intro j
-    rw [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
-      pencilOperator_pairing, smul_eq_mul]
-    rcases eq_or_ne j i with rfl | hji
-    · rw [hIdd j, hRdd j, htan, sub_self]
-    · rw [hIoff i j (Ne.symm hji), hRoff i j (Ne.symm hji), mul_zero, sub_zero]
-  -- Vanishing against a basis and nondegeneracy give the eigen-equation.
-  have hfun : g.rotatedRe φ
-      (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ) hnd (b i)
-        - Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * eig i)) • b i)
-      = 0 :=
-    b.ext fun j => by rw [hzero j, LinearMap.zero_apply]
-  have hker : pencilOperator (g.rotatedRe φ) (g.rotatedIm φ) hnd (b i)
-      - Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * eig i)) • b i
-      = 0 :=
-    hnd.1 _ fun y => by rw [hfun, LinearMap.zero_apply]
-  exact sub_eq_zero.mp hker
+      = Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * eig i)) • b i :=
+  pencilOperator_eigen_basis_of_form g.toForm g.symmetric' φ b eig hdiag hpos hnd i
 
 end Pencil
 
@@ -920,14 +1031,72 @@ theorem exists_rotation_posDef (g : AllowableComplexMetric V) :
   obtain ⟨φ, hφ, -, hposI⟩ := hAC.exists_rotation
   exact ⟨φ, hφ, fun x hx => g.rotatedRe_posDef φ b eig hdiag hposI x hx⟩
 
+omit [FiniteDimensional ℝ V] in
+/-- The rotated value `e^{-i phi} * B(x,x)` has argument in `(-pi/2, pi/2)` for
+`x ≠ 0` (bare-form core of `abs_arg_rotated_lt_pi_div_two`). -/
+theorem abs_arg_rotated_lt_pi_div_two_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) {x : V} (hx : x ≠ 0) :
+    |Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * B x x)| < Real.pi / 2 := by
+  refine Complex.abs_arg_lt_pi_div_two_iff.mpr (Or.inl ?_)
+  have h := hpos x hx
+  rwa [rotatedReOfForm_apply] at h
+
+omit [FiniteDimensional ℝ V] in
+/-- The rotation shifts the argument exactly, with no `2 pi` wrap (bare-form core of
+`arg_toForm_eq_arg_rotated_add`): `arg B(x,x) = arg(e^{-i phi} * B(x,x)) + phi`. -/
+theorem arg_eq_arg_rotated_add_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ)
+    (hphi : |phi| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) {x : V} (hx : x ≠ 0) :
+    Complex.arg (B x x)
+      = Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * B x x) + phi := by
+  set w := Complex.exp (-(phi : ℂ) * Complex.I) * B x x with hw
+  have hwre : 0 < w.re := by
+    have h := hpos x hx
+    rwa [rotatedReOfForm_apply] at h
+  have hwne : w ≠ 0 := fun h => by rw [h] at hwre; simp at hwre
+  have hargw : |w.arg| < Real.pi / 2 :=
+    Complex.abs_arg_lt_pi_div_two_iff.mpr (Or.inl hwre)
+  have hπ := Real.pi_pos
+  have h1 := abs_lt.mp hphi
+  have h2 := abs_lt.mp hargw
+  have hargexp : (Complex.exp ((phi : ℂ) * Complex.I)).arg = phi :=
+    arg_exp_ofReal_mul_I ⟨by linarith, by linarith⟩
+  have hz : B x x = Complex.exp ((phi : ℂ) * Complex.I) * w := by
+    rw [hw, ← mul_assoc, ← Complex.exp_add,
+      show (phi : ℂ) * Complex.I + -(phi : ℂ) * Complex.I = 0 by ring,
+      Complex.exp_zero, one_mul]
+  rw [hz, Complex.arg_mul (Complex.exp_ne_zero _) hwne
+    (by rw [hargexp]; exact ⟨by linarith, by linarith⟩), hargexp]
+  exact add_comm phi w.arg
+
+omit [FiniteDimensional ℝ V] in
+/-- The Rayleigh quotient of the bare pencil is the tangent of the rotated argument
+(bare-form core of `pencil_rayleigh_eq_tan`). -/
+theorem pencil_rayleigh_eq_tan_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ) (x : V) :
+    rotatedImOfForm B phi x x / rotatedReOfForm B phi x x
+      = Real.tan (Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * B x x)) := by
+  rw [rotatedImOfForm_apply, rotatedReOfForm_apply, Complex.tan_arg]
+
+omit [FiniteDimensional ℝ V] in
+/-- `arctan` of the bare pencil Rayleigh quotient recovers the shifted argument
+(bare-form core of `arctan_pencil_rayleigh_eq_arg_sub`). -/
+theorem arctan_pencil_rayleigh_eq_arg_sub_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ) (phi : ℝ)
+    (hphi : |phi| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) {x : V} (hx : x ≠ 0) :
+    Real.arctan (rotatedImOfForm B phi x x / rotatedReOfForm B phi x x)
+      = Complex.arg (B x x) - phi := by
+  have hargw := abs_arg_rotated_lt_pi_div_two_of_form B phi hpos hx
+  rw [pencil_rayleigh_eq_tan_of_form B phi x,
+    Real.arctan_tan (abs_lt.mp hargw).1 (abs_lt.mp hargw).2,
+    arg_eq_arg_rotated_add_of_form B phi hphi hpos hx]
+  ring
+
 /-- The rotated value `e^{-iφ}·g(x,x)` has argument in `(-π/2, π/2)` for `x ≠ 0`
 (STEP 2(i): positivity of `ĝ_R` is positivity of the rotated real part). -/
 theorem abs_arg_rotated_lt_pi_div_two (g : AllowableComplexMetric V) (φ : ℝ)
     (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {x : V} (hx : x ≠ 0) :
-    |Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x)| < Real.pi / 2 := by
-  refine Complex.abs_arg_lt_pi_div_two_iff.mpr (Or.inl ?_)
-  have h := hpos x hx
-  rwa [g.rotatedRe_apply] at h
+    |Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x)| < Real.pi / 2 :=
+  abs_arg_rotated_lt_pi_div_two_of_form g.toForm φ hpos hx
 
 /-- STEP 2(ii): the rotation shifts the argument exactly, with no `2π` wrap:
 `arg g(x,x) = arg(e^{-iφ}·g(x,x)) + φ`. Both the rotated argument and `φ` lie in
@@ -936,26 +1105,8 @@ theorem arg_toForm_eq_arg_rotated_add (g : AllowableComplexMetric V) (φ : ℝ)
     (hφ : |φ| < Real.pi / 2)
     (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {x : V} (hx : x ≠ 0) :
     Complex.arg (g.toForm x x)
-      = Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x) + φ := by
-  set w := Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x with hw
-  have hwre : 0 < w.re := by
-    have h := hpos x hx
-    rwa [g.rotatedRe_apply] at h
-  have hwne : w ≠ 0 := fun h => by rw [h] at hwre; simp at hwre
-  have hargw : |w.arg| < Real.pi / 2 :=
-    Complex.abs_arg_lt_pi_div_two_iff.mpr (Or.inl hwre)
-  have hπ := Real.pi_pos
-  have h1 := abs_lt.mp hφ
-  have h2 := abs_lt.mp hargw
-  have hargexp : (Complex.exp ((φ : ℂ) * Complex.I)).arg = φ :=
-    arg_exp_ofReal_mul_I ⟨by linarith, by linarith⟩
-  have hz : g.toForm x x = Complex.exp ((φ : ℂ) * Complex.I) * w := by
-    rw [hw, ← mul_assoc, ← Complex.exp_add,
-      show (φ : ℂ) * Complex.I + -(φ : ℂ) * Complex.I = 0 by ring,
-      Complex.exp_zero, one_mul]
-  rw [hz, Complex.arg_mul (Complex.exp_ne_zero _) hwne
-    (by rw [hargexp]; exact ⟨by linarith, by linarith⟩), hargexp]
-  exact add_comm φ w.arg
+      = Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x) + φ :=
+  arg_eq_arg_rotated_add_of_form g.toForm φ hφ hpos hx
 
 /-- STEP 1: the Rayleigh quotient of the pencil is the tangent of the rotated
 argument, `ĝ_I(x,x)/ĝ_R(x,x) = tan(arg(e^{-iφ}·g(x,x)))`. Under the `posDefCore`
@@ -963,20 +1114,16 @@ instances of `ĝ_R` the left side is `⟪T x, x⟫/‖x‖²` for the pencil ope
 (used in that form inside the transport theorems). -/
 theorem pencil_rayleigh_eq_tan (g : AllowableComplexMetric V) (φ : ℝ) (x : V) :
     g.rotatedIm φ x x / g.rotatedRe φ x x
-      = Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x)) := by
-  rw [g.rotatedIm_apply, g.rotatedRe_apply, Complex.tan_arg]
+      = Real.tan (Complex.arg (Complex.exp (-(φ : ℂ) * Complex.I) * g.toForm x x)) :=
+  pencil_rayleigh_eq_tan_of_form g.toForm φ x
 
 /-- STEP 2(iii): `arctan(ĝ_I(x,x)/ĝ_R(x,x)) = arg g(x,x) − φ` for `x ≠ 0`. -/
 theorem arctan_pencil_rayleigh_eq_arg_sub (g : AllowableComplexMetric V) (φ : ℝ)
     (hφ : |φ| < Real.pi / 2)
     (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {x : V} (hx : x ≠ 0) :
     Real.arctan (g.rotatedIm φ x x / g.rotatedRe φ x x)
-      = Complex.arg (g.toForm x x) - φ := by
-  have hargw := abs_arg_rotated_lt_pi_div_two g φ hpos hx
-  rw [pencil_rayleigh_eq_tan g φ x,
-    Real.arctan_tan (abs_lt.mp hargw).1 (abs_lt.mp hargw).2,
-    arg_toForm_eq_arg_rotated_add g φ hφ hpos hx]
-  ring
+      = Complex.arg (g.toForm x x) - φ :=
+  arctan_pencil_rayleigh_eq_arg_sub_of_form g.toForm φ hφ hpos hx
 
 end KSAngleMinmax
 
@@ -1038,21 +1185,43 @@ open Module
 
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
 
+/-- The decreasing eigenvalues of the pencil operator of a bare symmetric form's
+rotated pair, with the `posDefCore` inner-product instances installed locally
+(bare-form core of `pencilEigenvalues`). -/
+noncomputable def pencilEigenvaluesOfForm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) {n : ℕ}
+    (hn : Module.finrank ℝ V = n) : Fin n → ℝ :=
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _
+      (rotatedCoreOfForm B hsymm phi hpos)
+  letI : InnerProductSpace ℝ V :=
+    InnerProductSpace.ofCore (rotatedCoreOfForm B hsymm phi hpos).toCore
+  LinearMap.IsSymmetric.eigenvalues
+    (isSymmetric_of_pairing (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+      (pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+        (nondegenerate_of_posDef (rotatedReOfForm B phi) hpos))
+      (fun _ _ => rfl) (rotatedReOfForm_symm B hsymm phi)
+      (rotatedImOfForm_symm B hsymm phi)
+      (fun x y => pencilOperator_pairing _ _ _ x y)) hn
+
 /-- The decreasing eigenvalues of the pencil operator of `(ĝ_R, ĝ_I)`, with the
 `posDefCore` inner-product instances of `ĝ_R` installed locally (this realizes
 `hT.eigenvalues hn` as an instance-free function of `(g, φ, hpos)`). -/
 noncomputable def pencilEigenvalues (g : AllowableComplexMetric V) (φ : ℝ)
     (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) {n : ℕ}
     (hn : Module.finrank ℝ V = n) : Fin n → ℝ :=
-  letI : NormedAddCommGroup V :=
-    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
-  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
-  LinearMap.IsSymmetric.eigenvalues
-    (isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ)
-      (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
-        (nondegenerate_of_posDef (g.rotatedRe φ) hpos))
-      (fun _ _ => rfl) (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
-      (fun x y => pencilOperator_pairing _ _ _ x y)) hn
+  pencilEigenvaluesOfForm g.toForm g.symmetric' φ hpos hn
+
+/-- **The bare KS critical angles**: the `k`-th angle of `v ↦ arg B(v,v)` for a bare
+complex bilinear form `B`, as the sup-inf of `arg B(x,x)` over `(k+1)`-dimensional
+subspaces (bare-form core of `ksAngle`; checkpoint 4b). Instantiated at the
+restricted form `g|_W` this is the `ksAngle` of the restriction, connected to
+`ksAngleOn g W` by `ksAngleOn_eq_ksAngleOfForm`. -/
+noncomputable def ksAngleOfForm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (k : Fin (Module.finrank ℝ V)) : ℝ :=
+  ⨆ S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1},
+    ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (B x.1 x.1)
 
 /-- **The KS critical angles** (KS paper Proposition 2.5): the `k`-th angle of
 `v ↦ arg g(v)`, defined canonically (choice-free) as the sup-inf of `arg g(x,x)` over
@@ -1060,46 +1229,50 @@ noncomputable def pencilEigenvalues (g : AllowableComplexMetric V) (φ : ℝ)
 Courant-Fischer theorems. -/
 noncomputable def ksAngle (g : AllowableComplexMetric V)
     (k : Fin (Module.finrank ℝ V)) : ℝ :=
-  ⨆ S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1},
-    ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1)
+  ksAngleOfForm g.toForm k
 
-/-- **The KS angles are arctangents of the pencil eigenvalues, shifted by the
-rotation** (KS paper Proposition 2.5, sup-inf form): `ksAngle g k = arctan(μ_k) + φ`
-for any rotation `φ` with `ĝ_R` positive-definite. This transports checkpoint 2a's
-`eigenvalues_eq_iSup_iInf_rayleigh` through `arctan` and the constant shift `φ`. -/
-theorem ksAngle_eq_arctan_eigenvalue (g : AllowableComplexMetric V) (φ : ℝ)
-    (hφ : |φ| < Real.pi / 2)
-    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x)
+/-- **The bare KS angles are arctangents of the pencil eigenvalues, shifted by the
+rotation** (bare-form core of `ksAngle_eq_arctan_eigenvalue`):
+`ksAngleOfForm B k = arctan(mu_k) + phi` for any rotation `phi` making the rotated
+real part positive-definite. Transports checkpoint 2a's
+`eigenvalues_eq_iSup_iInf_rayleigh` through `arctan` and the constant shift. -/
+theorem ksAngle_eq_arctan_eigenvalue_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (hphi : |phi| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x)
     (k : Fin (Module.finrank ℝ V)) :
-    ksAngle g k = Real.arctan (pencilEigenvalues g φ hpos rfl k) + φ := by
+    ksAngleOfForm B k
+      = Real.arctan (pencilEigenvaluesOfForm B hsymm phi hpos rfl k) + phi := by
   classical
   letI : NormedAddCommGroup V :=
-    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
-  letI : InnerProductSpace ℝ V := InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
-  have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
-      (nondegenerate_of_posDef (g.rotatedRe φ) hpos)).IsSymmetric :=
-    isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
-      (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _
+      (rotatedCoreOfForm B hsymm phi hpos)
+  letI : InnerProductSpace ℝ V :=
+    InnerProductSpace.ofCore (rotatedCoreOfForm B hsymm phi hpos).toCore
+  have hTsym : (pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+      (nondegenerate_of_posDef (rotatedReOfForm B phi) hpos)).IsSymmetric :=
+    isSymmetric_of_pairing (rotatedReOfForm B phi) (rotatedImOfForm B phi) _
+      (fun _ _ => rfl) (rotatedReOfForm_symm B hsymm phi)
+      (rotatedImOfForm_symm B hsymm phi)
       (fun x y => pencilOperator_pairing _ _ _ x y)
-  set T := pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
-    (nondegenerate_of_posDef (g.rotatedRe φ) hpos) with hTdef
-  have hpe : pencilEigenvalues g φ hpos rfl = hTsym.eigenvalues rfl := rfl
-  -- the Rayleigh quotient of `T` is the `ĝ` ratio
+  set T := pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+    (nondegenerate_of_posDef (rotatedReOfForm B phi) hpos) with hTdef
+  have hpe : pencilEigenvaluesOfForm B hsymm phi hpos rfl = hTsym.eigenvalues rfl := rfl
+  -- the Rayleigh quotient of `T` is the rotated-form ratio
   have hray : ∀ x : V, inner ℝ (T x) x / ‖x‖ ^ 2
-      = g.rotatedIm φ x x / g.rotatedRe φ x x := by
+      = rotatedImOfForm B phi x x / rotatedReOfForm B phi x x := by
     intro x
-    have h1 : inner ℝ (T x) x = g.rotatedIm φ x x :=
-      pencilOperator_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ x x
-    have h2 : ‖x‖ ^ 2 = g.rotatedRe φ x x := by
+    have h1 : inner ℝ (T x) x = rotatedImOfForm B phi x x :=
+      pencilOperator_pairing (rotatedReOfForm B phi) (rotatedImOfForm B phi) _ x x
+    have h2 : ‖x‖ ^ 2 = rotatedReOfForm B phi x x := by
       rw [← real_inner_self_eq_norm_sq]
       rfl
     rw [h1, h2]
-  -- pointwise: arg g(x,x) = arctan (Rayleigh x) + φ
+  -- pointwise: arg B(x,x) = arctan (Rayleigh x) + phi
   have hpt : ∀ (x : V), x ≠ 0 →
-      Complex.arg (g.toForm x x)
-        = Real.arctan (inner ℝ (T x) x / ‖x‖ ^ 2) + φ := by
+      Complex.arg (B x x)
+        = Real.arctan (inner ℝ (T x) x / ‖x‖ ^ 2) + phi := by
     intro x hx
-    rw [hray x, arctan_pencil_rayleigh_eq_arg_sub g φ hφ hpos hx]
+    rw [hray x, arctan_pencil_rayleigh_eq_arg_sub_of_form B phi hphi hpos hx]
     ring
   -- side facts for the transport
   have hne : (Finset.univ : Finset (Fin (Module.finrank ℝ V))).Nonempty :=
@@ -1121,22 +1294,22 @@ theorem ksAngle_eq_arctan_eigenvalue (g : AllowableComplexMetric V) (φ : ℝ)
     exact inf'_le_rayleigh hTsym rfl hne x.2.2
   -- inner transport, per subspace
   have hInner : ∀ S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1},
-      (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+      (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (B x.1 x.1))
         = Real.arctan (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0},
-            inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ := by
+            inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + phi := by
     intro S
     haveI := hxne S
     have hfx : (fun x : {x : V // x ∈ S.1 ∧ x ≠ 0} =>
-        Complex.arg (g.toForm x.1 x.1))
-        = fun x => Real.arctan (inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ :=
+        Complex.arg (B x.1 x.1))
+        = fun x => Real.arctan (inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + phi :=
       funext fun x => hpt x.1 x.2.2
-    rw [hfx, ← ciInf_add_const _ φ (bddBelow_range_arctan _),
+    rw [hfx, ← ciInf_add_const _ phi (bddBelow_range_arctan _),
       ← arctan_ciInf _ (hbddR S)]
   -- outer transport
   have hfS : (fun S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1} =>
-      ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+      ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (B x.1 x.1))
       = fun S => Real.arctan (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0},
-          inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + φ :=
+          inner ℝ (T x.1) x.1 / ‖x.1‖ ^ 2) + phi :=
     funext hInner
   have hbddU : BddAbove (Set.range
       fun S : {S : Submodule ℝ V // finrank ℝ S = (k : ℕ) + 1} =>
@@ -1145,9 +1318,20 @@ theorem ksAngle_eq_arctan_eigenvalue (g : AllowableComplexMetric V) (φ : ℝ)
     rintro r ⟨S, rfl⟩
     obtain ⟨x⟩ := hxne S
     exact le_trans (ciInf_le (hbddR S) x) (rayleigh_le_sup' hTsym rfl hne x.2.2)
-  unfold ksAngle
-  rw [hfS, ← ciSup_add_const _ φ (bddAbove_range_arctan _),
+  unfold ksAngleOfForm
+  rw [hfS, ← ciSup_add_const _ phi (bddAbove_range_arctan _),
     ← arctan_ciSup _ hbddU, ← eigenvalues_eq_iSup_iInf_rayleigh hTsym rfl k, hpe]
+
+/-- **The KS angles are arctangents of the pencil eigenvalues, shifted by the
+rotation** (KS paper Proposition 2.5, sup-inf form): `ksAngle g k = arctan(μ_k) + φ`
+for any rotation `φ` with `ĝ_R` positive-definite. This transports checkpoint 2a's
+`eigenvalues_eq_iSup_iInf_rayleigh` through `arctan` and the constant shift `φ`. -/
+theorem ksAngle_eq_arctan_eigenvalue (g : AllowableComplexMetric V) (φ : ℝ)
+    (hφ : |φ| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x)
+    (k : Fin (Module.finrank ℝ V)) :
+    ksAngle g k = Real.arctan (pencilEigenvalues g φ hpos rfl k) + φ :=
+  ksAngle_eq_arctan_eigenvalue_of_form g.toForm g.symmetric' φ hφ hpos k
 
 /-- **The dual inf-sup characterization of the KS angles** (φ-free): the `k`-th angle
 is also the inf-sup of `arg g(x,x)` over `(n−k)`-dimensional subspaces, transporting
@@ -1237,25 +1421,37 @@ theorem ksAngle_eq_iInf_iSup (g : AllowableComplexMetric V)
   rw [hfS, ← ciInf_add_const _ φ (bddBelow_range_arctan _),
     ← arctan_ciInf _ hbddU, ← eigenvalues_eq_iInf_iSup_rayleigh hTsym rfl k, hpe]
 
+/-- The bare KS angles are decreasing in `k` for any qualifying rotation (bare-form
+core of `ksAngle_antitone`): `arctan` is monotone, the pencil eigenvalues are
+antitone, and the shift is constant. -/
+theorem ksAngleOfForm_antitone (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (hphi : |phi| < Real.pi / 2)
+    (hpos : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) :
+    Antitone (ksAngleOfForm B) := by
+  intro k l hkl
+  rw [ksAngle_eq_arctan_eigenvalue_of_form B hsymm phi hphi hpos k,
+    ksAngle_eq_arctan_eigenvalue_of_form B hsymm phi hphi hpos l]
+  have hmono : pencilEigenvaluesOfForm B hsymm phi hpos rfl l
+      ≤ pencilEigenvaluesOfForm B hsymm phi hpos rfl k := by
+    letI : NormedAddCommGroup V :=
+      @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _
+        (rotatedCoreOfForm B hsymm phi hpos)
+    letI : InnerProductSpace ℝ V :=
+      InnerProductSpace.ofCore (rotatedCoreOfForm B hsymm phi hpos).toCore
+    have hTsym : (pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+        (nondegenerate_of_posDef (rotatedReOfForm B phi) hpos)).IsSymmetric :=
+      isSymmetric_of_pairing (rotatedReOfForm B phi) (rotatedImOfForm B phi) _
+        (fun _ _ => rfl) (rotatedReOfForm_symm B hsymm phi)
+        (rotatedImOfForm_symm B hsymm phi)
+        (fun x y => pencilOperator_pairing _ _ _ x y)
+    exact hTsym.eigenvalues_antitone rfl hkl
+  exact add_le_add (Real.arctan_mono hmono) le_rfl
+
 /-- The KS angles are decreasing in `k` (φ-free statement): `arctan` is monotone, the
 pencil eigenvalues are antitone, and the shift is constant. -/
 theorem ksAngle_antitone (g : AllowableComplexMetric V) : Antitone (ksAngle g) := by
   obtain ⟨φ, hφ, hpos⟩ := exists_rotation_posDef g
-  intro k l hkl
-  rw [ksAngle_eq_arctan_eigenvalue g φ hφ hpos k,
-    ksAngle_eq_arctan_eigenvalue g φ hφ hpos l]
-  have hmono : pencilEigenvalues g φ hpos rfl l ≤ pencilEigenvalues g φ hpos rfl k := by
-    letI : NormedAddCommGroup V :=
-      @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hpos)
-    letI : InnerProductSpace ℝ V :=
-      InnerProductSpace.ofCore (g.rotatedCore φ hpos).toCore
-    have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
-        (nondegenerate_of_posDef (g.rotatedRe φ) hpos)).IsSymmetric :=
-      isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
-        (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
-        (fun x y => pencilOperator_pairing _ _ _ x y)
-    exact hTsym.eigenvalues_antitone rfl hkl
-  exact add_le_add (Real.arctan_mono hmono) le_rfl
+  exact ksAngleOfForm_antitone g.toForm g.symmetric' φ hφ hpos
 
 end KSAngleMain
 
@@ -1560,6 +1756,100 @@ theorem ksAngle_interlace (g : AllowableComplexMetric V) (W : Submodule ℝ V)
       ksAngleOn g W j ≤ ksAngle g (Fin.castLE (Submodule.finrank_le W) j) :=
   ⟨ksAngle_le_ksAngleOn g W hcodim j, ksAngleOn_le_ksAngle g W j⟩
 
+/-- The restricted KS angles are decreasing in the index (checkpoint 4b; consumed by
+the sign-split summation): every member of the larger-dimensional family contains a
+member of the smaller-dimensional family with a larger infimum. -/
+theorem ksAngleOn_antitone (g : AllowableComplexMetric V) (W : Submodule ℝ V) :
+    Antitone (ksAngleOn g W) := by
+  classical
+  intro k l hkl
+  obtain ⟨S0, hS0le, hS0dim⟩ := exists_finrank_eq_of_le (U := W)
+    (Nat.succ_le_of_lt l.isLt)
+  haveI : Nonempty {S : Submodule ℝ V // S ≤ W ∧ finrank ℝ S = (l : ℕ) + 1} :=
+    ⟨⟨S0, hS0le, hS0dim⟩⟩
+  refine ciSup_le fun S => ?_
+  obtain ⟨A, hAS, hAdim⟩ := exists_finrank_eq_of_le (U := S.1)
+    (m := (k : ℕ) + 1) (by rw [S.2.2]; have := Fin.le_def.mp hkl; omega)
+  haveI hAne : Nonempty {x : V // x ∈ A ∧ x ≠ 0} :=
+    nonempty_subtype_mem_ne_zero (by rw [hAdim]; omega)
+  have h1 : (⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+      ≤ ⨅ x : {x : V // x ∈ A ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1) :=
+    le_ciInf fun x => ciInf_le (bddBelow_range_arg _)
+      (⟨x.1, hAS x.2.1, x.2.2⟩ : {x : V // x ∈ S.1 ∧ x ≠ 0})
+  refine le_trans h1 (le_ciSup (bddAbove_range_iInf_arg g
+    (fun S' : {S' : Submodule ℝ V // S' ≤ W ∧ finrank ℝ S' = (k : ℕ) + 1} => S'.1)
+    (fun S' => nonempty_subtype_mem_ne_zero (by rw [S'.2.2]; omega)))
+    (⟨A, le_trans hAS S.2.1, hAdim⟩ :
+      {S' : Submodule ℝ V // S' ≤ W ∧ finrank ℝ S' = (k : ℕ) + 1}))
+
+/-- **The linchpin** (checkpoint 4b): the restricted KS angles `ksAngleOn g W`, a
+sup-inf over subspaces of `V` contained in `W`, are the bare KS angles
+`ksAngleOfForm B` of any form `B` on `↥W` whose quadratic values agree with `g`
+through the coercion — in particular the restricted form `g|_W`, for which the
+agreement hypothesis holds by `rfl`. The subspace families correspond under
+`map W.subtype` / `comap W.subtype` (the `Submodule.MapSubtype.orderIso`
+correspondence), values agree pointwise, and both `iSup`/`iInf` layers transport by
+range equality, with no boundedness side conditions. -/
+theorem ksAngleOn_eq_ksAngleOfForm (g : AllowableComplexMetric V) (W : Submodule ℝ V)
+    (B : ↥W →ₗ[ℝ] ↥W →ₗ[ℝ] ℂ)
+    (hB : ∀ x : ↥W, B x x = g.toForm (x : V) (x : V))
+    (k : Fin (Module.finrank ℝ ↥W)) :
+    ksAngleOn g W k = ksAngleOfForm B k := by
+  classical
+  -- the inner infima correspond along `map W.subtype`
+  have hinner : ∀ T : Submodule ℝ ↥W,
+      (⨅ x : {x : V // x ∈ Submodule.map W.subtype T ∧ x ≠ 0},
+        Complex.arg (g.toForm x.1 x.1))
+      = ⨅ y : {y : ↥W // y ∈ T ∧ y ≠ 0}, Complex.arg (B y.1 y.1) := by
+    intro T
+    have hrange : (Set.range
+        fun x : {x : V // x ∈ Submodule.map W.subtype T ∧ x ≠ 0} =>
+          Complex.arg (g.toForm x.1 x.1))
+        = Set.range fun y : {y : ↥W // y ∈ T ∧ y ≠ 0} =>
+            Complex.arg (B y.1 y.1) := by
+      ext r
+      constructor
+      · rintro ⟨⟨x, hxT, hx0⟩, rfl⟩
+        obtain ⟨y, hyT, hyx⟩ := Submodule.mem_map.mp hxT
+        simp only [Submodule.subtype_apply] at hyx
+        have hy0 : y ≠ 0 := by
+          rintro rfl
+          exact hx0 (by rw [← hyx]; simp)
+        refine ⟨⟨y, hyT, hy0⟩, ?_⟩
+        simp only [hB y, hyx]
+      · rintro ⟨⟨y, hyT, hy0⟩, rfl⟩
+        refine ⟨⟨(y : V), Submodule.mem_map_of_mem hyT,
+          fun h => hy0 (by exact_mod_cast h)⟩, ?_⟩
+        simp only [hB y]
+    rw [← sInf_range, ← sInf_range, hrange]
+  -- the outer suprema have equal ranges
+  have houter : (Set.range fun S : {S : Submodule ℝ V // S ≤ W ∧
+        finrank ℝ S = (k : ℕ) + 1} =>
+      ⨅ x : {x : V // x ∈ S.1 ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1))
+      = Set.range fun T : {T : Submodule ℝ ↥W // finrank ℝ T = (k : ℕ) + 1} =>
+        ⨅ y : {y : ↥W // y ∈ T.1 ∧ y ≠ 0}, Complex.arg (B y.1 y.1) := by
+    ext r
+    constructor
+    · rintro ⟨⟨S, hSW, hSdim⟩, rfl⟩
+      have hmap : Submodule.map W.subtype (Submodule.comap W.subtype S) = S := by
+        rw [Submodule.map_comap_subtype]
+        exact inf_of_le_right hSW
+      have hfr : finrank ℝ (Submodule.comap W.subtype S) = (k : ℕ) + 1 := by
+        have h1 := Submodule.finrank_map_subtype_eq W (Submodule.comap W.subtype S)
+        rw [hmap] at h1
+        omega
+      refine ⟨⟨Submodule.comap W.subtype S, hfr⟩, ?_⟩
+      change (⨅ y : {y : ↥W // y ∈ Submodule.comap W.subtype S ∧ y ≠ 0},
+          Complex.arg (B y.1 y.1))
+        = ⨅ x : {x : V // x ∈ S ∧ x ≠ 0}, Complex.arg (g.toForm x.1 x.1)
+      rw [← hinner, hmap]
+    · rintro ⟨⟨T, hTdim⟩, rfl⟩
+      refine ⟨⟨Submodule.map W.subtype T, Submodule.map_subtype_le W T, ?_⟩, hinner T⟩
+      rw [Submodule.finrank_map_subtype_eq]
+      exact hTdim
+  unfold ksAngleOn ksAngleOfForm
+  rw [← sSup_range, ← sSup_range, houter]
+
 end Interlacing
 
 /-! ### Faithfulness gate for the interlacing
@@ -1807,6 +2097,23 @@ theorem arg_rotated_eig (φ : ℝ) (hφ : |φ| < Real.pi / 2) {z : ℂ} (hz : z 
       (by rw [hargexp]; exact ⟨by linarith, by linarith⟩), hargexp]
   ring
 
+/-- **STEP 1, bare-form core**: a diagonalizing basis of a bare symmetric form is an
+eigenbasis of its pencil operator with eigenvalues the tangents of the shifted
+angles, `T bᵢ = tan(arg(eig i) − phi) • bᵢ` (bare-form core of
+`pencil_apply_angle_cond_basis`). -/
+theorem pencil_apply_diag_basis_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (hphi : |phi| < Real.pi / 2)
+    {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ V) (eig : ι → ℂ)
+    (hnz : ∀ i, eig i ≠ 0)
+    (hang : ∀ i, |Complex.arg (eig i) - phi| < Real.pi / 2)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hpos : ∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re)
+    (hnd : (rotatedReOfForm B phi).Nondegenerate) (i : ι) :
+    pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi) hnd (b i)
+      = Real.tan (Complex.arg (eig i) - phi) • b i := by
+  rw [← arg_rotated_eig phi hphi (hnz i) (hang i)]
+  exact pencilOperator_eigen_basis_of_form B hsymm phi b eig hdiag hpos hnd i
+
 /-- **STEP 1**: the `angle_cond` basis is an eigenbasis of the pencil operator with
 eigenvalues the tangents of the shifted angles, `T bᵢ = tan(arg(eig i) − φ) • bᵢ`.
 (Checkpoint 1's `pencilOperator_eigen_basis` is already stated on this basis; this
@@ -1820,9 +2127,9 @@ theorem pencil_apply_angle_cond_basis (g : AllowableComplexMetric V) (φ : ℝ)
     (hpos : ∀ i, 0 < (Complex.exp (-(φ : ℂ) * Complex.I) * eig i).re)
     (hnd : (g.rotatedRe φ).Nondegenerate) (i : ι) :
     pencilOperator (g.rotatedRe φ) (g.rotatedIm φ) hnd (b i)
-      = Real.tan (Complex.arg (eig i) - φ) • b i := by
-  rw [← arg_rotated_eig φ hφ (hnz i) (hang i)]
-  exact pencilOperator_eigen_basis g φ b eig hdiag hpos hnd i
+      = Real.tan (Complex.arg (eig i) - φ) • b i :=
+  pencil_apply_diag_basis_of_form g.toForm g.symmetric' φ hφ b eig hnz hang hdiag
+    hpos hnd i
 
 omit [FiniteDimensional ℝ V] in
 /-- A basis on which `T` acts diagonally represents `T` by the diagonal matrix of the
@@ -1868,6 +2175,48 @@ theorem multiset_map_eq_of_diag {N M : ℕ} (T : V →ₗ[ℝ] V)
   have hro := congrArg Polynomial.roots (hchar1.symm.trans hchar2)
   rwa [roots_prod_X_sub_C_fin, roots_prod_X_sub_C_fin] at hro
 
+/-- **STEP 2, bare-form core**: the multiset of pencil eigenvalues of a bare
+symmetric form equals the multiset of tangents of the shifted diagonal angles
+(bare-form core of `pencil_eigenvalues_multiset_eq`). -/
+theorem pencil_eigenvalues_multiset_eq_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (hphi : |phi| < Real.pi / 2)
+    (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+    (eig : Fin (Module.finrank ℝ V) → ℂ)
+    (hnz : ∀ i, eig i ≠ 0)
+    (hang : ∀ i, |Complex.arg (eig i) - phi| < Real.pi / 2)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hposI : ∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re)
+    (hposV : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) :
+    Multiset.map (pencilEigenvaluesOfForm B hsymm phi hposV rfl) Finset.univ.val
+      = Multiset.map (fun i => Real.tan (Complex.arg (eig i) - phi))
+          Finset.univ.val := by
+  letI : NormedAddCommGroup V :=
+    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _
+      (rotatedCoreOfForm B hsymm phi hposV)
+  letI : InnerProductSpace ℝ V :=
+    InnerProductSpace.ofCore (rotatedCoreOfForm B hsymm phi hposV).toCore
+  have hTsym : (pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+      (nondegenerate_of_posDef (rotatedReOfForm B phi) hposV)).IsSymmetric :=
+    isSymmetric_of_pairing (rotatedReOfForm B phi) (rotatedImOfForm B phi) _
+      (fun _ _ => rfl) (rotatedReOfForm_symm B hsymm phi)
+      (rotatedImOfForm_symm B hsymm phi)
+      (fun a b' => pencilOperator_pairing _ _ _ a b')
+  set T := pencilOperator (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+    (nondegenerate_of_posDef (rotatedReOfForm B phi) hposV) with hTdef
+  have hb : ∀ i, T (b i) = Real.tan (Complex.arg (eig i) - phi) • b i := fun i =>
+    pencil_apply_diag_basis_of_form B hsymm phi hphi b eig hnz hang hdiag hposI _ i
+  have hc : ∀ k, T ((hTsym.eigenvectorBasis rfl).toBasis k)
+      = hTsym.eigenvalues rfl k • (hTsym.eigenvectorBasis rfl).toBasis k := by
+    intro k
+    rw [OrthonormalBasis.coe_toBasis]
+    exact hTsym.apply_eigenvectorBasis rfl k
+  have hM := multiset_map_eq_of_diag T b _ hb
+    (hTsym.eigenvectorBasis rfl).toBasis _ hc
+  have hpe : pencilEigenvaluesOfForm B hsymm phi hposV rfl
+      = hTsym.eigenvalues rfl := rfl
+  rw [hpe]
+  exact hM.symm
+
 /-- **STEP 2**: the multiset of pencil eigenvalues equals the multiset of tangents of
 the shifted `angle_cond` angles. -/
 theorem pencil_eigenvalues_multiset_eq (g : AllowableComplexMetric V) (φ : ℝ)
@@ -1881,30 +2230,46 @@ theorem pencil_eigenvalues_multiset_eq (g : AllowableComplexMetric V) (φ : ℝ)
     (hposV : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x) :
     Multiset.map (pencilEigenvalues g φ hposV rfl) Finset.univ.val
       = Multiset.map (fun i => Real.tan (Complex.arg (eig i) - φ))
-          Finset.univ.val := by
-  letI : NormedAddCommGroup V :=
-    @InnerProductSpace.Core.toNormedAddCommGroup ℝ V _ _ _ (g.rotatedCore φ hposV)
-  letI : InnerProductSpace ℝ V :=
-    InnerProductSpace.ofCore (g.rotatedCore φ hposV).toCore
-  have hTsym : (pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
-      (nondegenerate_of_posDef (g.rotatedRe φ) hposV)).IsSymmetric :=
-    isSymmetric_of_pairing (g.rotatedRe φ) (g.rotatedIm φ) _ (fun _ _ => rfl)
-      (g.rotatedRe_symm φ) (g.rotatedIm_symm φ)
-      (fun a b' => pencilOperator_pairing _ _ _ a b')
-  set T := pencilOperator (g.rotatedRe φ) (g.rotatedIm φ)
-    (nondegenerate_of_posDef (g.rotatedRe φ) hposV) with hTdef
-  have hb : ∀ i, T (b i) = Real.tan (Complex.arg (eig i) - φ) • b i := fun i =>
-    pencil_apply_angle_cond_basis g φ hφ b eig hnz hang hdiag hposI _ i
-  have hc : ∀ k, T ((hTsym.eigenvectorBasis rfl).toBasis k)
-      = hTsym.eigenvalues rfl k • (hTsym.eigenvectorBasis rfl).toBasis k := by
-    intro k
-    rw [OrthonormalBasis.coe_toBasis]
-    exact hTsym.apply_eigenvectorBasis rfl k
-  have hM := multiset_map_eq_of_diag T b _ hb
-    (hTsym.eigenvectorBasis rfl).toBasis _ hc
-  have hpe : pencilEigenvalues g φ hposV rfl = hTsym.eigenvalues rfl := rfl
-  rw [hpe]
-  exact hM.symm
+          Finset.univ.val :=
+  pencil_eigenvalues_multiset_eq_of_form g.toForm g.symmetric' φ hφ b eig hnz hang
+    hdiag hposI hposV
+
+/-- **The bare KS angles are the diagonal angles, as a multiset** (bare-form,
+rotation-parameterized core of `ksAngle_multiset_eq_angle_cond`; checkpoint 4b):
+no `AngleCondition` input — the rotation data `(phi, hphi, hang, hposI, hposV)` is
+supplied directly, so the theorem applies to the restricted form `g|_W` whose
+angle-sum bound is still unproven. -/
+theorem ksAngle_multiset_eq_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (hphi : |phi| < Real.pi / 2)
+    (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+    (eig : Fin (Module.finrank ℝ V) → ℂ)
+    (hnz : ∀ i, eig i ≠ 0)
+    (hang : ∀ i, |Complex.arg (eig i) - phi| < Real.pi / 2)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hposI : ∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re)
+    (hposV : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) :
+    Multiset.map (fun k => ksAngleOfForm B k) Finset.univ.val
+      = Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val := by
+  have hM := pencil_eigenvalues_multiset_eq_of_form B hsymm phi hphi b eig hnz hang
+    hdiag hposI hposV
+  have h1 : Multiset.map (fun k => ksAngleOfForm B k) Finset.univ.val
+      = Multiset.map (fun r => Real.arctan r + phi)
+          (Multiset.map (pencilEigenvaluesOfForm B hsymm phi hposV rfl)
+            Finset.univ.val) := by
+    rw [Multiset.map_map]
+    exact Multiset.map_congr rfl fun k _ =>
+      ksAngle_eq_arctan_eigenvalue_of_form B hsymm phi hphi hposV k
+  have h2 : Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val
+      = Multiset.map (fun r => Real.arctan r + phi)
+          (Multiset.map (fun i => Real.tan (Complex.arg (eig i) - phi))
+            Finset.univ.val) := by
+    rw [Multiset.map_map]
+    refine Multiset.map_congr rfl fun i _ => ?_
+    change Complex.arg (eig i)
+      = Real.arctan (Real.tan (Complex.arg (eig i) - phi)) + phi
+    rw [Real.arctan_tan (abs_lt.mp (hang i)).1 (abs_lt.mp (hang i)).2]
+    ring
+  rw [h1, h2, hM]
 
 /-- **The KS angles are the `angle_cond` angles, as a multiset** (KS paper
 Proposition 2.5): for any `angle_cond` witness `(b, eig)` of `g`,
@@ -1917,26 +2282,35 @@ theorem ksAngle_multiset_eq_angle_cond (g : AllowableComplexMetric V)
     Multiset.map (fun k => ksAngle g k) Finset.univ.val
       = Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val := by
   obtain ⟨φ, hφ, hang, hposI⟩ := hAC.exists_rotation
-  have hposV : ∀ x : V, x ≠ 0 → 0 < g.rotatedRe φ x x :=
-    fun x hx => g.rotatedRe_posDef φ b eig hdiag hposI x hx
-  have hM := pencil_eigenvalues_multiset_eq g φ hφ b eig hAC.nonzero hang hdiag
+  exact ksAngle_multiset_eq_of_form g.toForm g.symmetric' φ hφ b eig hAC.nonzero
+    hang hdiag hposI
+    (fun x hx => g.rotatedRe_posDef φ b eig hdiag hposI x hx)
+
+/-- **Equality of the absolute-angle sums, bare-form core** (checkpoint 4b): the
+rotation-parameterized form of `sum_abs_ksAngle_eq_sum_abs_angle_cond`, applicable
+to the restricted form before its angle-sum bound is known. -/
+theorem sum_abs_ksAngle_eq_of_form (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (hphi : |phi| < Real.pi / 2)
+    (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+    (eig : Fin (Module.finrank ℝ V) → ℂ)
+    (hnz : ∀ i, eig i ≠ 0)
+    (hang : ∀ i, |Complex.arg (eig i) - phi| < Real.pi / 2)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (hposI : ∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re)
+    (hposV : ∀ x : V, x ≠ 0 → 0 < rotatedReOfForm B phi x x) :
+    ∑ k, |ksAngleOfForm B k| = ∑ i, |Complex.arg (eig i)| := by
+  have hM := ksAngle_multiset_eq_of_form B hsymm phi hphi b eig hnz hang hdiag
     hposI hposV
-  have h1 : Multiset.map (fun k => ksAngle g k) Finset.univ.val
-      = Multiset.map (fun r => Real.arctan r + φ)
-          (Multiset.map (pencilEigenvalues g φ hposV rfl) Finset.univ.val) := by
+  have h1 : ∑ k, |ksAngleOfForm B k|
+      = (Multiset.map (fun r => |r|)
+          (Multiset.map (fun k => ksAngleOfForm B k) Finset.univ.val)).sum := by
     rw [Multiset.map_map]
-    exact Multiset.map_congr rfl fun k _ =>
-      ksAngle_eq_arctan_eigenvalue g φ hφ hposV k
-  have h2 : Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val
-      = Multiset.map (fun r => Real.arctan r + φ)
-          (Multiset.map (fun i => Real.tan (Complex.arg (eig i) - φ))
-            Finset.univ.val) := by
+    rfl
+  have h2 : ∑ i, |Complex.arg (eig i)|
+      = (Multiset.map (fun r => |r|)
+          (Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val)).sum := by
     rw [Multiset.map_map]
-    refine Multiset.map_congr rfl fun i _ => ?_
-    change Complex.arg (eig i)
-      = Real.arctan (Real.tan (Complex.arg (eig i) - φ)) + φ
-    rw [Real.arctan_tan (abs_lt.mp (hang i)).1 (abs_lt.mp (hang i)).2]
-    ring
+    rfl
   rw [h1, h2, hM]
 
 /-- **Equality of the absolute-angle sums** (KS paper Proposition 2.5, the
@@ -1948,18 +2322,10 @@ theorem sum_abs_ksAngle_eq_sum_abs_angle_cond (g : AllowableComplexMetric V)
     (hAC : AngleCondition eig)
     (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
     ∑ k, |ksAngle g k| = ∑ i, |Complex.arg (eig i)| := by
-  have hM := ksAngle_multiset_eq_angle_cond g b hAC hdiag
-  have h1 : ∑ k, |ksAngle g k|
-      = (Multiset.map (fun r => |r|)
-          (Multiset.map (fun k => ksAngle g k) Finset.univ.val)).sum := by
-    rw [Multiset.map_map]
-    rfl
-  have h2 : ∑ i, |Complex.arg (eig i)|
-      = (Multiset.map (fun r => |r|)
-          (Multiset.map (fun i => Complex.arg (eig i)) Finset.univ.val)).sum := by
-    rw [Multiset.map_map]
-    rfl
-  rw [h1, h2, hM]
+  obtain ⟨φ, hφ, hang, hposI⟩ := hAC.exists_rotation
+  exact sum_abs_ksAngle_eq_of_form g.toForm g.symmetric' φ hφ b eig hAC.nonzero
+    hang hdiag hposI
+    (fun x hx => g.rotatedRe_posDef φ b eig hdiag hposI x hx)
 
 end SpectrumReconciliation
 
@@ -1997,3 +2363,248 @@ example : |Real.arctan 1 + Real.pi / 12| + |Real.arctan (-1) + Real.pi / 12|
   rw [abs_of_pos (by positivity), abs_of_neg (by linarith), abs_of_pos (by positivity),
     abs_neg, abs_of_pos (by positivity)]
   ring
+
+-- Witness constructor (checkpoint 4b)
+
+/-! ## Witness constructor: diagonalizing a rotated-positive form
+
+KS paper Proposition 2.5 (checkpoint 4b): a bare symmetric complex bilinear form `B`
+whose rotated real part `Re(e^{-i phi} * B)` is positive-definite admits a
+diagonalizing basis whose coefficients carry every field of `AngleCondition` except
+the angle-sum bound: they are nonzero, off the nonpositive real axis, within `pi/2`
+of `phi`, and of positive rotated real part. Instantiated at the restricted form
+`g|_W` (whose rotated positivity is inherited from the ambient metric through the
+coercion, by `rfl`), this is the raw `angle_cond` witness bundle for
+`restrict_allowable`; the missing angle-sum field is exactly the codimension
+induction of checkpoint 4c. -/
+
+section WitnessConstructor
+
+open Module
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+
+/-- **The raw diagonal witness** (KS paper Proposition 2.5, checkpoint 4b): a bare
+symmetric form with positive-definite rotated real part is diagonalized by some
+basis, with coefficients nonzero, off the nonpositive real axis, within `pi/2` of
+the rotation, and of positive rotated real part — all of `AngleCondition` except
+`sum_arg_lt_pi`. -/
+theorem exists_diag_witness_of_rotated_posDef (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (phi : ℝ) (hphi : |phi| < Real.pi / 2)
+    (hpos : ∀ v : V, v ≠ 0 → 0 < rotatedReOfForm B phi v v) :
+    ∃ (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
+      (eig : Fin (Module.finrank ℝ V) → ℂ),
+      (∀ i, eig i ≠ 0) ∧
+      (∀ i, 0 < (eig i).re ∨ (eig i).im ≠ 0) ∧
+      (∀ i, |Complex.arg (eig i) - phi| < Real.pi / 2) ∧
+      (∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * eig i).re) ∧
+      (∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) := by
+  classical
+  obtain ⟨b, hPb, hAb⟩ := KontsevichSegal.Hodge.exists_basis_isOrtho_pair_of_posdef
+    (rotatedReOfForm B phi) (rotatedImOfForm B phi)
+    (rotatedReOfForm_symm B hsymm phi) (rotatedImOfForm_symm B hsymm phi) hpos
+  have horth : ∀ i j, i ≠ j → B (b i) (b j) = 0 := by
+    intro i j hij
+    have h0 : Complex.exp (-(phi : ℂ) * Complex.I) * B (b i) (b j) = 0 :=
+      Complex.ext (by simpa using hPb i j hij) (by simpa using hAb i j hij)
+    exact (mul_eq_zero.mp h0).resolve_left (Complex.exp_ne_zero _)
+  have hdiag : ∀ v, B v v = ∑ i, B (b i) (b i) * (b.repr v i : ℂ) ^ 2 :=
+    bilin_diag_of_orthogonal B b horth
+  have hposI : ∀ i, 0 < (Complex.exp (-(phi : ℂ) * Complex.I) * B (b i) (b i)).re := by
+    intro i
+    have h := hpos (b i) (b.ne_zero i)
+    rwa [rotatedReOfForm_apply] at h
+  have hnz : ∀ i, B (b i) (b i) ≠ 0 := by
+    intro i h0
+    have h := hposI i
+    rw [h0, mul_zero, Complex.zero_re] at h
+    exact lt_irrefl 0 h
+  have hang : ∀ i, |Complex.arg (B (b i) (b i)) - phi| < Real.pi / 2 := by
+    intro i
+    have hrot : |Complex.arg (Complex.exp (-(phi : ℂ) * Complex.I) * B (b i) (b i))|
+        < Real.pi / 2 :=
+      Complex.abs_arg_lt_pi_div_two_iff.mpr (Or.inl (hposI i))
+    have hshift := arg_eq_arg_rotated_add_of_form B phi hphi hpos (b.ne_zero i)
+    rw [hshift]
+    simpa using hrot
+  have hnpr : ∀ i, 0 < (B (b i) (b i)).re ∨ (B (b i) (b i)).im ≠ 0 := by
+    intro i
+    by_contra hcon
+    push_neg at hcon
+    obtain ⟨hre, him⟩ := hcon
+    rcases lt_or_eq_of_le hre with hlt | heq
+    · have harg : Complex.arg (B (b i) (b i)) = Real.pi :=
+        Complex.arg_eq_pi_iff.mpr ⟨hlt, him⟩
+      have h1 := hang i
+      rw [harg] at h1
+      have h2 := abs_lt.mp h1
+      have h3 := abs_lt.mp hphi
+      have hπ := Real.pi_pos
+      linarith [h2.2, h3.2]
+    · exact hnz i (Complex.ext (by simpa using heq) (by simpa using him))
+  exact ⟨b, fun i => B (b i) (b i), hnz, hnpr, hang, hposI, hdiag⟩
+
+end WitnessConstructor
+
+-- Sign-split summation (checkpoint 4b)
+
+/-! ## The sign-split abs-sum inequality
+
+Interlaced sequences have dominated absolute sums: if `a (k+1) <= b k <= a k` with
+`b` antitone, then `sum |b| <= sum |a|`. A nonnegative `b k` is dominated by
+`a k.castSucc`, a negative one by `a k.succ`; the index map choosing by the sign is
+injective by antitonicity, so the chosen `|a|`-terms are summed without repetition.
+Applied to the codim-1 interlacing `ksAngle_interlace`, this gives KS paper
+Proposition 2.5's codimension-1 sum step `sum_j |theta'_j| <= sum_k |theta_k|`. -/
+
+section SignSplit
+
+/-- **The sign-split abs-sum inequality** for interlaced sequences: if
+`a k.succ <= b k <= a k.castSucc` with `b` antitone, then `sum |b| <= sum |a|`. -/
+theorem sum_abs_le_sum_abs_of_interlace {n : ℕ} (a : Fin (n + 1) → ℝ) (b : Fin n → ℝ)
+    (hb : Antitone b)
+    (hlow : ∀ j : Fin n, a j.succ ≤ b j) (hhigh : ∀ j : Fin n, b j ≤ a j.castSucc) :
+    ∑ j, |b j| ≤ ∑ k, |a k| := by
+  classical
+  set f : Fin n → Fin (n + 1) := fun j => if 0 ≤ b j then j.castSucc else j.succ
+    with hf
+  have hle : ∀ j, |b j| ≤ |a (f j)| := by
+    intro j
+    rw [hf]
+    by_cases h : 0 ≤ b j
+    · simp only [if_pos h]
+      rw [abs_of_nonneg h, abs_of_nonneg (le_trans h (hhigh j))]
+      exact hhigh j
+    · push_neg at h
+      simp only [if_neg (not_le.mpr h)]
+      rw [abs_of_neg h, abs_of_neg (lt_of_le_of_lt (hlow j) h)]
+      exact neg_le_neg (hlow j)
+  have hinj : Function.Injective f := by
+    intro j1 j2 heq
+    rw [hf] at heq
+    simp only at heq
+    by_cases h1 : 0 ≤ b j1 <;> by_cases h2 : 0 ≤ b j2
+    · rw [if_pos h1, if_pos h2] at heq
+      exact Fin.castSucc_injective n heq
+    · rw [if_pos h1, if_neg h2] at heq
+      have hval : (j1 : ℕ) = (j2 : ℕ) + 1 := by
+        have := congrArg Fin.val heq
+        simpa using this
+      have hlt : j2 < j1 := by
+        rw [Fin.lt_def]
+        omega
+      have hmono := hb hlt.le
+      push_neg at h2
+      linarith
+    · rw [if_neg h1, if_pos h2] at heq
+      have hval : (j1 : ℕ) + 1 = (j2 : ℕ) := by
+        have := congrArg Fin.val heq
+        simpa using this
+      have hlt : j1 < j2 := by
+        rw [Fin.lt_def]
+        omega
+      have hmono := hb hlt.le
+      push_neg at h1
+      linarith
+    · rw [if_neg h1, if_neg h2] at heq
+      exact Fin.succ_injective n heq
+  calc ∑ j, |b j| ≤ ∑ j, |a (f j)| := Finset.sum_le_sum fun j _ => hle j
+    _ = ∑ k ∈ Finset.univ.image f, |a k| := by
+        rw [Finset.sum_image fun j _ j' _ h => hinj h]
+    _ ≤ ∑ k, |a k| :=
+        Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _)
+          fun k _ _ => abs_nonneg _
+
+open Module in
+/-- **The codimension-1 abs-sum bound** (KS paper Proposition 2.5, checkpoint 4b):
+for a codimension-1 subspace `W` the restricted angles `theta'_j = ksAngleOn g W j`
+interlace the ambient angles `theta_k = ksAngle g k`, so their absolute sums are
+dominated: `sum_j |theta'_j| <= sum_k |theta_k|`. The flag induction of
+checkpoint 4c chains this step. -/
+theorem sum_abs_ksAngleOn_le_sum_abs_ksAngle {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [FiniteDimensional ℝ V] (g : AllowableComplexMetric V)
+    (W : Submodule ℝ V)
+    (hcodim : Module.finrank ℝ ↥W + 1 = Module.finrank ℝ V) :
+    ∑ j, |ksAngleOn g W j| ≤ ∑ k, |ksAngle g k| := by
+  have hsum : ∑ k : Fin (Module.finrank ℝ ↥W + 1),
+      |ksAngle g (finCongr hcodim k)| = ∑ k, |ksAngle g k| :=
+    Fintype.sum_equiv (finCongr hcodim) _ _ fun k => rfl
+  rw [← hsum]
+  refine sum_abs_le_sum_abs_of_interlace (fun k => ksAngle g (finCongr hcodim k))
+    (fun j => ksAngleOn g W j) (ksAngleOn_antitone g W) (fun j => ?_) (fun j => ?_)
+  · have hidx : finCongr hcodim j.succ
+        = (⟨(j : ℕ) + 1, by have := j.isLt; omega⟩ : Fin (Module.finrank ℝ V)) :=
+      Fin.ext (by simp)
+    change ksAngle g (finCongr hcodim j.succ) ≤ ksAngleOn g W j
+    rw [hidx]
+    exact (ksAngle_interlace g W hcodim j).1
+  · have hidx : finCongr hcodim j.castSucc
+        = Fin.castLE (Submodule.finrank_le W) j :=
+      Fin.ext (by simp)
+    change ksAngleOn g W j ≤ ksAngle g (finCongr hcodim j.castSucc)
+    rw [hidx]
+    exact (ksAngle_interlace g W hcodim j).2
+
+end SignSplit
+
+/-! ### Faithfulness gate for the witness constructor and the sign-split
+
+`exists_diag_witness_of_rotated_posDef` produces its basis through the spectral
+theorem (choice-based), and `ksAngleOn`/`ksAngleOfForm` are `Submodule`-indexed, so
+none of the abstract statements reduce; per the standing discipline the checks below
+pin the SYMBOLIC witness data on the checkpoint-1 concrete pair
+`eig = (e^{i pi/3}, e^{-i pi/6})`, `phi = pi/12`, restricted to the span of the
+first basis vector: the restricted witness coefficient is the single value
+`e^{i pi/3}`, its four codimension-free fields evaluate by `simp`/`norm_num`, and
+the codim-1 sum comparison holds with room to spare. -/
+
+/-- Witness field `hnz` on the concrete restricted coefficient `e^{i pi/3}`. -/
+example : Complex.exp (((Real.pi / 3 : ℝ) : ℂ) * Complex.I) ≠ 0 :=
+  Complex.exp_ne_zero _
+
+/-- Witness field `not_nonpos_real`: `Re(e^{i pi/3}) = cos(pi/3) = 1/2 > 0`. -/
+example : 0 < (Complex.exp (((Real.pi / 3 : ℝ) : ℂ) * Complex.I)).re ∨
+    (Complex.exp (((Real.pi / 3 : ℝ) : ℂ) * Complex.I)).im ≠ 0 := by
+  left
+  rw [Complex.exp_ofReal_mul_I_re, Real.cos_pi_div_three]
+  norm_num
+
+/-- Witness field `hang`: `|pi/3 - pi/12| = pi/4 < pi/2`. -/
+example : |Real.pi / 3 - Real.pi / 12| < Real.pi / 2 := by
+  have hπ := Real.pi_pos
+  rw [show Real.pi / 3 - Real.pi / 12 = Real.pi / 4 by ring,
+    abs_of_pos (by positivity)]
+  linarith
+
+/-- Witness field `hposI`: the rotated coefficient is `e^{i pi/4}`, of real part
+`cos(pi/4) > 0`. -/
+example : 0 < (Complex.exp (-((Real.pi / 12 : ℝ) : ℂ) * Complex.I)
+    * Complex.exp (((Real.pi / 3 : ℝ) : ℂ) * Complex.I)).re := by
+  have hcomb : Complex.exp (-((Real.pi / 12 : ℝ) : ℂ) * Complex.I)
+      * Complex.exp (((Real.pi / 3 : ℝ) : ℂ) * Complex.I)
+      = Complex.exp (((Real.pi / 4 : ℝ) : ℂ) * Complex.I) := by
+    rw [← Complex.exp_add]
+    congr 1
+    push_cast
+    ring
+  rw [hcomb, Complex.exp_ofReal_mul_I_re, Real.cos_pi_div_four]
+  positivity
+
+/-- The 1-dimensional diagonal identity collapses to a single term
+(the restricted diagonal identity in the codim-1 concrete case). -/
+example (c z : ℂ) : ∑ i : Fin 1, (![c] i) * (![z] i) ^ 2 = c * z ^ 2 := by
+  rw [Fin.sum_univ_one]
+  rfl
+
+/-- Codim-1 sum comparison on the concrete pair: the restricted abs-angle `|pi/3|`
+is dominated by the ambient abs-sum `|pi/3| + |-(pi/6)|` (the sign-split bound). -/
+example : |Real.pi / 3| ≤ |Real.pi / 3| + |-(Real.pi / 6)| := by
+  have h := abs_nonneg (-(Real.pi / 6))
+  linarith
+
+/-- And the dominating ambient abs-sum is `pi/2 < pi`: the codim-1 step keeps the
+sum strictly below `pi`. -/
+example : |Real.pi / 3| + |-(Real.pi / 6)| < Real.pi := by
+  have hπ := Real.pi_pos
+  rw [abs_of_pos (by positivity), abs_neg, abs_of_pos (by positivity)]
+  linarith
