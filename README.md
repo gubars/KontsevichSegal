@@ -52,16 +52,17 @@ or stated-but-deferred).
 
 | Module | Paper section | Status |
 |--------|---------------|--------|
-| `ComplexMetrics/` | Section 2 | **Substantially proven.** The consequences and Shilov-boundary results are proven; 2 `sorry`s remain in `restrict_allowable` (Prop 2.5), deferred under scope (a); plus documented `True`-placeholders for results blocked on Mathlib gaps. |
+| `ComplexMetrics/` | Section 2 | **Complete and sorry-free** (scope (a)). The consequences, the Shilov-boundary results, KS Theorem 2.2 (the Definition 2.1 equivalence, proved in both directions via a from-scratch Hodge star), and KS Proposition 2.5 (`restrict_allowable`: restriction of an allowable metric to a subspace remains allowable) are all proven; documented `True`-placeholders remain for the results blocked on Mathlib gaps (Props 2.4/2.7, the two-copies Shilov statement). |
 | `Cobordism/` | Section 3 | **Encoded.** The cobordism category C_d^ℂ as an identity-free `Semicategory` (it genuinely has no identity morphisms). |
 | `FieldTheory/` | Section 3 | **Encoded.** All of Section 3's analytic infrastructure, the field-theory functor, and the six functor-condition/axiom nodes (together, all 11 Section 3 blueprint nodes). Stated faithfully; deep analytic content deferred to the Mathlib gaps above. |
 | `WickRotation/` | Section 5 | **Encoded.** All 11 nodes stated faithfully (scope (a)): the real-analytic Lorentzian / globally-hyperbolic cobordism category, the invariance principle (Principle 5.1), Theorem 5.2 (the gh unitary functor and the rigged triple Ě ⊂ E^Hilb ⊂ Ê), observables and their ordering-independent action, spacelike commutativity, and the vacuum-expectation domain V_k with Proposition 5.4 (V_k ⊇ U_k; the domain-of-holomorphy of V_k kept as KS's open conjecture, stated but not asserted). No `sorry` and no `axiom` — deferrals are documented prose, the same character as the Section 3 rows. |
 
 - **`ComplexMetrics`** (Section 2) — the domain QC(V) of allowable complex
   metrics: the angle condition ∑ᵢ |arg(λᵢ)| < π (working definition, Theorem 2.2),
-  its deferred equivalence with Definition 2.1 (Hodge star), restriction to
-  subspaces (Prop 2.5), and the Shilov boundary (real Lorentzian metrics, and no
-  other nondegenerate real metrics, lie on it).
+  its proved equivalence with Definition 2.1 (via a Hodge star built from
+  scratch), restriction to subspaces (Prop 2.5, proved via an in-repo
+  Courant–Fischer min–max and eigenvalue interlacing), and the Shilov boundary
+  (real Lorentzian metrics, and no other nondegenerate real metrics, lie on it).
 - **`Cobordism` / `FieldTheory`** (Section 3) — the cobordism category C_d^ℂ; the
   analytic infrastructure (nuclear Fréchet spaces, Met_ℂ(M) as a complex manifold,
   holomorphic vector bundles); a field theory as a holomorphic functor; and its
@@ -93,27 +94,33 @@ axiomatized as property-classes (never the `axiom` keyword). Proof gaps are
 explicit `sorry`s; statements not yet expressible use documented `True`
 placeholders.
 
-Snapshot (2026-06-24):
+Snapshot (2026-07-09):
 
 | Metric | Count |
 |--------|-------|
-| Total `sorry` | **2** |
-| Total `True` placeholders | **6** |
+| Total `sorry` | **0** |
+| Total `True` placeholders | **5** |
 | Total `axiom` declarations | **0** |
 
 ### Sorry inventory
 
-Both remaining `sorry`s are in one declaration:
+**None — the tree is sorry-free.** The last two `sorry`s, the `nondegenerate`
+and `angle_cond` fields of `restrict_allowable` (KS Proposition 2.5), are now
+proved. Their proof needed the Courant–Fischer min–max and
+eigenvalue-interlacing characterization of the allowable angles, which Mathlib
+lacks (it has only the spectral theorem and extremal Rayleigh quotients); that
+characterization is built in-repo, from the spectral theorem, in
+`ComplexMetrics/EigenvalueMinmax.lean`, and Proposition 2.5's codimension
+induction is assembled on top of it in `ComplexMetrics/Restriction.lean`.
 
-| File | `sorry`s | Notes |
-|------|----------|-------|
-| `ComplexMetrics/Restriction.lean` | 2 | `restrict_allowable` — its `nondegenerate` and `angle_cond` fields (Prop 2.5). Deferred under scope (a): the statement is faithful and complete, but the proof needs a Courant–Fischer min–max / eigenvalue-interlacing characterization not in Mathlib. |
-
-All other Section 2 results are proven (`not_neg_real_axis`,
-`volume_element_positive`, `lorentzian_on_boundary`, `only_lorentzian_on_boundary`)
-or are `True` placeholders (Defn 2.1 equivalence, Props 2.4/2.7, the two-copies
-Shilov statement) blocked on the Hodge star, topology on QC(V), or Stein/Siegel
-domain theory.
+All Section 2 results in scope are proven (`not_neg_real_axis`,
+`volume_element_positive`, `lorentzian_on_boundary`,
+`only_lorentzian_on_boundary`, `defn_2_1_equiv_angle_condition` — KS
+Theorem 2.2, both directions — and `restrict_allowable` — KS Proposition 2.5)
+or are `True` placeholders (Props 2.4/2.7, the two-copies Shilov statement)
+blocked on topology on QC(V) or Stein/Siegel domain theory. Sections 3 and 5
+remain scope-(a) encodings: stated faithfully, with the deep analytic and
+geometric constructions (the cobordism geometry chain among them) still open.
 
 The **Section 3 and Section 5 files contain no `sorry`s and no `axiom` keyword**:
 each node is stated faithfully as `structure`/`class`/`def` declarations, with the
@@ -134,9 +141,11 @@ KontsevichSegal/
 ├── ComplexMetrics.lean            -- umbrella for ComplexMetrics/
 ├── ComplexMetrics/                -- Section 2: domain of complex metrics
 │   ├── Defs.lean                  -- Theorem 2.2: allowable complex metrics (working def)
-│   ├── Equivalence.lean           -- Definition 2.1 ↔ Theorem 2.2 (deferred: Hodge star)
+│   ├── HodgeScaffold.lean         -- the Hodge star ⋆_g, built from scratch
+│   ├── Equivalence.lean           -- Definition 2.1 ↔ Theorem 2.2 (proved, via the Hodge star)
 │   ├── Domain.lean                -- QC(V): contractibility, domain of holomorphy
-│   ├── Restriction.lean           -- Proposition 2.5: restriction to subspaces
+│   ├── EigenvalueMinmax.lean      -- Courant–Fischer min–max + interlacing (the Prop 2.5 engine)
+│   ├── Restriction.lean           -- Proposition 2.5: restriction to subspaces (proved)
 │   └── ShilovBoundary.lean        -- Lorentzian metrics on the Shilov boundary
 ├── Cobordism.lean                 -- umbrella for Cobordism/
 ├── Cobordism/                     -- Section 3: the cobordism category
@@ -177,7 +186,7 @@ docs/
 ├── project_status.md              -- authoritative per-result status
 ├── development_plan.md            -- overall phasing
 ├── section2_review.md             -- Section 2 audit
-├── restrict_allowable_plan.md     -- plan for the remaining Prop 2.5 proof
+├── restrict_allowable_plan.md     -- Prop 2.5 proof plan (historical; the proof has landed)
 └── only_lorentzian_plan.md        -- record of the only_lorentzian proof route
 ```
 
