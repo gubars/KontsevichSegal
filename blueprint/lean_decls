@@ -120,5 +120,11 @@ WickRotation.InducesUnitaryGH.inner_eq
 WickRotation.HilbertCompletion
 KontsevichSegal.Hodge.star_g
 KontsevichSegal.Hodge.star_g_star_g
+ksAngle
+ksAngle_antitone
+ksAngle_eq_iInf_iSup
+ksAngle_multiset_eq_angle_cond
+ksAngleOn_eq_ksAngleOfForm
+ksAngle_interlace
 WickRotation.MinkowskiLinear
 WickRotation.MinkowskiModel.minkowskiLinear

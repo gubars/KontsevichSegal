@@ -233,7 +233,10 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
 
 \begin{lemma}[Courant--Fischer min--max and eigenvalue interlacing for allowable angles]
   \label{lem:eigenvalue-minmax}
-  \notready
+  \lean{ksAngle, ksAngle_antitone, ksAngle_eq_iInf_iSup,
+    ksAngle_multiset_eq_angle_cond, ksAngleOn_eq_ksAngleOfForm,
+    ksAngle_interlace}
+  \leanok
   \uses{def:allowable, def:restrict-form}
   For $g \in Q_{\mathbb C}(V)$, the ordered angles
   $\theta_1 \geq \dots \geq \theta_d$ of $g$ are characterized by the min--max
@@ -245,6 +248,38 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
   $\theta'_1 \geq \dots \geq \theta'_{d-1}$ of $g|_W$ interleave those of $g$:
   $\theta_k \geq \theta'_k \geq \theta_{k+1}$.
 \end{lemma}
+
+\begin{proof}
+  \leanok
+  \uses{def:allowable, def:restrict-form}
+  (Paper, p.~13, for the characterization; the min--max engine is classical.)
+  The angle condition of Definition~\ref{def:allowable} yields a rotation
+  $e^{-\mathrm i \varphi}$ with $|\varphi| < \pi/2$, taken at the midpoint of
+  the arc spanned by the $\arg \lambda_i$, for which
+  $\hat g_R = \operatorname{Re}(e^{-\mathrm i \varphi} g)$ is positive definite
+  and every $|\arg \lambda_i - \varphi| < \pi/2$. With $\hat g_R$ as inner
+  product, $\hat g_I = \operatorname{Im}(e^{-\mathrm i \varphi} g)$ is
+  represented by a self-adjoint pencil operator $T$, and
+  $\arg g(v) = \arctan\bigl(\langle Tv, v\rangle / \|v\|^2\bigr) + \varphi$
+  for $v \neq 0$, principal arguments adding exactly in the open right
+  half-plane. The Courant--Fischer min--max for the decreasing eigenvalues
+  $\mu_k$ of $T$, proved in both sup-inf and inf-sup forms by dimension count
+  against spans of eigenvectors, transports through the monotone continuous
+  $\arctan$ and the constant shift: $\theta_k = \arctan \mu_k + \varphi$,
+  giving both displayed forms and the decreasing order. Any diagonalizing
+  basis witnessing the angle condition is an eigenbasis of $T$ with
+  eigenvalues $\tan(\arg \lambda_i - \varphi)$; comparing characteristic
+  polynomials identifies the eigenvalue multiset of $T$ with the diagonal
+  multiset, so the min--max values are exactly the ordered angles
+  $\arg \lambda_i$ of $g$. For $W$ of codimension one, the angles of $g|_W$
+  (Definition~\ref{def:restrict-form}) are the same min--max ranged over the
+  subspaces contained in $W$: $\theta'_k \leq \theta_k$ because the restricted
+  family of subspaces is contained in the ambient family, and
+  $\theta_{k+1} \leq \theta'_k$ because the span of the top $k+1$ eigenvectors
+  of $T$ meets $W$ in dimension at least $k$, producing a $k$-dimensional
+  member of the restricted family on which $\arg g \geq \theta_{k+1}$
+  pointwise.
+\end{proof}
 
 \begin{definition}[Complexified Minkowski space]
   \label{found:minkowski-linear}
