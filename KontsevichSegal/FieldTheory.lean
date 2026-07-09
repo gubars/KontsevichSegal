@@ -4,6 +4,7 @@ import KontsevichSegal.FieldTheory.DualConjugate
 import KontsevichSegal.FieldTheory.FieldTheory
 import KontsevichSegal.FieldTheory.Holomorphicity
 import KontsevichSegal.FieldTheory.HolomorphicBundle
+import KontsevichSegal.FieldTheory.IsomorphismAction
 import KontsevichSegal.FieldTheory.MetCManifold
 import KontsevichSegal.FieldTheory.NuclearFrechet
 import KontsevichSegal.FieldTheory.TensorAxiom

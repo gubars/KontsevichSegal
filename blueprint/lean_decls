@@ -40,6 +40,9 @@ IsContinuous
 MonoidalCobordism
 IsTensorial
 partitionFunction
+GermIsoGeometry
+SmoothLinearFamilies
+IsoAction
 DualConjugateGeometry
 dualConj
 DualRelation

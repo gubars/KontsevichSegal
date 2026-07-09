@@ -285,6 +285,37 @@ are stated here; the unitarity condition is treated separately.
   $Z_M \in \mathrm{End}(E_{\emptyset}) = \mathbb C$.
 \end{definition}
 
+\begin{definition}[Action of germ isomorphisms; KS Section 3]
+  \label{def:isomorphism-action}
+  \lean{GermIsoGeometry, SmoothLinearFamilies, IsoAction}
+  \notready
+  \uses{def:field-theory, def:cobordism-category, found:smooth-cobordism-geometry,
+    abstract:cobordism-domain}
+  Whichever formulation of the cobordism category one adopts, a field theory is
+  assumed to carry an action of the isomorphisms of germs: an isomorphism
+  $f \colon \Sigma_0 \to \Sigma_1$ of germs of $d$-manifolds induces an
+  isomorphism $f_* \colon E_{\Sigma_0} \to E_{\Sigma_1}$. Unlike the cobordisms,
+  the germ isomorphisms compose associatively and have identities and inverses,
+  and the action is functorial: $(\mathrm{id}_{\Sigma})_* = \mathrm{id}$ and
+  $(g \circ f)_* = g_* \circ f_*$, so that $(f^{-1})_* = (f_*)^{-1}$.
+
+  The action depends \emph{smoothly} on $f$: for any family
+  $P \times \Sigma_0 \to \Sigma_1$ of isomorphisms parametrized by a
+  finite-dimensional manifold $P$, the induced map
+  $P \times E_{\Sigma_0} \to E_{\Sigma_1}$ is smooth.
+
+  This is a condition on the field theory, the functor, not on the cobordism
+  category. Stating it rests on assumed structure of two kinds. The groupoid of
+  germ isomorphisms, the isomorphisms of metric germs preserving the complex
+  metric and the co-orientation, is smooth-manifold germ geometry not developed
+  here, the same geometry whose absence keeps the time-symmetry condition of
+  Definition~\ref{def:unitarity} an equality stand-in. Smoothness of a family of
+  maps into the Fréchet fibres has no Mathlib notion, since manifolds and their
+  calculus require normed model spaces while the fibres are Fréchet; it is
+  assumed as a predicate on families, pinned by requiring that constant families
+  are smooth and that smooth families are jointly continuous.
+\end{definition}
+
 \subsection{Unitarity}
 
 The remaining condition, unitarity, is built from a dual functor, a conjugate
