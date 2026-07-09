@@ -108,7 +108,8 @@ or approximating:
   `Met_ℂ(M) → Met_ℂ(Σ_i)`. At the level of fields, restriction along an
   inclusion of manifolds is the pointwise Section 2 restriction
   `AllowableComplexMetric.restrict`, whose allowability is Proposition 2.5
-  (`restrict_allowable`, currently a deferred sorry), and whose holomorphy is
+  (`restrict_allowable`, proven; the Courant–Fischer min–max it needs was built
+  in-repo in `ComplexMetrics/EigenvalueMinmax.lean`), and whose holomorphy is
   part of the deferred complex-manifold structure above. The restriction maps are
   therefore deferred rather than assumed as bare (and hence vacuous) functions.
 
