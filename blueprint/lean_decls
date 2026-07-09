@@ -49,6 +49,7 @@ DualRelation
 PlainDuality
 IsReal
 ConjugateDualIdentification
+plainDuality_of_dualRelation
 IsTimeSymmetric
 IsUnitary
 WickRotation.LorentzianField

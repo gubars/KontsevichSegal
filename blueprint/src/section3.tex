@@ -345,7 +345,8 @@ requirement. The nodes below follow that order.
 
 \begin{definition}[Conjugate-dual duality; KS Section 3, Appendix]
   \label{def:conjugate-dual-duality}
-  \lean{PlainDuality, IsReal, ConjugateDualIdentification}
+  \lean{PlainDuality, IsReal, ConjugateDualIdentification,
+    plainDuality_of_dualRelation}
   \notready
   \uses{def:dual-conjugate-functors, def:nuclear-frechet, found:tvs-limits-tensor}
   For any field theory, with no further hypothesis, the appendix to Section 3 of
@@ -358,8 +359,9 @@ requirement. The nodes below follow that order.
   $\check E_{\Sigma^*}$, also holds. Passing between the two forms is not a mere
   swap of $\Sigma$ and $\Sigma^*$; it dualizes the first and invokes the
   reflexivity of the nuclear Fréchet space $\hat E_{\Sigma}$, which is among the
-  properties assumed of nuclear spaces. We state these results; their appendix
-  proof is not formalized.
+  properties assumed of nuclear spaces; granting that reflexivity, the passage
+  from the companion form to the displayed form is proved. We state the duality
+  itself; its appendix proof is not formalized.
 
   Separately, a field theory may satisfy the \emph{reality condition}: a natural
   antilinear involution
