@@ -5,26 +5,23 @@ This is a condition ON THE FUNCTOR (a `FieldTheory`), encoded without the `axiom
 keyword and without exhibiting any concrete unitary theory, never on the
 cobordism category (Category vs. functor boundary, CLAUDE.md). It composes
 earlier nodes: the reality condition `IsReal` (from `ConjugateDualDuality.lean`),
-`dualConj` (= `dual ∘ conj` = Σ̄*, from `DualConjugate.lean`), and the real
-`T.ECheck`.
+`dualConj` (= `dual ∘ conj` = Σ̄*, from `DualConjugate.lean`), the
+germ-isomorphism groupoid `GermIsoGeometry` (from `IsomorphismAction.lean`), and
+the real `T.ECheck`.
 
 Contents:
 
-* TIME-SYMMETRIC germ (`IsTimeSymmetric`): `Σ ≅ Σ̄*`. The germ `Σ ⊂ U` admits a
-  reflection with fixed-point set `Σ` reversing the co-orientation and
-  conjugating the metric; the metric is then real, and real Riemannian on `Σ`.
-  Expressed here as the object being fixed by `Σ ↦ Σ̄*` (`o = dualConj o`). This
-  EQUALITY is a stand-in STRONGER than the intended isomorphism `Σ ≅ Σ̄*` (it
-  excludes germs isomorphic-but-not-equal to `Σ̄*`): an object-level isomorphism is
-  not expressible with the current structure, because the cobordism `Semicategory`
-  has no identity morphisms (so the categorical iso notion `f ≫ g = 𝟙` is
-  unavailable) and the reflection witnessing `Σ ≅ Σ̄*` is a germ diffeomorphism,
-  not a cobordism (`Mor`). The reflection witness and the real-Riemannian metric
-  structure are assumed germ geometry not tracked by `CobordismGeometry`; that
-  sub-part is deferred (the same gap as the metric-conjugation tie in
-  `DualConjugate.lean`). To be upgraded to `Nonempty (o ≅ dualConj o)` once an
-  object/germ-isomorphism structure exists (analogous to the `fibre_eq`
-  type-equality caveat).
+* TIME-SYMMETRIC germ (`IsTimeSymmetric`): `Σ ≅ Σ̄*`, encoded as
+  `Nonempty (GermIsoGeometry.Iso o (dualConj o))` — the paper's displayed
+  condition `Σ ≅ Σ̄*` (KSTeX 480 and 494) exactly, with the germ isomorphism
+  drawn from the assumed groupoid `GermIsoGeometry`
+  (`FieldTheory/IsomorphismAction.lean`). This is WEAKER than the paper's
+  reflection gloss (KSTeX 480): that reflection is an involution with
+  fixed-point set `Σ` that reverses the co-orientation and conjugates the
+  metric; its involutivity and fixed-point-set content are NOT captured and
+  remain deferred inside the assumed `GermIsoGeometry`. The node stays
+  `\notready` because the predicate rests on the undischarged `GermIsoGeometry`
+  (no instance).
 
 * UNITARITY (`IsUnitary`): a field theory is unitary if it satisfies
   (i) the reality condition (5) (`IsReal`, reused), and
@@ -33,8 +30,9 @@ Contents:
   ACTUAL functor-induced pairing, not as the existence of some free inner product
   (which would be vacuous: every complex vector space admits a positive-definite
   hermitian form, e.g. via a Hamel basis). For a time-symmetric `o` the conjugate
-  dual of `Ě_Σ` is `Ê_{Σ̄*} = Ê_Σ` (`ConjugateDualIdentification`, since the theory
-  is real by (i)); with the functor's own canonical map
+  dual of `Ě_Σ` is `Ê_{Σ̄*}` (`ConjugateDualIdentification`, since the theory is
+  real by (i)), identified with `Ê_Σ` across `Σ ≅ Σ̄*` in prose only (no germ-iso
+  action on `Ê` is encoded); with the functor's own canonical map
   `κ = T.toEHat o ∘ T.fromECheck o` (`Ě_Σ → Ê_Σ`) and an identification
   `J : Ê_Σ ≃L (Ě_Σ)^{conj-dual}`, the pairing `B(x, y) = J (κ x) y` on `Ě_Σ`
   (linear in `x`, antilinear in `y`) is required to be hermitian and
@@ -66,6 +64,7 @@ Blueprint: `def:unitarity` in `blueprint/src/section3.tex`.
 -/
 
 import KontsevichSegal.FieldTheory.ConjugateDualDuality
+import KontsevichSegal.FieldTheory.IsomorphismAction
 import Mathlib.Analysis.InnerProductSpace.Basic
 
 open Cobordism
@@ -73,24 +72,19 @@ open Cobordism
 /-! ## Time-symmetric germs -/
 
 /-- **A time-symmetric germ** (KS Section 3, blueprint `def:unitarity`):
-`Σ ≅ Σ̄*`, the germ admitting a reflection reversing the co-orientation and
-conjugating the metric.
+`Σ ≅ Σ̄*`, encoded as `Nonempty (GermIsoGeometry.Iso o (dualConj o))` — the
+paper's displayed condition `Σ ≅ Σ̄*` (KSTeX 480 and 494) exactly.
 
-Expressed as the object being fixed by `Σ ↦ Σ̄*` (`o = dualConj o`). CAVEAT: this
-EQUALITY is a stand-in that is STRONGER than the intended isomorphism `Σ ≅ Σ̄*`
-(it excludes germs isomorphic-but-not-equal to `Σ̄*`). An object-level isomorphism
-`Nonempty (o ≅ dualConj o)` is not expressible with the current structure: the
-cobordism `Semicategory` has no identity morphisms (so the categorical iso notion
-`f ≫ g = 𝟙` is unavailable), and the reflection witnessing `Σ ≅ Σ̄*` is a germ
-diffeomorphism, not a cobordism (`Mor`). The reflection witness and the "metric
-real and Riemannian on `Σ`" structure are assumed germ geometry not tracked by
-`CobordismGeometry`; that sub-part is deferred (same gap as the metric-conjugation
-tie in `DualConjugate.lean`). To be upgraded to `Nonempty (o ≅ dualConj o)` once
-an object/germ-isomorphism structure exists (analogous to the `fibre_eq`
-type-equality caveat). -/
-def IsTimeSymmetric [g : CobordismGeometry] [d : DualConjugateGeometry] (o : g.Obj) :
-    Prop :=
-  o = dualConj o
+This is WEAKER than the paper's reflection gloss (KSTeX 480): that reflection is
+an involution with fixed-point set `Σ` that reverses the co-orientation and
+conjugates the metric; its involutivity and fixed-point-set content are NOT
+captured and remain deferred inside the assumed `GermIsoGeometry`.
+
+The node stays `\notready` because the predicate rests on the undischarged
+`GermIsoGeometry` (no instance). -/
+def IsTimeSymmetric [g : CobordismGeometry] [gi : GermIsoGeometry]
+    [d : DualConjugateGeometry] (o : g.Obj) : Prop :=
+  Nonempty (GermIsoGeometry.Iso o (dualConj o))
 
 /-! ## Unitarity -/
 
@@ -104,8 +98,10 @@ condition ON the functor `T`, requiring two things:
 
 Condition (ii) is stated on the ACTUAL functor-induced pairing, not as the mere
 existence of some inner product. For a time-symmetric `o` the conjugate dual of
-`Ě_Σ` is `Ê_{Σ̄*} = Ê_Σ` (the `ConjugateDualIdentification` of
-`ConjugateDualDuality.lean`, available because the theory is real by (i)), so an
+`Ě_Σ` is `Ê_{Σ̄*}` (the `ConjugateDualIdentification` of
+`ConjugateDualDuality.lean`, available because the theory is real by (i)),
+identified with `Ê_Σ` across `Σ ≅ Σ̄*` in prose only (no germ-iso action on `Ê`
+is encoded), so an
 identification `J : Ê_Σ ≃L (Ě_Σ)^{conj-dual}` together with the functor's OWN
 canonical map `κ = T.toEHat o ∘ T.fromECheck o : Ě_Σ → Ê_Σ` induces the hermitian
 duality pairing `B(x, y) = J (κ x) y` on `Ě_Σ` (linear in `x`, antilinear in
@@ -122,17 +118,19 @@ complex vector space admits some positive-definite hermitian form, e.g. via a
 Hamel basis, so existence of one constrained nothing.) The identification `J` is
 existential, matching the `Nonempty` status of `ConjugateDualIdentification`.
 
-Scope note (the time-symmetric stand-in, audit item M4): `IsTimeSymmetric o` is
-the over-strong equality `o = dualConj o` (see its docstring; the faithful iso
-`Σ ≅ Σ̄*` is not yet expressible). So (ii) currently binds only on that
-equality-class of time-symmetric objects; it is to be widened to all `o` with
-`Σ ≅ Σ̄*` once an object/germ isomorphism becomes expressible.
+M4 note (executed): `IsTimeSymmetric o` is now
+`Nonempty (GermIsoGeometry.Iso o (dualConj o))`, the paper's `Σ ≅ Σ̄*`; the
+former equality stand-in `o = dualConj o` is gone. Two deferrals remain:
+(1) `IsReal`'s naturality and involution law — `IsReal` is an existential `Prop`
+that cannot state them; data-fying it is a separate interface split.
+(2) the `E^Hilb` completion tie — it needs a nameable inner product living
+inside the `∃ J` existential, and `found:tvs-limits-tensor`.
 
 The Hilbert completion `Ě_Σ → E^Hilb_Σ → Ê_Σ` induced by `B` is the consequence;
 the completion construction and the maps are deferred (see the module comment).
 Not instantiated for any concrete theory. -/
-def IsUnitary [g : CobordismGeometry] [d : DualConjugateGeometry] (T : FieldTheory) :
-    Prop :=
+def IsUnitary [g : CobordismGeometry] [gi : GermIsoGeometry]
+    [d : DualConjugateGeometry] (T : FieldTheory) : Prop :=
   letI := T.eFrechet
   letI := T.echeckFibres
   letI := T.ehatFibres

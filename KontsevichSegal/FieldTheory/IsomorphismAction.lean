@@ -16,10 +16,12 @@ keyword and without exhibiting any concrete instance. Two assumed layers feed it
   isomorphisms. Isomorphisms of metric germs (preserving the complex metric and
   the co-orientation, bundled into the assumed object data exactly as in
   `CobordismGeometry.Obj`) are smooth-germ geometry absent from Mathlib — the
-  `found:smooth-cobordism-geometry` gap, and precisely the missing structure the
-  time-symmetry stand-in records (`Unitarity.lean`: the `o = dualConj o`
-  equality caveat waits for an object/germ-isomorphism notion; the witness is
-  "a germ diffeomorphism, not a cobordism"). Unlike the cobordisms, germ
+  `found:smooth-cobordism-geometry` gap — and precisely the structure
+  `Unitarity.lean`'s time-symmetry predicate consumes: `GermIsoGeometry` now
+  supplies that object/germ-isomorphism notion, and `IsTimeSymmetric` has been
+  upgraded to `Nonempty (GermIsoGeometry.Iso o (dualConj o))` (the witness is
+  "a germ diffeomorphism, not a cobordism"; the reflection's involutivity and
+  fixed-point-set content are NOT captured here and remain deferred). Unlike the cobordisms, germ
   isomorphisms DO have identities and inverses, so the honest interface is a
   groupoid: `Iso`, `idIso`, `compIso`, `invIso` with the five groupoid laws.
   NOT Mathlib's `CategoryTheory.Groupoid`: that extends `Category` →

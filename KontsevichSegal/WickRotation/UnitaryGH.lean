@@ -116,8 +116,9 @@ class WickObjectCorrespondence [gc : CobordismGeometry] [gl : LorentzianCobordis
 /-- A **time-symmetric Lorentzian germ**: a germ `σ` whose complex object `cplx σ` is
 time-symmetric in Section 3's sense (`IsTimeSymmetric`, i.e. `Σ ≅ Σ̄*`). These are the objects
 Theorem 5.2 sends to Hilbert spaces. -/
-def TimeSymmetricGerm [gc : CobordismGeometry] [dc : DualConjugateGeometry]
-    [gl : LorentzianCobordismGeometry] [WickObjectCorrespondence] : Type _ :=
+def TimeSymmetricGerm [gc : CobordismGeometry] [gi : GermIsoGeometry]
+    [dc : DualConjugateGeometry] [gl : LorentzianCobordismGeometry]
+    [WickObjectCorrespondence] : Type _ :=
   {σ : gl.Obj // IsTimeSymmetric (WickObjectCorrespondence.cplx σ)}
 
 /-! ## Theorem 5.2: the induced gh unitary functor (both forms) -/
@@ -138,8 +139,9 @@ preserve it (unitary); `unitary_check`/`unitary_hat` make the iso ALSO carry `Ě
 Rests on REAL unitarity: `inner_eq` + `checkIncl_injective` force the pairing positive-definite
 (an inner product is), which is exactly `hU`'s reflection-positivity — so a non-unitary `T`
 cannot satisfy this. Not constructed for any concrete theory (the proof is deferred). -/
-structure InducesUnitaryGH [gc : CobordismGeometry] [dc : DualConjugateGeometry]
-    [gl : LorentzianCobordismGeometry] [HolomorphicComplexification] [lc : LightConeGeometry]
+structure InducesUnitaryGH [gc : CobordismGeometry] [gi : GermIsoGeometry]
+    [dc : DualConjugateGeometry] [gl : LorentzianCobordismGeometry]
+    [HolomorphicComplexification] [lc : LightConeGeometry]
     [CobordismRealization] [WOC : WickObjectCorrespondence]
     (T : FieldTheory) (hU : IsUnitary T) (hI : IsInvariant T) where
   /-- `E_Σ^Hilb`: the Hilbert space of a time-symmetric germ (functor form). -/
@@ -206,8 +208,9 @@ and positive-definite, and `checkIncl_injective` upgrades semidefinite to defini
 that existential `J` guarantees, so a witness with an invalid (non-positive-definite) `pairing`
 cannot exist. PROVED from `inner_conj_symm` / `inner_self_nonneg` / `inner_self_eq_zero`. -/
 theorem InducesUnitaryGH.pairing_reflectionPositive [gc : CobordismGeometry]
-    [dc : DualConjugateGeometry] [gl : LorentzianCobordismGeometry] [HolomorphicComplexification]
-    [lc : LightConeGeometry] [CobordismRealization] [WOC : WickObjectCorrespondence]
+    [gi : GermIsoGeometry] [dc : DualConjugateGeometry] [gl : LorentzianCobordismGeometry]
+    [HolomorphicComplexification] [lc : LightConeGeometry] [CobordismRealization]
+    [WOC : WickObjectCorrespondence]
     {T : FieldTheory} {hU : IsUnitary T} {hI : IsInvariant T}
     (W : InducesUnitaryGH T hU hI) (σ : TimeSymmetricGerm) :
     (∀ (x y : T.ECheck (WOC.cplx σ.1)),

@@ -308,8 +308,11 @@ are stated here; the unitarity condition is treated separately.
   category. Stating it rests on assumed structure of two kinds. The groupoid of
   germ isomorphisms, the isomorphisms of metric germs preserving the complex
   metric and the co-orientation, is smooth-manifold germ geometry not developed
-  here, the same geometry whose absence keeps the time-symmetry condition of
-  Definition~\ref{def:unitarity} an equality stand-in. Smoothness of a family of
+  here; the assumed groupoid now expresses germ isomorphisms, so the
+  time-symmetry condition of Definition~\ref{def:unitarity} is the isomorphism
+  predicate $\Sigma \cong \bar\Sigma^*$, no longer an equality stand-in, while
+  the reflection's involutive and fixed-point-set content remains deferred
+  inside this assumed structure. Smoothness of a family of
   maps into the Fréchet fibres has no Mathlib notion, since manifolds and their
   calculus require normed model spaces while the fibres are Fréchet; it is
   assumed as a predicate on families, pinned by requiring that constant families
@@ -382,8 +385,8 @@ requirement. The nodes below follow that order.
   \label{def:unitarity}
   \lean{IsTimeSymmetric, IsUnitary}
   \notready
-  \uses{def:conjugate-dual-duality, def:field-theory, prop:lorentzian-boundary,
-    prop:only-lorentzian, found:rigged-triple}
+  \uses{def:conjugate-dual-duality, def:field-theory, def:isomorphism-action,
+    prop:lorentzian-boundary, prop:only-lorentzian, found:rigged-triple}
   A germ $\Sigma$ is \emph{time-symmetric} if $\Sigma \cong \bar\Sigma^*$, that
   is, if $\Sigma \subset U$ admits a reflection with fixed-point set $\Sigma$
   that reverses the co-orientation and replaces the metric by its complex

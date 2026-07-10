@@ -144,9 +144,9 @@ applied at the germ's complex object, `hU.2 (cplx o) hts`. So it is the SAME pai
 `InducesUnitaryGH.pairing_reflectionPositive` proves hermitian + positive-definite. Gated on
 `IsTimeSymmetric`: a non-time-symmetric germ has no such `hts`, hence no hermitian form ("and only
 then"). -/
-theorem timeSymmetricHermitianInner [gc : CobordismGeometry] [dc : DualConjugateGeometry]
-    [gl : LorentzianCobordismGeometry] [WOC : WickObjectCorrespondence]
-    {T : FieldTheory} (hU : IsUnitary T) (o : gl.Obj)
+theorem timeSymmetricHermitianInner [gc : CobordismGeometry] [gi : GermIsoGeometry]
+    [dc : DualConjugateGeometry] [gl : LorentzianCobordismGeometry]
+    [WOC : WickObjectCorrespondence] {T : FieldTheory} (hU : IsUnitary T) (o : gl.Obj)
     (hts : IsTimeSymmetric (WOC.cplx o)) :
     ∃ J : T.EHat (WOC.cplx o) ≃L[ℂ] (T.ECheck (WOC.cplx o) →SL[starRingEnd ℂ] ℂ),
       (∀ (x y : T.ECheck (WOC.cplx o)),

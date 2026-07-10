@@ -118,9 +118,9 @@ open Cobordism
 
 universe u
 
-variable [gc : CobordismGeometry] [dc : DualConjugateGeometry] [gl : LorentzianCobordismGeometry]
-  [HolomorphicComplexification] [lc : LightConeGeometry] [CobordismRealization]
-  [WOC : WickObjectCorrespondence]
+variable [gc : CobordismGeometry] [gi : GermIsoGeometry] [dc : DualConjugateGeometry]
+  [gl : LorentzianCobordismGeometry] [HolomorphicComplexification] [lc : LightConeGeometry]
+  [CobordismRealization] [WOC : WickObjectCorrespondence]
   {T : FieldTheory} {hU : IsUnitary T} {hI : IsInvariant T}
 
 /-! ## The unitary propagation `Z_{t₀,t}` on the rigged triple -/
