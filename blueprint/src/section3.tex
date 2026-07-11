@@ -216,7 +216,10 @@ record the structures and properties assumed of each.
   which the functor \emph{takes disjoint unions to tensor products}, and the
   further \emph{unitarity} condition are each stated as separate nodes following
   this one. The present node fixes only the underlying functor and its induced
-  limit structure.
+  limit structure. The functor and its limit structure are stated as data;
+  deferred is the construction of $\check E_\Sigma$ and $\hat E_\Sigma$ as
+  direct and inverse limits of topological vector spaces, which Mathlib lacks
+  (Definition~\ref{found:tvs-limits-tensor}).
 \end{definition}
 
 \subsection{The functor axioms}
@@ -237,7 +240,14 @@ are stated here; the unitarity condition is treated separately.
   $M \colon \Sigma_0 \leadsto \Sigma_1$, the maps $Z_M$ form a morphism of
   holomorphic vector bundles over $\mathrm{Met}_{\mathbb C}(M)$, the bundles
   $\{E_{\Sigma_0}\}$ and $\{E_{\Sigma_1}\}$ of the two ends being pulled back to
-  $\mathrm{Met}_{\mathbb C}(M)$ along the restriction maps.
+  $\mathrm{Met}_{\mathbb C}(M)$ along the restriction maps. Stating the
+  holomorphy itself --- local triviality over the base and $Z_M$ as a
+  holomorphic bundle morphism --- rests on the deferred complex-manifold
+  structure of $\mathrm{Met}_{\mathbb C}$
+  (Definitions~\ref{def:metc-complex-manifold}, \ref{def:holomorphic-bundle},
+  the Fr\'echet-manifold gap); what is stated is the anchoring of each
+  $E_\Sigma$ as the fibre of a bundle over $\mathrm{Met}_{\mathbb C}(U)$ at the
+  object's metric.
 \end{definition}
 
 \begin{definition}[Continuity; KS Section 3]
@@ -257,7 +267,12 @@ are stated here; the unitarity condition is treated separately.
   cobordism category. It is the true replacement for the identity morphisms that
   $\mathcal C_d^{\mathbb C}$ lacks: rather than adjoining degenerate zero-length
   cobordisms, whose operators are not nuclear, one requires the injective dense
-  maps $\check E_{\Sigma} \to \hat E_{\Sigma}$ of the functor.
+  maps $\check E_{\Sigma} \to \hat E_{\Sigma}$ of the functor. The
+  injective-dense-image condition is itself fully stated against the functor's
+  canonical maps; the node presupposes the field theory of
+  Definition~\ref{def:field-theory}, whose limit spaces $\check E_\Sigma$ and
+  $\hat E_\Sigma$ carry the deferred limit construction
+  (Definition~\ref{found:tvs-limits-tensor}).
 \end{definition}
 
 \begin{definition}[Disjoint unions to tensor products; KS Section 3]
@@ -282,7 +297,13 @@ are stated here; the unitarity condition is treated separately.
   This requirement forces $E_{\emptyset} = \mathbb C$ on the empty
   $(d-1)$-manifold. Hence a closed $d$-manifold $M$, regarded as a cobordism
   $\emptyset \leadsto \emptyset$, has a \emph{partition function}
-  $Z_M \in \mathrm{End}(E_{\emptyset}) = \mathbb C$.
+  $Z_M \in \mathrm{End}(E_{\emptyset}) = \mathbb C$. The value
+  $E_\emptyset = \mathbb C$ and the scalar partition function are stated; the
+  tensor isomorphism and the functoriality
+  $Z_M \otimes Z_{M'} = Z_{M \sqcup M'}$ are deferred on the completed
+  topological tensor product of nuclear spaces, absent from Mathlib
+  (Definition~\ref{found:tvs-limits-tensor}), and the empty object and disjoint
+  union are assumed monoidal geometry of the cobordism category.
 \end{definition}
 
 \begin{definition}[Action of germ isomorphisms; KS Section 3]
@@ -343,7 +364,13 @@ requirement. The nodes below follow that order.
   by the conjugate metric $\bar g$ and its co-orientation unchanged. Then
   $\Sigma \mapsto \bar\Sigma$ is a covariant functor. Composing the two gives the
   contravariant functor $\Sigma \mapsto \bar\Sigma^*$, which reverses the
-  co-orientation and conjugates the metric.
+  co-orientation and conjugates the metric. The operations
+  $\Sigma \mapsto \Sigma^*$ and $\Sigma \mapsto \bar\Sigma$ are assumed germ
+  geometry (the cobordism geometry tracks neither co-orientation nor metric
+  conjugation); their involution and variance laws and the limit-level dual
+  relation are stated, while the tie of the conjugate object's metric to
+  conjugation on $Q_{\mathbb C}(V)$, which Section~2 does not provide, is
+  deferred.
 \end{definition}
 
 \begin{definition}[Conjugate-dual duality; KS Section 3, Appendix]
@@ -364,7 +391,13 @@ requirement. The nodes below follow that order.
   reflexivity of the nuclear Fréchet space $\hat E_{\Sigma}$, which is among the
   properties assumed of nuclear spaces; granting that reflexivity, the passage
   from the companion form to the displayed form is proved. We state the duality
-  itself; its appendix proof is not formalized.
+  itself; its appendix proof is not formalized. The statement itself rests on
+  the assumed dual and conjugate operations of
+  Definition~\ref{def:dual-conjugate-functors} and, for the passage between the
+  two dual forms, on the assumed reflexivity of the nuclear Fr\'echet space
+  $\hat E_\Sigma$ (Definition~\ref{def:nuclear-frechet}); the naturality and
+  involution law of the reality involution~(5) are likewise deferred, only the
+  per-object existence of the antilinear equivalence being stated.
 
   Separately, a field theory may satisfy the \emph{reality condition}: a natural
   antilinear involution
@@ -415,5 +448,12 @@ requirement. The nodes below follow that order.
   nondegenerate real metrics on the Shilov boundary of $Q_{\mathbb C}(V)$ are
   exactly the Lorentzian ones. The time-symmetric hypersurfaces on which a
   unitary theory acquires Hilbert spaces are the functorial counterpart of those
-  Lorentzian metrics on the Shilov boundary.
+  Lorentzian metrics on the Shilov boundary. Time-symmetry
+  $\Sigma \cong \bar\Sigma^*$ is stated through the assumed germ-isomorphism
+  groupoid of Definition~\ref{def:isomorphism-action}, whose reflection content
+  (involutivity, fixed-point set) remains deferred there; the two unitarity
+  conditions are stated on the functor's own pairing, while the naturality of
+  the reality involution and the completion
+  $\check E_\Sigma \to E^{\mathrm{Hilb}}_\Sigma \to \hat E_\Sigma$ stay deferred
+  on Definition~\ref{found:tvs-limits-tensor}.
 \end{definition}
