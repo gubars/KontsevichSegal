@@ -54,7 +54,7 @@ or stated-but-deferred).
 |--------|---------------|--------|
 | `ComplexMetrics/` | Section 2 | **Complete and sorry-free** (scope (a)). The consequences, the Shilov-boundary results, KS Theorem 2.2 (the Definition 2.1 equivalence, proved in both directions via a from-scratch Hodge star), and KS Proposition 2.5 (`restrict_allowable`: restriction of an allowable metric to a subspace remains allowable) are all proven; documented `True`-placeholders remain for the results blocked on Mathlib gaps (Props 2.4/2.7, the two-copies Shilov statement). |
 | `Cobordism/` | Section 3 | **Encoded.** The cobordism category C_d^ℂ as an identity-free `Semicategory` (it genuinely has no identity morphisms). |
-| `FieldTheory/` | Section 3 | **Encoded.** All of Section 3's analytic infrastructure, the field-theory functor, and the six functor-condition/axiom nodes (together, all 11 Section 3 blueprint nodes). Stated faithfully; deep analytic content deferred to the Mathlib gaps above. |
+| `FieldTheory/` | Section 3 | **Encoded — complete under scope (a).** All of Section 3's analytic infrastructure, the field-theory functor, the action of germ isomorphisms, and the functor-condition/axiom nodes (together, all 12 Section 3 blueprint nodes; the condition layer is closed, with time-symmetry stated as the germ-isomorphism predicate Σ ≅ Σ̄* rather than an equality stand-in). Stated faithfully; cited infrastructure is no-instance property-classes, and deep analytic content is deferred to the Mathlib gaps above. |
 | `WickRotation/` | Section 5 | **Encoded.** All 11 nodes stated faithfully (scope (a)): the real-analytic Lorentzian / globally-hyperbolic cobordism category, the invariance principle (Principle 5.1), Theorem 5.2 (the gh unitary functor and the rigged triple Ě ⊂ E^Hilb ⊂ Ê), observables and their ordering-independent action, spacelike commutativity, and the vacuum-expectation domain V_k with Proposition 5.4 (V_k ⊇ U_k; the domain-of-holomorphy of V_k kept as KS's open conjecture, stated but not asserted). No `sorry` and no `axiom` — deferrals are documented prose, the same character as the Section 3 rows. |
 
 - **`ComplexMetrics`** (Section 2) — the domain QC(V) of allowable complex
@@ -67,8 +67,10 @@ or stated-but-deferred).
   analytic infrastructure (nuclear Fréchet spaces, Met_ℂ(M) as a complex manifold,
   holomorphic vector bundles); a field theory as a holomorphic functor; and its
   conditions: holomorphicity, continuity (the injective/dense-image replacement
-  for the missing identity morphisms), the disjoint-union/tensor axiom, the dual
-  and conjugate functors, the conjugate-dual duality, and unitarity.
+  for the missing identity morphisms), the disjoint-union/tensor axiom, the
+  action of germ isomorphisms, the dual and conjugate functors, the
+  conjugate-dual duality, and unitarity (time-symmetric germs via the
+  germ-isomorphism predicate Σ ≅ Σ̄*).
 - **`WickRotation`** (Section 5) — Wick rotation and the unitary functor on the
   globally hyperbolic category: the real-analytic Lorentzian cobordism category and
   its globally-hyperbolic subcategory; the Wick rotation of time-symmetric metrics
@@ -88,13 +90,18 @@ encoded (scope (a): statements stated faithfully, the deep constructions deferre
 
 ## Project Status
 
+**Scope (a) is complete:** all 56 blueprint nodes are green/proved, documented-deferred, or
+abstract-by-design (7 dark-green fully-proved results; Sections 2, 3 and 5 all encoded). The
+remaining work is scope (b) — deep constructions and open proofs resting on the deferred
+Mathlib gaps below.
+
 The tracked production tree contains **zero `axiom` declarations**: all physics
 axioms are fields of `structure`/`class` declarations, and cited infrastructure is
 axiomatized as property-classes (never the `axiom` keyword). Proof gaps are
 explicit `sorry`s; statements not yet expressible use documented `True`
 placeholders.
 
-Snapshot (2026-07-09):
+Snapshot (2026-07-10):
 
 | Metric | Count |
 |--------|-------|
@@ -129,9 +136,11 @@ than sorrys or stand-ins.
 
 ### Detailed status
 
-See [docs/project_status.md](docs/project_status.md) for per-result tracking
-against the paper, including the anchor-vs-assume-vs-defer breakdown of each
-Section 3 node and the candidate additive tasks.
+Per-result tracking against the paper, including the anchor-vs-assume-vs-defer
+breakdown of each Section 3 node and the candidate additive tasks, is kept in
+`docs/project_status.md`, a local working document that is git-ignored and not
+part of the repository; the [Project Status](#project-status) section above is
+the shipped summary.
 
 ## Repository Layout
 
@@ -159,6 +168,7 @@ KontsevichSegal/
 │   ├── Holomorphicity.lean        -- holomorphicity condition
 │   ├── Continuity.lean            -- continuity: injective/dense-image (identity replacement)
 │   ├── TensorAxiom.lean           -- disjoint unions to tensor products; E_∅ = ℂ
+│   ├── IsomorphismAction.lean     -- action of germ isomorphisms (assumed germ-iso groupoid)
 │   ├── DualConjugate.lean         -- dual (Σ*) and conjugate (Σ̄) functors
 │   ├── ConjugateDualDuality.lean  -- plain duality, reality condition (5), conjugate-dual
 │   └── Unitarity.lean             -- time-symmetric germs; unitarity
@@ -180,14 +190,16 @@ KontsevichSegal.lean               -- root entry point
 blueprint/
 └── src/
     ├── content.tex                -- Section 2 blueprint nodes
+    ├── foundations.tex            -- deferred-foundations chapter (15 nodes: assumed classes + built foundations)
     ├── section3.tex               -- Section 3 blueprint nodes
     └── section5.tex               -- Section 5 blueprint nodes
 docs/
-├── project_status.md              -- authoritative per-result status
 ├── development_plan.md            -- overall phasing
+├── blueprint_roadmap_plan.md      -- foundations roadmap (the F-table)
 ├── section2_review.md             -- Section 2 audit
 ├── restrict_allowable_plan.md     -- Prop 2.5 proof plan (historical; the proof has landed)
-└── only_lorentzian_plan.md        -- record of the only_lorentzian proof route
+├── project_status.md              -- per-result status (local, git-ignored — not in the repo)
+└── only_lorentzian_plan.md        -- only_lorentzian proof route (local — not in the repo)
 ```
 
 ## Building
