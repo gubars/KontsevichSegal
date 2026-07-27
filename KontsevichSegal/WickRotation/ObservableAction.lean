@@ -15,7 +15,7 @@ shows that if `x₁,…,x_k` are distinct points on `Σ`, we have a map
 points."
 
 THE ENCODING (scope (a): STATE the action data; the disc-removal / thinner-collars / disjoint-
-collars construction is additive prose, NEVER a `sorry`'d theorem). Three pieces.
+collars construction is additive prose, NEVER a `sorry`'d theorem). Two pieces.
 
 * `ObservableAction T ht M σ x O` — the SINGLE-observable action, for the ambient Lorentzian
   cobordism `M : σ₀ ⤳ σ₁` with `x` interior to `M` on the time-slice `σ` (the germ of `O`):
@@ -23,29 +23,40 @@ collars construction is additive prose, NEVER a `sorry`'d theorem). Three pieces
     (`E_? = T.E (cplx ?)`, Section 3's field-theory space via the Wick object correspondence,
     node 6). Linear in `ψ` (the `k = 1` case of the multilinear map). KS's construction
     (remove a small disc `D` around `x`, leaving `M ∖ D̊ : ∂D ⊔ σ₀ ⤳ σ₁`, whose `Z` gives
-    `E_{∂D} → Hom(E_{σ₀}; E_{σ₁})` by the TENSORING property `def:tensor-axiom`, then the inverse
-    limit `𝒪_x = lim← E_{∂D}`) is deferred prose.
-  - `actAtSlice : 𝒪_x →ₗ[ℂ] (E_σ →L[ℂ] E_σ)` — the BOUNDED E-action at the time-slice `σ`, i.e.
-    "act for the thinner-collar cobordisms `σ ⤳ σ`": the bounded operator on `E_σ` the collars
-    converge to. The CORE through which `slice` factors.
-  - `slice : 𝒪_x →ₗ[ℂ] (Ě_σ →L[ℂ] Ê_σ)` — the TIME-SLICE operator `ψ ∈ Hom(Ě_σ; Ê_σ)`
-    (`Ě_σ = T.ECheck (cplx σ)`, `Ê_σ = T.EHat (cplx σ)`). This is an "unbounded operator in
-    `E_σ`": in the rigging `Ě_σ ⊂ E_σ ⊂ Ê_σ` (node 6) an unbounded operator on `E_σ` is exactly
-    a CONTINUOUS map `Ě_σ → Ê_σ`, so `→L[ℂ]` between the limit spaces is the faithful encoding
-    of "unbounded in `E_σ`" (not a contradiction).
-  - `slice_factors` — the TIE (`slice ↔ actAtSlice`; the node-2 `differential_eq` / node-5
-    `cob_realizes` pattern, CHECK 1): the time-slice operator is the bounded slice action LIFTED
-    through the Section-3 rigging maps, `slice ψ = toEHat ∘ actAtSlice ψ ∘ fromECheck`. So `slice`
-    is NOT a free field independent of the action; it factors through `actAtSlice` (exactly KS's
-    "we get an operator in `Hom(Ě_σ; Ê_σ)`" = the same action seen on the rigging). Only the
-    collar-limit CONSTRUCTION of `actAtSlice` is deferred; the tie uses the real Section-3 maps.
-    `act` relates to `actAtSlice` by propagation across `M`'s split at `σ`
-    (`act ψ = Z(M₁) ∘ actAtSlice ψ ∘ Z(M₀)`), which needs the morphism-level Wick correspondence
-    and the split of the opaque `M` — forced-deferred (the nodes-5/6 gap), documented.
+    `E_{∂D} → Hom(E_{σ₀}; E_{σ₁})` by the TENSORING property `def:tensor-axiom`, then the
+    inverse limit `𝒪_x = lim← E_{∂D}`) is deferred prose.
+  - `slice : 𝒪_x →ₗ[ℂ] (Ě_σ →L[ℂ] Ê_σ)` — the TIME-SLICE operator `ψ ∈ Hom(Ě_σ; Ê_σ)`, an
+    UNBOUNDED operator in `E_σ` (`Ě_σ = T.ECheck (cplx σ)`, `Ê_σ = T.EHat (cplx σ)`). In the
+    rigging `Ě_σ ⊂ E_σ ⊂ Ê_σ` (node 6) an unbounded operator in `E_σ` is exactly an element
+    of `Hom(Ě_σ; Ê_σ)`: a continuous map between the limit spaces, with NO requirement that
+    it factor through a continuous operator on `E_σ`. KS's thinner-collar operators are each
+    continuous on `E_σ` (positive-thickness collars `σ ⤳ σ`), but their limit in general is
+    not — it escapes `Hom(E_σ; E_σ)` and exists only in `Hom(Ě_σ; Ê_σ)`; that escape is the
+    content of KS's "i.e. an unbounded operator in `E_Σ`". The type therefore imposes no
+    factorization through `E_σ` (and forbids none: "unbounded operator" in the standard
+    usage includes operators that happen to be bounded, e.g. an observable acting as the
+    identity).
+
+RESTATEMENT (2026-07-27). The previous encoding carried two further fields:
+`actAtSlice : 𝒪_x →ₗ[ℂ] (E_σ →L[ℂ] E_σ)` ("the bounded operator on `E_σ` the thinner-collar
+actions converge to") and the tie
+`slice_factors : ∀ ψ, slice ψ = toEHat ∘ actAtSlice ψ ∘ fromECheck`. That forced every
+slice observable to be the rigging-restriction of a CONTINUOUS operator on `E_σ` and to land
+in `range toEHat` — exactly what the paper's "i.e. an unbounded operator in `E_Σ`" excludes:
+the collar limit in general has no bounded core, and postulating one contradicts the claim
+(a genuinely non-factoring `slice` admits NO `actAtSlice` satisfying the tie, so the paper's
+intended inhabitant could not inhabit the structure). Both fields were DELETED as a
+statement-level infidelity (audit verdict (c) WRONG, 2026-07-27); the reviewed proposal is
+`blueprint/restatements/prop-observable-action.md`. The true ties — `act` and `slice` both
+arising from `T.Z` on disc-removal / collar cobordisms, and `slice` as the `k = 1` case of
+`mmap` — remain deferred: the ambient `M : gl.Mor σ₀ σ₁` is OPAQUE (no disc-removal / collar
+/ sub-cobordism accessor) and the morphism-level Wick correspondence is absent (the
+nodes-5/6 gap), so no statable tie pins the operators to `T.Z`. Documented, not faked.
 
 * `ObservableMultilinear T ht σ x hx O` — for `k` DISTINCT points `x₁,…,x_k` on the slice `σ`
   (`hx : Function.Injective x`), the ORDERING-INDEPENDENT multilinear map
-  `𝒪_{x₁} ⊗ … ⊗ 𝒪_{x_k} → Hom(Ě_σ; Ê_σ)`:
+  `𝒪_{x₁} ⊗ … ⊗ 𝒪_{x_k} → Hom(Ě_σ; Ê_σ)` (UNCHANGED by the restatement; the audit found this
+  half faithful):
   - `mmap` gives, for each ordering `π` of the points, the `MultilinearMap` of the `k`
     observables (heterogeneous fibres `𝒪_{x_{π i}}`) into `Hom(Ě_σ; Ê_σ)`. A `MultilinearMap`
     is precisely a map OUT of the tensor product `𝒪_{x₁} ⊗ … ⊗ 𝒪_{x_k}` (its universal
@@ -66,35 +77,34 @@ and `(ht : IsTensorial T)` — the disjoint-union `⊔` of objects/cobordisms an
 property of `T` that the construction uses (the disc-removal `∂D ⊔ σ₀ ⤳ σ₁` for `act`, the
 disjoint collars of the distinct points for `mmap`). These are used in the deferred construction
 (prose), exactly as node 7 carries `hReal : IsReal T` and node 6 carries `hU : IsUnitary T`.
+Neither `ht` nor the ambient `M` is referenced by any field (phantom parameters, kept as
+documentation of the construction's context); `hx` likewise documents the distinctness the
+deferred disjoint-collars construction needs.
 
 SELF-CHECK — per-predicate degeneracy (NON-VACUITY).
-* `act`/`actAtSlice`/`slice` are carried MAPS from the real `𝒪_x` (node 8) into the real operator
-  spaces (Section 3 `E`/`Ě`/`Ê`). The degenerate `actAtSlice := 0` (hence `slice := 0` by
-  `slice_factors`) / `act := 0` satisfies the fields: it is a FORCED DEFERRAL, since the genuine
-  operator-from-`ψ` construction (disc removal / thinner collars + the tensoring split of `Z` + the
-  inverse limit) is deferred infrastructure — and the ambient `M : gl.Mor σ₀ σ₁` is OPAQUE (no
-  disc-removal / sub-cobordism accessor), so no statable tie pins the operator to `T.Z`. The MAPS
-  are carried (tying `ψ` to an operator), matching scope (a); the specific operator is the deferred
-  part. Documented.
+* `act`/`slice` are carried MAPS from the real `𝒪_x` (node 8) into the real operator spaces
+  (Section 3 `E`/`Ě`/`Ê`). The degenerate `act := 0` / `slice := 0` satisfies the fields: a
+  FORCED DEFERRAL, since the genuine operator-from-`ψ` construction (disc removal / thinner
+  collars + the tensoring split of `Z` + the inverse limit) is deferred infrastructure — and
+  the ambient `M : gl.Mor σ₀ σ₁` is OPAQUE (no disc-removal / sub-cobordism accessor), so no
+  statable tie pins the operator to `T.Z`. This is inhabitation-degeneracy, not
+  statement-vacuity: the structure states the SHAPE of KS's data, and after the restatement
+  it carries no propositional field — nothing ties `slice` to `act` (the removed tie was
+  FALSE, not partial; the true tie via `T.Z` is deferred). The node's bite lives in
+  `ordering_indep`. Documented.
 * `mmap` with `mmap π := 0` degenerately satisfies `ordering_indep` (`0 = 0`); same forced
   deferral. BUT `ordering_indep` BITES as a CONDITION (its content, the ordering-independence,
   is an identity assertion that a genuinely order-DEPENDENT assignment FAILS — see below). Per
   the node-7 trivial-satisfiability nuance: when the content IS an identity assertion, the
   symmetric model is the CORRECT one, and the condition still excludes order-dependent maps.
 
-SELF-CHECK — float-free ties (CHECK 1, slice tied; CHECK 2, family pinned).
-* CHECK 1 — `slice` is TIED to `actAtSlice`, not free. `slice_factors` pins `slice ψ = toEHat ∘
-  actAtSlice ψ ∘ fromECheck` (the Section-3 rigging maps), the node-2 `differential_eq` pattern:
-  the time-slice operator is the bounded slice action lifted through the rigging, NOT an arbitrary
-  field paired with a sensible `act`. Only the collar-limit producing `actAtSlice` is deferred. The
-  `act ↔ actAtSlice` propagation (across `M`'s split at `σ`) needs the morphism-level Wick
-  correspondence + the split of the opaque `M`, so it stays forced-deferred (nodes-5/6 gap).
-* `act`/`actAtSlice`/`slice`/`mmap` reference the REAL `𝒪_x` (node 8's `Observables.Ox`) and the
-  REAL `E`/`ECheck`/`EHat` (Section 3, via `WickObjectCorrespondence.cplx`, node 6). The deeper tie
+SELF-CHECK — float-free ties (the family is pinned).
+* `act`/`slice`/`mmap` reference the REAL `𝒪_x` (node 8's `Observables.Ox`) and the REAL
+  `E`/`ECheck`/`EHat` (Section 3, via `WickObjectCorrespondence.cplx`, node 6). The deeper tie
   (operator = `Z` of the disc-removed / collar cobordism) is the deferred construction (opaque
   `Mor`, deferred tensor split), the same deferral as node 5's `realize` (carried field,
   construction deferred).
-* CHECK 2 — `ordering_indep` PINS the family `mmap π` to `mmap (Equiv.refl _)` (no slack). From
+* `ordering_indep` PINS the family `mmap π` to `mmap (Equiv.refl _)` (no slack). From
   `eval_orderIndep`, `mmap π (v ∘ π) = mmap refl v`; and every input `w : ∀ i, 𝒪_{x_{π i}}` is of
   the form `v ∘ π` with `v := w ∘ π⁻¹` (so `(v ∘ π) i = w i`), hence `mmap π w = mmap refl (w ∘ π⁻¹)`
   for ALL `w` — `mmap π` is fully determined by `mmap refl`. So the family-plus-coherence genuinely
@@ -104,9 +114,13 @@ SELF-CHECK — float-free ties (CHECK 1, slice tied; CHECK 2, family pinned).
 SELF-CHECK — equate vs distinguish (opaque `Hom`). The action lands in `Hom(Ě_σ; Ê_σ)`, an
 OPAQUE operator space. The only constraint stated on it is `ordering_indep`, an EQUATE (sameness
 of operators). The distinguish/measure constraints — that `act`/`slice`/`mmap` are nonzero, that
-`slice ψ` is genuinely unbounded on `E_σ`, that the operator equals `Z` of a specific
-cobordism — would require measuring the operator or the deferred construction; they are deferred,
-not faked. NO distinctness/injectivity field is added.
+`slice ψ` is genuinely unbounded (not of the form `toEHat ∘ A ∘ fromECheck` for continuous
+`A : E_σ →L E_σ`), that the operator equals `Z` of a specific cobordism — would require
+measuring the operator or the deferred construction; they are deferred, not faked. NO
+distinctness/injectivity field is added, and NO factorization field either: mandating the
+factorization was the restated infidelity, and mandating its negation would overshoot the
+paper (KS assert membership in `Hom(Ě_σ; Ê_σ)`, which contains the boundedly-factoring
+operators as special cases).
 
 SELF-CHECK — ordering-independence BITES. Take a genuinely order-DEPENDENT assignment, e.g.
 `mmap π := if π = 1 then m₀ else 0` with `m₀ ≠ 0`. Then `ordering_indep 1 π v` (for `π ≠ 1`)
@@ -115,15 +129,15 @@ EXCLUDED; the symmetric / order-independent KS construction satisfies it. It is 
 constraint, not vacuously true.
 
 DEFERRED (documented, not faked): the disc-removal `M ∖ D̊` and the inverse limit `𝒪_x = lim← E_{∂D}`
-producing `act`; the thinner-collars limit producing the bounded `actAtSlice` (and the
-unbounded-operator structure on `E_σ`, encoded via the `Ě ⊂ E ⊂ Ê` rigging — `slice` itself is TIED
-to `actAtSlice`, not deferred); the `act ↔ actAtSlice` propagation `act ψ = Z(M₁) ∘ actAtSlice ψ ∘
-Z(M₀)` (needs the morphism-level Wick correspondence + the split `M = M₁ ∘ M₀` of the opaque `M`);
-the disjoint-collars construction of `mmap` and the completed topological tensor product
-`𝒪_{x₁} ⊗ … ⊗ 𝒪_{x_k}` (the same Mathlib gap `def:tensor-axiom` defers); the geometric relationships
-`x ∈ M̊`, "`σ` is a time-slice of `M` through `x`", and the distinctness-of-collars (no
-interior/time-slice predicate on the opaque `Mor`; the same Lorentzian↔complex deferral as nodes
-1/3/5/6).
+producing `act`; the thinner-collars limit producing `slice` (the limit exists only in
+`Hom(Ě_σ; Ê_σ)` — there is no bounded core to carry, which is why none is); the tie of `act`
+and `slice` to `T.Z` and to each other (needs the morphism-level Wick correspondence + the
+split of the opaque `M`); `slice` as the `k = 1` case of `mmap` (needs shared context between
+the two structures); the disjoint-collars construction of `mmap` and the completed topological
+tensor product `𝒪_{x₁} ⊗ … ⊗ 𝒪_{x_k}` (the same Mathlib gap `def:tensor-axiom` defers); the
+geometric relationships `x ∈ M̊`, "`σ` is a time-slice of `M` through `x`", and the
+distinctness-of-collars (no interior/time-slice predicate on the opaque `Mor`; the same
+Lorentzian↔complex deferral as nodes 1/3/5/6).
 
 CONSTRAINTS: no `axiom` keyword, no concrete instance, no `sorry` (the action and the multilinear
 map are STATED as `structure`s; the construction is prose, never a `sorry`'d theorem;
@@ -131,8 +145,13 @@ map are STATED as `structure`s; the construction is prose, never a `sorry`'d the
 `Observables.Ox`, node 6's `WickObjectCorrespondence` and Section 3's `FieldTheory.E`/`ECheck`/`EHat`,
 and `def:tensor-axiom`'s `MonoidalCobordism` / `IsTensorial`, with their real signatures.
 
-Blueprint: `prop:observable-action` in `blueprint/src/section5.tex` (its `\lean` annotation lands
-with the forthcoming content-node annotation batch).
+MARKING: `prop:observable-action` is `\notready` in the blueprint after the restatement (the
+decided post-fix marking): the statement-level infidelity is fixed, but the encoding
+underspecifies the proposition — `M`/`ht` are phantoms and no existence-level claim or `T.Z`
+tie is statable against the opaque `Mor` — the same standard as the 2026-07-27 demotion batch
+(thm:unitary-gh, prop:invariance-principle, prop:lorentzian-E-welldefined).
+
+Blueprint: `prop:observable-action` in `blueprint/src/section5.tex`.
 -/
 
 import KontsevichSegal.WickRotation.Observables
@@ -147,55 +166,39 @@ open Cobordism
 /-! ## The action of an observable: `E_{σ₀} → E_{σ₁}` and the time-slice operator `Hom(Ě_σ; Ê_σ)` -/
 
 /-- **The action of an observable on a Lorentzian cobordism (KS Section 5, blueprint
-`prop:observable-action`), the single-observable case.** For a field theory `T` (tensorial, `ht`),
-an ambient Lorentzian cobordism `M : σ₀ ⤳ σ₁`, and an observable `O` at a point `x` on a
-time-slice `σ` in the interior of `M`:
+`prop:observable-action`), the single-observable case.** For a field theory `T` (tensorial,
+`ht`), an ambient Lorentzian cobordism `M : σ₀ ⤳ σ₁`, and an observable `O` at a point `x` on
+a time-slice `σ` in the interior of `M`:
 
-* `act` is the action `ψ ↦ (E_{σ₀} → E_{σ₁})`, linear in `ψ`. (`E_? = T.E (cplx ?)` via the Wick
-  object correspondence, node 6.) Built — in deferred prose — by removing a small disc around `x`
-  (`M ∖ D̊ : ∂D ⊔ σ₀ ⤳ σ₁`), applying the tensoring property `def:tensor-axiom` to get
-  `E_{∂D} → Hom(E_{σ₀}; E_{σ₁})`, and passing to the inverse limit `𝒪_x = lim← E_{∂D}`.
-* `slice` is the time-slice operator `ψ ∈ Hom(Ě_σ; Ê_σ)` — an UNBOUNDED operator in `E_σ`,
-  encoded faithfully as a continuous map `Ě_σ →L[ℂ] Ê_σ` between the limit spaces of the rigging
-  `Ě_σ ⊂ E_σ ⊂ Ê_σ` (node 6). Built — in deferred prose — from the cobordisms of successively
-  thinner collars of `σ`.
+* `act` is the action `ψ ↦ (E_{σ₀} → E_{σ₁})`, linear in `ψ`. (`E_? = T.E (cplx ?)` via the
+  Wick object correspondence, node 6.) Built — in deferred prose — by removing a small disc
+  around `x` (`M ∖ D̊ : ∂D ⊔ σ₀ ⤳ σ₁`), applying the tensoring property `def:tensor-axiom` to
+  get `E_{∂D} → Hom(E_{σ₀}; E_{σ₁})`, and passing to the inverse limit `𝒪_x = lim← E_{∂D}`.
+* `slice` is the time-slice operator `ψ ∈ Hom(Ě_σ; Ê_σ)`, an UNBOUNDED operator in `E_σ`:
+  in the rigging `Ě_σ ⊂ E_σ ⊂ Ê_σ` an unbounded operator in `E_σ` is exactly an element of
+  `Hom(Ě_σ; Ê_σ)`, with NO requirement that it factor through a continuous operator on `E_σ`
+  (KS: "simply by considering the cobordisms corresponding to a sequence of successively
+  thinner collars of `Σ`" — the collar operators are each continuous on `E_σ`, but their
+  limit in general is not; the type deliberately does NOT assert such a factorization).
 
 The geometric relationships (`x ∈ M̊`, `σ` a time-slice of `M` through `x`) and the
-operator-from-`ψ` constructions are deferred (the opaque `Mor`, the deferred tensor split / inverse
-limit). The action MAPS are carried, tied to the real `𝒪_x` (node 8) and the real `E`/`Ě`/`Ê`
-(Section 3). Not constructed for any concrete theory. -/
+operator-from-`ψ` constructions are deferred (the opaque `Mor`, the deferred tensor split /
+inverse limit). The action MAPS are carried, tied to the real `𝒪_x` (node 8) and the real
+`E`/`Ě`/`Ê` (Section 3). Not constructed for any concrete theory. -/
 structure ObservableAction [gc : CobordismGeometry] [gl : LorentzianCobordismGeometry]
     [HolomorphicComplexification] [m : MonoidalCobordism] [WOC : WickObjectCorrespondence]
     (T : FieldTheory) (ht : IsTensorial T)
     {σ₀ σ₁ : gl.Obj} (M : gl.Mor σ₀ σ₁)
     (σ : gl.Obj) [MetCManifold (gl.Ambient σ)] (x : gl.Ambient σ)
     (O : Observables σ x) where
-  /-- **The action `ψ ↦ (E_{σ₀} → E_{σ₁})`** of an observable on the ambient cobordism `M`,
-  linear in `ψ ∈ 𝒪_x`. The operator-from-`ψ` construction (disc removal + tensoring property +
-  inverse limit) is deferred prose. Relates to `actAtSlice` by propagation across `M`'s split at
-  the time-slice `σ` (`act ψ = Z(M₁) ∘ actAtSlice ψ ∘ Z(M₀)`, `M = M₁ ∘ M₀`); that tie needs the
-  morphism-level Wick correspondence and the split of the opaque `M`, so it is forced-deferred
-  (the same gap as nodes 5/6), documented in the module comment. -/
+  /-- The action `ψ ↦ (E_{σ₀} → E_{σ₁})` of an observable on the ambient cobordism `M`,
+  linear in `ψ ∈ 𝒪_x`. The construction (disc removal + tensoring + inverse limit) and the
+  tie to `T.Z` across the opaque `M` are deferred prose. -/
   act : O.Ox →ₗ[ℂ] (T.E (WOC.cplx σ₀) →L[ℂ] T.E (WOC.cplx σ₁))
-  /-- **The bounded E-action at the time-slice `σ`** (`E_σ →L[ℂ] E_σ`): the action "for the
-  cobordisms corresponding to thinner collars of `σ`" (collars `σ ⤳ σ`), i.e. the bounded operator
-  on `E_σ` that the thinner-collar actions converge to. This is the CORE through which the
-  time-slice operator `slice` factors; the collar-limit producing it is deferred prose. -/
-  actAtSlice : O.Ox →ₗ[ℂ] (T.E (WOC.cplx σ) →L[ℂ] T.E (WOC.cplx σ))
-  /-- **The time-slice operator `ψ ∈ Hom(Ě_σ; Ê_σ)`**, an unbounded operator in `E_σ` (encoded as
-  the continuous map `Ě_σ →L[ℂ] Ê_σ` of the rigging), linear in `ψ ∈ 𝒪_x`. TIED to `actAtSlice` by
-  `slice_factors`. -/
+  /-- The time-slice operator `ψ ∈ Hom(Ě_σ; Ê_σ)`, an unbounded operator in `E_σ` — an
+  element of the Hom-space of the rigging with no factorization through `E_σ` imposed. The
+  thinner-collars construction is deferred prose. -/
   slice : O.Ox →ₗ[ℂ] (T.ECheck (WOC.cplx σ) →L[ℂ] T.EHat (WOC.cplx σ))
-  /-- **TIE (`slice ↔ actAtSlice`; the node-2 `differential_eq` / node-5 `cob_realizes` pattern).**
-  The time-slice operator is the bounded slice action `actAtSlice` LIFTED through the Section-3
-  rigging maps `fromECheck : Ě_σ → E_σ` and `toEHat : E_σ → Ê_σ`:
-  `slice ψ = toEHat ∘ actAtSlice ψ ∘ fromECheck`. So `slice` is NOT a free field independent of the
-  action — it factors through the bounded E-action at the slice, exactly as KS's "we get an operator
-  in `Hom(Ě_σ; Ê_σ)`" is the same action seen on the rigging. Only the collar-limit CONSTRUCTION of
-  `actAtSlice` is deferred (opaque `Mor`); the tie itself uses the real Section-3 maps. It BITES: a
-  `slice` not of the form `toEHat ∘ (bounded) ∘ fromECheck` is excluded. -/
-  slice_factors : ∀ ψ : O.Ox,
-    slice ψ = (T.toEHat (WOC.cplx σ)).comp ((actAtSlice ψ).comp (T.fromECheck (WOC.cplx σ)))
 
 /-! ## The ordering-independent multilinear map `𝒪_{x₁} ⊗ … ⊗ 𝒪_{x_k} → Hom(Ě_σ; Ê_σ)` -/
 
