@@ -19,16 +19,11 @@ Lorentz-invariant vacuum has vacuum expectation values `E_k : F_k → Hom(O^⊗k
 observables at a point of `E`); by Principle 5.1 `E_k` is constant on the connected components of the
 fibres of `π`, so it descends to `V_k`.
 
-THE DEFINING REQUIREMENT: TWO UNPROVEN STATEMENTS OF DIFFERENT EPISTEMIC STATUS, encoded as VISIBLY
-DISTINCT declarations.
+THE DEFINING REQUIREMENT: TWO UNPROVEN STATEMENTS OF DIFFERENT EPISTEMIC STATUS.
 * **Proposition 5.4 (`prop:Vk-contains-Uk`): `U_k ⊆ V_k`.** KS PROVE this (the ruled-manifold
-  construction, KSTeX 811-813). In scope (a) it is a STATED theorem whose Lean proof is
-  deferred-additive PROSE (exactly like Theorem 5.2 / Principle 5.1). It IS claimed to hold. Encoded
-  as the CARRIED/ASSERTED field `VacuumExpectationData.uk_subset_vcheck` (the geometric content KS
-  prove, at the provable `V̌_k` level: every `U_k` configuration lies on an allowable totally-real
-  ruled `M`), with the ruled-manifold proof recorded as prose; the `V_k`-level inclusion theorem
-  `Uk_subset_Vk` is then PROVED from it (axiom-clean). So Prop 5.4 appears as: an asserted field +
-  a proved corollary.
+  construction, KSTeX 811-813). It is NOT formalized here: it lives as `\notready` blueprint prose
+  (statement + proof sketch), because no faithful Lean statement of it is currently expressible —
+  see RESTATEMENT below. Nothing in this file asserts, assumes, or proves it.
 * **The domain-of-holomorphy claim: `V_k` is a domain of holomorphy.** KS explicitly have NO proof —
   "Unfortunately we have no proof that `V_k` is a domain of holomorphy" (KSTeX 799). This is an OPEN
   CONJECTURE, not a theorem of the paper. Encoded as the stand-alone `def
@@ -36,9 +31,29 @@ DISTINCT declarations.
   and NEVER `sorry`'d (a `sorry`'d theorem would falsely claim a provable-in-principle result; it is
   not one). It is a SEPARATE declaration from the witness data, marked in its docstring as KS's open
   conjecture.
-The reader sees at a glance: Prop 5.4 = stated theorem (asserted field + proved corollary, proof
-deferred — KS have one); domain-of-holomorphy = conjecture (a `def : Prop`, never asserted — KS have
-none).
+The reader sees at a glance: Prop 5.4 = unformalized paper theorem (`\notready` blueprint prose —
+KS have a proof; the encoding cannot yet state it); domain-of-holomorphy = conjecture (a
+`def : Prop`, never asserted — KS have none).
+
+RESTATEMENT (2026-07-27). The previous encoding carried Proposition 5.4 as the ASSERTED field
+`uk_subset_vcheck : ∀ x, geom.Uk x → Vcheck x` of `VacuumExpectationData`, and "proved" the
+`V_k`-level inclusion `Uk_subset_Vk` from it (field + `basePts_surj` + `Quotient.mk` — zero
+geometric content of its own). That axiomatized KS's OWN theorem (audit verdict (b) RESTATEMENT,
+2026-07-27): the field IS Prop 5.4 at the `V̌_k` level, and `basePts_mem`/`basePts_surj` make
+`V̌_k` exactly the image of `π`, so the `V̌_k`-inclusion and the `V_k`-covering are the same claim
+up to quotient bookkeeping. Both the field and the theorem were REMOVED. A standalone sorry'd
+`∀ x, Uk x → Vcheck x` was REJECTED: at the axiomatized generality it is FALSE (a degenerate
+instance with `TotallyRealSub := PEmpty` over the genuine built linear model has `Uk`-true
+configurations at `k = 2` by `uk_two`, while `Vcheck` is everywhere false), and the ruled-manifold
+proof is not attemptable (no complex orthogonal group; `Uk` opaque beyond `k = 2`; no constructor
+produces a `TotallyRealSub`; cone convexity deferred). What remains in Lean is the honest residue
+`vcheck_covered` (the quotient bookkeeping "`V̌_k` is covered by `V_k`", fully proved, NOT
+Prop 5.4). Reviewed proposal: `blueprint/restatements/prop-Vk-contains-Uk.md`. The blueprint node
+is `\notready` with its `\lean` annotation DROPPED. When Prop 5.4 is later formalized against a
+pinned geometry (complex orthogonal group + the general suitably-ordered-γ tube definition; a
+ruled-submanifold former with carrier/tangent/inducedForm computation rules; cone convexity), the
+swept metric's ALLOWABILITY must remain a PROOF OBLIGATION, never an assumed field — assuming it
+would re-import proof content exactly as `uk_subset_vcheck` did.
 
 THE ENCODING (scope (a): STATE the data; the infinite-dim-manifold / ruled-manifold constructions are
 deferred prose, never `sorry`'d).
@@ -65,17 +80,18 @@ deferred prose, never `sorry`'d).
   (the "same image in `V_k`" equivalence — same fibre-component / path-covering — carried as the
   EQUATE); `Ek : Fk → MultilinearMap ℂ (fun _ : Fin k => O.Ox) ℂ` (the vacuum expectation `E_k`,
   target `Hom(O^⊗k; ℂ)` via the node-9 tensor-as-multilinear pattern, `O = O.Ox` node 8) with
-  `Ek_respects` (E_k constant on the quotient classes, by Principle 5.1 / `hI`); and
-  `uk_subset_vcheck` (Prop 5.4's asserted `V̌_k`-level content).
+  `Ek_respects` (E_k constant on the quotient classes, by Principle 5.1 / `hI`). Proposition 5.4
+  is NOT a field (RESTATEMENT above).
 
 * `VacuumExpectationData.Vk := Quotient vkSetoid` — `V_k` as the Hausdorff quotient of `F_k` by the
   same-image relation. `projVk := Quotient.lift basePts basePts_respects` and `EkOnVk := Quotient.lift
   Ek Ek_respects` are PROVED (axiom-clean) descents of `π` and `E_k` to `V_k`: `E_k` descends because
   it is invariant on the classes (`Ek_respects`, tied to Principle 5.1).
 
-* `VacuumExpectationData.Uk_subset_Vk` (Prop 5.4, PROVED) — `∀ x, Uk x → ∃ q : Vk, projVk q = x`:
-  every `U_k` configuration is covered by a point of `V_k`. Reduces to the carried `uk_subset_vcheck`
-  (the ruled-manifold content) + `basePts_surj` (`π` surjects onto `V̌_k`) + the quotient descent.
+* `VacuumExpectationData.vcheck_covered` (the honest residue, PROVED) — `∀ x, Vcheck x →
+  ∃ q : Vk, projVk q = x`: every base configuration in `V̌_k` is covered by a point of `V_k`. Pure
+  quotient bookkeeping (`basePts_surj` + the descent). NOT Proposition 5.4: no `U_k` appears; the
+  inclusion `U_k ⊆ V̌_k` is the deferred ruled-manifold content (blueprint prose).
 
 * `VacuumExpectationData.VkIsDomainOfHolomorphy` (the CONJECTURE) — `geom.isDomainOfHolomorphy
   projVk`: the assertion that the spread `V_k → (m_C)^k` is a domain of holomorphy. A `def : Prop`,
@@ -87,12 +103,14 @@ THE FIVE STANDING DISCIPLINES.
    "some manifold"). `E_k`'s fibre-constancy (`Ek_respects`) ties to node 5's `IsInvariant` (carried
    `hI`, Principle 5.1; not a free "is constant"). `basePts`/`basePts_mem` tie `F_k`'s base map to the
    projection landing in `V̌_k`. The `Hom(O^⊗k; ℂ)` target ties `O` to node 8's `Observables.Ox`.
-2. NON-VACUITY. The degenerate satisfiers are `U_k = ∅`, `V̌_k = ∅`, `V_k = everything`. `uk_two` pins
-   `Uk` (at `k = 2`) to the SATISFIABLE bilinear condition (`‖x₀−x₁‖²` not real-and-`≤ 0`), so `U_k`
-   is not free-empty; `basePts_mem` forces `π`'s image into `V̌_k` (so `V_k` does NOT map onto all of
-   `(m_C)^k`); `basePts_mem`+`basePts_surj` tie `F_k`'s image EXACTLY to `V̌_k`, and `Uk_subset_Vk`
-   then forces `V̌_k` nonempty wherever `U_k` is (for `k = 2`, by `uk_two`). The fields interlock to
-   exclude the hollows; `Uk_subset_Vk` has genuine content (excludes `V_k` too small / `U_k` empty).
+2. NON-VACUITY (WEAKENED by the restatement, honestly). `uk_two` pins `Uk` (at `k = 2`) to the
+   SATISFIABLE bilinear condition (`‖x₀−x₁‖²` not real-and-`≤ 0`), so `U_k` is not free-empty;
+   `basePts_mem` forces `π`'s image into `V̌_k` (so `V_k` does NOT map onto all of `(m_C)^k`);
+   `basePts_mem`+`basePts_surj` tie `F_k`'s image EXACTLY to `V̌_k`. The former further interlock,
+   "`Uk_subset_Vk` forces `V̌_k` nonempty wherever `U_k` is", DISAPPEARED with the removed field:
+   nothing in Lean now relates `U_k` to `V̌_k`, and `V̌_k = ∅` (e.g. `Fk` empty) is a legal
+   degenerate model. That gap IS Proposition 5.4, deferred to blueprint prose, not papered over
+   with a substitute field.
 3. EQUATE-vs-DISTINGUISH. `V_k`'s quotient equivalence (same image iff same fibre-component /
    path-joined) is the EQUATE — carried as `vkSetoid : Setoid Fk`, sameness. The local-diffeomorphism
    / Hausdorff-maximality is the DISTINGUISHING property of which setoid; the opaque quotient blocks
@@ -100,14 +118,15 @@ THE FIVE STANDING DISCIPLINES.
    contradict the quotient identification.
 4. TRIVIAL-SATISFIABILITY NUANCE. Unlike the identity-content nodes 5/7/9/10 (where the symmetric /
    trivial model is the CORRECT one), Prop 5.4 is a genuine INCLUSION/containment (`U_k ⊆ V_k`), NOT
-   an identity assertion. So the empty model (`U_k = ∅`) is a VACUITY to EXCLUDE, not a correct
-   trivial model: the inclusion must bite against "`V_k` too small", which `uk_two` (the nonempty
-   `k = 2` tube) and the `basePts_mem`/`_surj` interlock secure.
+   an identity assertion, so a Lean statement of it must BITE against "`V_k` too small". The
+   current geometry cannot support that bite: `TotallyRealSub` is opaque and constructor-free, so
+   the inclusion is FALSE in degenerate instances and no faithful biting statement exists yet. That
+   is why the node retreats to `\notready` prose rather than to a sorry'd theorem.
 5. VERIFICATION POSTURE. The conjecture is VISIBLY a conjecture (a `def : Prop`, never asserted, never
-   `sorry`'d, docstring-marked), not a deferred-proof theorem. Prop 5.4 is STATED (the carried field
-   `uk_subset_vcheck`, ruled-manifold proof deferred prose) and its genuinely-reducible part is PROVED
-   (`Uk_subset_Vk` from the carried `V̌_k`-level field; `EkOnVk` the descent of `E_k` from the
-   invariance field) — axiom-clean, like `eval_orderIndep` / `propCheck_eq`.
+   `sorry`'d, docstring-marked), not a deferred-proof theorem. Prop 5.4 is VISIBLY unformalized
+   (`\notready` blueprint prose; no Lean declaration states, assumes, or proves it). What is PROVED
+   is only the genuinely provable: the descents (`projVk`, `EkOnVk`) and the quotient bookkeeping
+   (`vcheck_covered`) — axiom-clean, like `eval_orderIndep` / `propCheck_eq`.
 
 GEOMETRY / DEFERRALS (assumed, documented; no concrete instance, never the `axiom` keyword, never
 `sorry`). NOW BUILT (no longer deferred): `m_C` (complexified Minkowski) with the splitting
@@ -125,18 +144,19 @@ Hausdorff local-diffeo quotient (Mathlib gap: infinite-dim complex manifolds + t
 Hausdorff-maximality of the quotient, the latter the distinguishing property of `vkSetoid`); `E_k`'s
 holomorphicity (the Section-3 holomorphicity gap); the notion "domain of holomorphy" (Stein manifolds
 / holomorphic envelopes, Mathlib gap, carried as the assumed predicate `isDomainOfHolomorphy`); and
-the Proposition 5.4 ruled-manifold proof (complex-orthogonal + reordering invariance reduce to
-`Im(x_{i+1} − x_i)` in the forward cone, smooth the polygonal path, sweep the ruled `M` from
-orthonormal frames orthogonal to `x'(t)`, its metric allowable — deferred prose).
+Proposition 5.4 itself with its ruled-manifold proof (complex-orthogonal + reordering invariance
+reduce to `Im(x_{i+1} − x_i)` in the forward cone, smooth the polygonal path, sweep the ruled `M`
+from orthonormal frames orthogonal to `x'(t)`, its metric allowable) — since the 2026-07-27
+restatement the STATEMENT as well as the proof is deferred, to `\notready` blueprint prose.
 
 CONSTRAINTS: no `axiom` keyword, no concrete instance of an assumed class, no `sorry` (the conjecture
-is a stated `def : Prop` never asserted; Prop 5.4 is a stated theorem with prose proof; the descents
-and the inclusion that genuinely reduce to carried fields are PROVED axiom-clean). Reuses Section 2's
+is a stated `def : Prop` never asserted; Prop 5.4 is `\notready` blueprint prose, neither stated nor
+assumed in Lean; the descents and the quotient bookkeeping are PROVED axiom-clean). Reuses Section 2's
 `AllowableComplexMetric`, node 5's `IsInvariant`, node 8's `Observables.Ox`, and `Function.Injective`
 for `Conf_k`, with their real signatures.
 
-Blueprint: `def:vacuum-domain` and `prop:Vk-contains-Uk` in `blueprint/src/section5.tex` (their
-`\lean` annotations land with the content-node annotation batch, like nodes 5-10).
+Blueprint: `def:vacuum-domain` (annotated) and `prop:Vk-contains-Uk` (`\notready`, its `\lean`
+annotation dropped with the 2026-07-27 restatement) in `blueprint/src/section5.tex`.
 -/
 
 import KontsevichSegal.WickRotation.ObservableAction
@@ -217,18 +237,18 @@ def Vcheck [geom : MinkowskiComplexGeometry] {k : ℕ} (x : Fin k → geom.mC) :
 
 /-! ## The witness data: `F_k`, `π`, the quotient relation, `E_k`, and Proposition 5.4's content -/
 
-/-- **The vacuum-expectation witness data (KS Section 5, blueprint `def:vacuum-domain` /
-`prop:Vk-contains-Uk`).** For a field theory `T` with Principle 5.1 (`hI : IsInvariant T`) and the
-observables `O` at a point of `E` (node 8), the data of `F_k`, the projection `π`, the quotient
-relation defining `V_k`, the vacuum expectation `E_k`, and the asserted content of Proposition 5.4.
+/-- **The vacuum-expectation witness data (KS Section 5, blueprint `def:vacuum-domain`).** For a
+field theory `T` with Principle 5.1 (`hI : IsInvariant T`) and the observables `O` at a point of
+`E` (node 8), the data of `F_k`, the projection `π`, the quotient relation defining `V_k`, and the
+vacuum expectation `E_k`.
 
 `Fk` is the space of pairs `(M, x)` (an infinite-dim complex manifold, deferred); `basePts` is `π`
 (forget `M`), landing in (`basePts_mem`) and surjecting onto (`basePts_surj`) `V̌_k`; `vkSetoid` is
 the "same image in `V_k`" equivalence (the EQUATE); `Ek` is the vacuum expectation valued in
 `Hom(O^⊗k; ℂ) = MultilinearMap ℂ (fun _ => O.Ox) ℂ`, constant on the quotient classes by Principle
-5.1 (`Ek_respects`, by `hI`); `uk_subset_vcheck` is Proposition 5.4's asserted `V̌_k`-level content
-(the ruled-manifold construction, proof deferred prose). Not constructed for any concrete
-theory. -/
+5.1 (`Ek_respects`, by `hI`). Proposition 5.4 is NOT a field: the former `uk_subset_vcheck`
+axiomatized KS's own theorem and was removed (RESTATEMENT 2026-07-27, module header). Not
+constructed for any concrete theory. -/
 structure VacuumExpectationData [gc : CobordismGeometry] [gl : LorentzianCobordismGeometry]
     [HolomorphicComplexification] [CobordismRealization] [geom : MinkowskiComplexGeometry]
     (T : FieldTheory) (hI : IsInvariant T)
@@ -260,12 +280,6 @@ structure VacuumExpectationData [gc : CobordismGeometry] [gl : LorentzianCobordi
   `E_k`. The fibre-constancy KS derive from Principle 5.1 (node 5); carried, tied to `hI`. It lets
   `E_k` descend to `V_k`. -/
   Ek_respects : ∀ p p' : Fk, vkSetoid.r p p' → Ek p = Ek p'
-  /-- **Proposition 5.4's asserted content (KS PROVE this; Lean proof deferred PROSE).** The
-  `V̌_k`-level inclusion `U_k ⊆ V̌_k`: every permuted-extended-tube configuration lies on an
-  allowable totally-real ruled manifold, hence is in `V̌_k`. This is the geometric content KS
-  establish by the ruled-manifold construction (KSTeX 811-813), CARRIED here as an asserted field;
-  the `V_k`-level inclusion `Uk_subset_Vk` is PROVED from it. -/
-  uk_subset_vcheck : ∀ x : Fin k → geom.mC, geom.Uk x → Vcheck x
 
 namespace VacuumExpectationData
 
@@ -305,24 +319,14 @@ def EkOnVk (W : VacuumExpectationData T hI O k) :
     W.EkOnVk (Quotient.mk W.vkSetoid p) = W.Ek p :=
   rfl
 
-/-! ## Proposition 5.4 (PROVED from the carried content) -/
+/-! ## The `V̌_k`-covering residue (quotient bookkeeping; Prop 5.4 itself is unformalized) -/
 
-/-- **Proposition 5.4 (KS Section 5, blueprint `prop:Vk-contains-Uk`): `U_k ⊆ V_k` (PROVED).** Every
-Wightman permuted-extended-tube configuration is covered by a point of `V_k`: for `x ∈ U_k` there is
-`q : V_k` with `projVk q = x`.
-
-PROVED by reducing to the carried `uk_subset_vcheck` (Proposition 5.4's `V̌_k`-level geometric
-content — the ruled-manifold construction, KS's proof, deferred prose) together with `basePts_surj`
-(`π` surjects onto `V̌_k`) and the quotient descent: `uk_subset_vcheck` puts `x` in `V̌_k`,
-`basePts_surj` lifts it to a pair `p : F_k`, and `⟦p⟧ : V_k` projects back to `x`.
-
-This is a genuine INCLUSION (not an identity), so the empty model is a vacuity to exclude, not a
-trivial model: with `uk_two` pinning `U_k` to the nonempty `k = 2` tube, the inclusion bites against
-"`V_k` too small". The ruled-manifold construction itself stays deferred prose (KS have the proof;
-the Lean proof is additive, scope (a)). -/
-theorem Uk_subset_Vk (W : VacuumExpectationData T hI O k) (x : Fin k → geom.mC)
-    (hx : geom.Uk x) : ∃ q : W.Vk, W.projVk q = x := by
-  obtain ⟨p, hp⟩ := W.basePts_surj x (W.uk_subset_vcheck x hx)
+/-- Every base configuration in `V̌_k` is covered by a point of `V_k` — the quotient
+bookkeeping (`basePts_surj` + descent). NOT Proposition 5.4: no `U_k` appears; the
+inclusion `U_k ⊆ V̌_k` is the deferred ruled-manifold content (blueprint prose). -/
+theorem vcheck_covered (W : VacuumExpectationData T hI O k) (x : Fin k → geom.mC)
+    (hx : Vcheck x) : ∃ q : W.Vk, W.projVk q = x := by
+  obtain ⟨p, hp⟩ := W.basePts_surj x hx
   exact ⟨Quotient.mk W.vkSetoid p, by rw [W.projVk_mk]; exact hp⟩
 
 /-! ## The closing conjecture (stated, NEVER asserted) -/

@@ -620,10 +620,14 @@ What is proved is the following inclusion.
 
 \begin{proposition}[Proposition 5.4; KS Section 5]
   \label{prop:Vk-contains-Uk}
-  \lean{WickRotation.VacuumExpectationData.Uk_subset_Vk}
-  \leanok
+  \notready
   \uses{def:vacuum-domain, def:allowable, found:minkowski-linear, found:scv-tube-domain}
   The domain $\mathcal V_k$ contains the Wightman domain $\mathcal U_k$.
+
+  Note: when this is later formalized, the swept manifold's metric allowability (KS's ``the
+  metric of $M$ is clearly allowable'') must remain a proof obligation, never an assumed
+  field; assuming it would re-import proof content as the removed \texttt{uk\_subset\_vcheck}
+  did.
 \end{proposition}
 
 \begin{proof}
