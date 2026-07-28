@@ -181,9 +181,8 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
   \lean{WickRotation.RiemannianField, WickRotation.assembleNormalForm,
     WickRotation.GeodesicNormalForm, WickRotation.TimeSymmetricRotation,
     WickRotation.TimeSymmetricRotation.wickRotatedFamily,
-    WickRotation.TimeSymmetricRotation.wickMetric, WickRotation.IsEuclideanObject,
-    WickRotation.EuclideanSpace}
-  \leanok
+    WickRotation.TimeSymmetricRotation.wickMetric, WickRotation.IsEuclideanObject}
+  \notready
   \uses{def:lorentzian-cobordism-category, def:unitarity, def:field-theory,
     found:lorentzian-causal-geometry, found:real-analytic-complexification,
     found:wick-correspondence}
@@ -236,6 +235,17 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
   $h_t = h_{-t}$, and the analytic continuation $t \mapsto h_{\mathrm{i}t}$, that is
   the passage from $h_t = H(t^2)$ to $H(-t^2)$ which realizes the rotated metric as
   real.
+
+  Not yet formalizable: the faithful statement requires complexified Minkowski
+  spacetime $\mathbb M_{\mathbb C}$, its standard Euclidean subspace
+  $\mathbb E = \mathbb R^d \subset \mathbb M_{\mathbb C}$, the Wick-rotation action
+  $\exp(\mathrm i\Theta/2)$, and the generalized octahedron $\Pi_0$ of condition (4),
+  none of which are built. The former Lean alias \texttt{WickRotation.EuclideanSpace},
+  definitionally the field-theory state space at a complex object, named that state
+  space and not a rotated Euclidean subspace of spacetime; it has been removed from
+  this node. Future work: this missing $\mathbb M_{\mathbb C}$ foundation may be the
+  same infrastructure \texttt{found:minkowski-linear} requires, to be confirmed and,
+  if so, recorded as a single foundational item.
 \end{definition}
 
 \section{The invariance principle (Principle 5.1)}
