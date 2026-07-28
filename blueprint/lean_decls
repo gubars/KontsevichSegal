@@ -73,7 +73,6 @@ WickRotation.TimeSymmetricRotation
 WickRotation.TimeSymmetricRotation.wickRotatedFamily
 WickRotation.TimeSymmetricRotation.wickMetric
 WickRotation.IsEuclideanObject
-WickRotation.EuclideanSpace
 WickRotation.IsInvariant
 WickRotation.Movement
 WickRotation.CobordismRealization

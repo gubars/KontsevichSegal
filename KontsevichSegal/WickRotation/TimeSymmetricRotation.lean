@@ -55,13 +55,20 @@ geometry cannot form `TimeSymmetricRotation`. The deeper term-level analytic-cur
 formalization (uniqueness via the identity theorem) is deferred, consistent with
 node 1 deferring the full identity-theorem characterization.
 
-E_Σ. The Euclidean space `E_Σ` of the germ is what the field theory of
-`def:field-theory` assigns to the Wick-rotated Riemannian germ: `EuclideanSpace T oℂ
-= T.E oℂ` (a genuine reuse of `FieldTheory.E`; `E_Σ` is undefined without it). The
-complex object `oℂ` representing the Euclidean germ is characterized non-vacuously by
-`IsEuclideanObject` (its complex metric is real and positive-definite, Euclidean
-signature); the precise identification of `oℂ`'s metric with the Wick-rotated form is
-the deferred Riemannian-germ-into-`C_d^ℂ` embedding.
+E_Σ (RESTATEMENT 2026-07-28: retreated to blueprint prose). The paper defines `E_Σ` as
+what the field theory of `def:field-theory` assigns to the Wick-rotated Riemannian
+germ. The previous encoding annotated a hypothesis-free alias
+`EuclideanSpace T oℂ := T.E oℂ` under the node's `\lean` — a bare synonym of
+`FieldTheory.E` at an ARBITRARY complex object, carrying none of the rotation content
+(audit: VACUOUS, not wrong; reviewed proposal
+`blueprint/restatements/def-wick-rotation.md`). The alias was DELETED and the blueprint
+node demoted to `\notready`: the faithful definition of `E_Σ` (the space at THE rotated
+germ) is not yet expressible, the germ-to-object identification being the deferred
+Riemannian-germ-into-`C_d^ℂ` embedding. What remains is the genuine predicate
+`IsEuclideanObject` (real, positive-definite metric), characterizing the kind of object
+a Wick-rotated germ defines. The blueprint node also names the missing
+complexified-Minkowski foundation (`m_C`, `E = ℝ^d`, `exp(iΘ/2)`, the octahedron `Π_0`)
+as possibly shared with `found:minkowski-linear` (future work).
 
 THE LIMITATION (honest). This Wick rotation defines `E_Σ` only for time-symmetric
 germs, and even there the prescription is tied to the chosen normal form. The
@@ -285,11 +292,12 @@ theorem wickRotatedFamily_zero (W : TimeSymmetricRotation o) :
 
 end TimeSymmetricRotation
 
-/-! ## The Euclidean space `E_Σ` of a time-symmetric germ
+/-! ## Euclidean objects of `C_d^ℂ`
 
-`E_Σ` is what the field theory of `def:field-theory` assigns to the Wick-rotated
-Riemannian germ. The germ's Euclidean (Wick-rotated) metric makes it an object of the
-complex cobordism category `C_d^ℂ` whose metric is real and positive-definite. -/
+The Wick-rotated germ's metric is real and positive-definite: `IsEuclideanObject`
+characterizes the complex objects of that kind. The definition of `E_Σ` itself (the
+field-theory space at THE rotated germ) is not yet expressible and lives as `\notready`
+blueprint prose; see the RESTATEMENT note in the module header. -/
 
 section Euclidean
 
@@ -306,19 +314,6 @@ def IsEuclideanObject (oℂ : g.Obj) : Prop :=
       (AllowableComplexMetric.toForm (g.metric oℂ x) v w).im = 0) ∧
   (∀ (x : g.Ambient oℂ) (v : TangentStructure.Tangent x), v ≠ 0 →
       0 < (AllowableComplexMetric.toForm (g.metric oℂ x) v v).re)
-
-/-- **The Euclidean space `E_Σ` of a (Wick-rotated) germ (KS Section 5, blueprint
-`def:wick-rotation`).** For the complex object `oℂ` representing the Wick-rotated
-Riemannian germ, `E_Σ` is the space the field theory `T` of `def:field-theory` assigns
-to it: `T.E oℂ`. A genuine reuse of `FieldTheory.E` (`E_Σ` is undefined without it).
-
-The complex object `oℂ` is intended to satisfy `IsEuclideanObject` (Euclidean
-signature), with its metric the Wick-rotated form `h_{it} + dt²` of
-`TimeSymmetricRotation`; the precise identification of `oℂ`'s metric with that form is
-the deferred Riemannian-germ-into-`C_d^ℂ` embedding (the boundary correspondence
-`C_d^Lor → C_d^ℂ` that node 1 records only at the metric level via
-`metric_on_shilov_boundary`). -/
-def EuclideanSpace (T : FieldTheory) (oℂ : g.Obj) : Type _ := T.E oℂ
 
 end Euclidean
 
