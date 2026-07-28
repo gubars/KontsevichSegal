@@ -130,3 +130,4 @@ ksAngleOn_eq_ksAngleOfForm
 ksAngle_interlace
 WickRotation.MinkowskiLinear
 WickRotation.MinkowskiModel.minkowskiLinear
+WickRotation.MinkowskiModel.negIndex_eq_one

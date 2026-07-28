@@ -283,7 +283,8 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
 
 \begin{definition}[Complexified Minkowski space]
   \label{found:minkowski-linear}
-  \lean{WickRotation.MinkowskiLinear, WickRotation.MinkowskiModel.minkowskiLinear}
+  \lean{WickRotation.MinkowskiLinear, WickRotation.MinkowskiModel.minkowskiLinear,
+    WickRotation.MinkowskiModel.negIndex_eq_one}
   \leanok
   Real Minkowski space $\mathbb M = \mathbb R^{d-1,1}$ with its Lorentzian form of signature
   $(d-1,1)$; its complexification
@@ -297,7 +298,8 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
   algebra over Mathlib and realized by a concrete coordinate model on $\mathbb C^{d}$, $d \ge 2$:
   the restriction of the complex form to the real points is the real Lorentzian form, both
   splittings hold, the form is positive definite on $\mathbb E$, and the Lorentzian form is
-  indefinite and nondegenerate; the forward light cone is exhibited (nonempty, open, proper), its
+  indefinite and nondegenerate, with negative index exactly one, pinning the signature to
+  $(d-1,1)$; the forward light cone is exhibited (nonempty, open, proper), its
   convexity left to the causal geometry of
   Definition~\ref{found:lorentzian-causal-geometry}. The totally-real-submanifold half of
   \texttt{MinkowskiComplexGeometry} stays deferred, folded into
