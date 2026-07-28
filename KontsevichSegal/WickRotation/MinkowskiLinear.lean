@@ -26,8 +26,11 @@ algebra:
 * `m_C = m ⊕ i·m` (`mc_span`) and `m_C = E ⊕ i·E` (`eucl_span`);
 * the form is real and positive definite on `E` (`bilin_eucl_real`, `bilin_eucl_pos`) -- the Wick
   rotation `etaC i · (mu i)² = 1` cancels the signature on `E`;
-* the form is genuinely Lorentzian: indefinite (`exists_timelike`, `exists_spacelike`) and
-  nondegenerate (`realForm_nondegen`).
+* the form is genuinely Lorentzian: indefinite (`exists_timelike`, `exists_spacelike`),
+  nondegenerate (`realForm_nondegen`), and of signature `(d-1,1)` invariantly — the negative
+  index is exactly one (`negIndex_eq_one`, PROVED; the signature pin of the 2026-07-28
+  restatement, blueprint `found:minkowski-linear`). The pin is a LEMMA about the model, not
+  a field of the class: `MinkowskiLinear` itself is left general.
 
 No `axiom` keyword, no `sorry`. -/
 
@@ -345,6 +348,76 @@ lemma forwardCone_smul {x : Fin (n + 2) → ℝ} (hx : x ∈ forwardCone n) {c :
       simp only [map_smul, LinearMap.smul_apply, smul_eq_mul]; ring
     rw [hexp]
     exact mul_neg_of_pos_of_neg (pow_pos hc 2) hQ
+
+/-! ## The signature pin: negative index exactly one
+
+The blueprint node `found:minkowski-linear` claims signature `(d-1,1)`; the class fields
+alone say only "indefinite and nondegenerate" (which `(2,2)`-style forms also satisfy). The
+pin is stated INVARIANTLY (basis-independent) and proved for the concrete model. Stated as a
+LEMMA about the model, not a field of the class: `MinkowskiLinear` is left general. -/
+
+/-- **The model's Lorentzian form has negative index exactly one (KS: `𝕄 = ℝ^{d-1,1}`),
+invariantly.** There is a one-dimensional negative-definite subspace (the time axis
+`span (Pi.single 0 1)`), and every negative-definite subspace has dimension at most one
+(the time-coordinate functional is injective on any such subspace). This EXCLUDES Euclidean
+forms (negative index `0`: no negative-definite line) and split forms such as `(2,2)`
+(negative index `2`: a negative-definite plane); with `realForm_nondegen`, finite dimension,
+and Sylvester's law it pins the signature to `(d-1,1)`. -/
+theorem negIndex_eq_one :
+    (∃ W : Submodule ℝ (Fin (n + 2) → ℝ),
+        (∀ w ∈ W, w ≠ 0 → realForm n w w < 0) ∧ Module.finrank ℝ W = 1) ∧
+    (∀ W : Submodule ℝ (Fin (n + 2) → ℝ),
+        (∀ w ∈ W, w ≠ 0 → realForm n w w < 0) → Module.finrank ℝ W ≤ 1) := by
+  constructor
+  · have hx : (Pi.single 0 1 : Fin (n + 2) → ℝ) ≠ 0 := by
+      intro h
+      have h0 := congrFun h 0
+      simp at h0
+    refine ⟨Submodule.span ℝ {(Pi.single 0 1 : Fin (n + 2) → ℝ)}, ?_, ?_⟩
+    · intro w hw hwne
+      obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.mp hw
+      have hc : c ≠ 0 := by
+        rintro rfl
+        simp at hwne
+      have hval : realForm n (c • (Pi.single 0 1 : Fin (n + 2) → ℝ))
+          (c • (Pi.single 0 1 : Fin (n + 2) → ℝ))
+          = c * c * realForm n (Pi.single 0 1) (Pi.single 0 1) := by
+        simp only [map_smul, LinearMap.smul_apply, smul_eq_mul]
+        ring
+      rw [hval, realForm_self_single]
+      have hη : eta n 0 = -1 := by unfold eta; simp
+      rw [hη]
+      have hgoal : c * c * (-1 : ℝ) = -(c * c) := by ring
+      rw [hgoal]
+      exact neg_lt_zero.mpr (mul_self_pos.mpr hc)
+    · exact finrank_span_singleton hx
+  · intro W hW
+    set φ : W →ₗ[ℝ] ℝ :=
+      (LinearMap.proj (0 : Fin (n + 2))).comp W.subtype with hφ
+    have hinj : Function.Injective φ := by
+      rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+      rintro ⟨w, hwW⟩ h0
+      have hw0 : w 0 = 0 := h0
+      have hw : w = 0 := by
+        by_contra hne
+        have hneg := hW w hwW hne
+        have hnn : (0 : ℝ) ≤ realForm n w w := by
+          rw [realForm_apply]
+          refine Finset.sum_nonneg fun i _ => ?_
+          by_cases hi : i = 0
+          · subst hi
+            rw [hw0]
+            simp
+          · have hεi : eta n i = 1 := by
+              unfold eta
+              rw [if_neg hi]
+            rw [hεi, one_mul]
+            exact mul_self_nonneg _
+        linarith
+      exact Subtype.ext hw
+    have h1 : Module.finrank ℝ W ≤ Module.finrank ℝ ℝ :=
+      LinearMap.finrank_le_finrank_of_injective hinj
+    simpa [Module.finrank_self] using h1
 
 end MinkowskiModel
 
