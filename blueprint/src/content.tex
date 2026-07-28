@@ -136,26 +136,50 @@ in Sections~2 and~5.
   arguments in $(-\pi/2, \pi/2)$.
 \end{proof}
 
-\begin{lemma}[Values form a convex cone; KS p.~9]
+\begin{lemma}[Values avoid the negative real axis; KS p.~9]
   \label{lem:convex-cone}
   \lean{not_neg_real_axis}
   \leanok
   \uses{def:allowable}
-  For $g \in Q_{\mathbb C}(V)$ one has
-  $\max_i \arg \lambda_i - \min_i \arg \lambda_i < \pi$, so as $v$ runs
-  through $V$ the values $g(v)$ form a closed convex cone in $\mathbb C$
-  disjoint from the open negative real axis. In particular $g(v)$ is never
-  real and negative.
+  For $g \in Q_{\mathbb C}(V)$ and every nonzero $v \in V$ the value $g(v)$
+  is never real and negative: it does not lie on the open negative real
+  axis, that is, not both $\mathrm{Im}\, g(v) = 0$ and $\mathrm{Re}\, g(v) < 0$.
 \end{lemma}
 
 \begin{proof}
   \leanok
   \uses{def:allowable}
+  In a diagonalizing basis, condition (4) puts all the arguments
+  $\arg \lambda_i$ in an arc $[-Q, N]$ of width $N + Q < \pi$ containing
+  $0$. Let $\varphi = (N - Q)/2$ be the arc's midpoint; then
+  $|\varphi| < \pi/2$ and $|\arg \lambda_i - \varphi| < \pi/2$ for every
+  $i$, so the linear functional $z \mapsto \mathrm{Re}(e^{-\mathrm i \varphi} z)$
+  is strictly positive on every $\lambda_i$, hence strictly positive on
+  $g(v) = \sum_i \lambda_i y_i^2$ when $v \neq 0$. A real negative value
+  $z$ has $\mathrm{Re}(e^{-\mathrm i \varphi} z) = z \cos \varphi < 0$, so
+  $g(v)$ is not one.
+\end{proof}
+
+\begin{lemma}[Values form a convex cone; KS p.~9]
+  \label{lem:convex-cone-geometry}
+  \notready
+  \uses{def:allowable}
+  For $g \in Q_{\mathbb C}(V)$ one has
+  $\max_i \arg \lambda_i - \min_i \arg \lambda_i < \pi$, a consequence of
+  condition (4); consequently, as $v$ runs through $V$, the values $g(v)$
+  form a closed convex cone in $\mathbb C$ disjoint from the open negative
+  real axis. Lemma~\ref{lem:convex-cone} is the ``in particular'' of this
+  statement.
+\end{lemma}
+
+\begin{proof}
+  \uses{def:allowable}
   From (4), if $\arg \lambda_j > 0 > \arg \lambda_k$ then
-  $\arg \lambda_j - \arg \lambda_k \leq \sum_i |\arg \lambda_i| < \pi$;
-  hence all values $\lambda_i y_i^2$ lie in a closed convex cone of opening
-  angle less than $\pi$, which contains no two opposite rays and avoids the
-  open negative real axis. Nonnegative combinations stay in the cone.
+  $\arg \lambda_j - \arg \lambda_k \leq \sum_i |\arg \lambda_i| < \pi$,
+  which is the spread bound. Hence all values $\lambda_i y_i^2$ lie in a
+  closed convex cone of opening angle less than $\pi$, which contains no
+  two opposite rays and avoids the open negative real axis; nonnegative
+  combinations stay in the cone.
 \end{proof}
 
 \begin{lemma}[The volume element; KS p.~7]
