@@ -9,6 +9,7 @@ import KontsevichSegal.ComplexMetrics.Domain
 import KontsevichSegal.ComplexMetrics.EigenvalueMinmax
 import KontsevichSegal.ComplexMetrics.Equivalence
 import KontsevichSegal.ComplexMetrics.HodgeScaffold
+import KontsevichSegal.ComplexMetrics.Parametrization
 import KontsevichSegal.ComplexMetrics.Restriction
 import KontsevichSegal.ComplexMetrics.ShilovBoundary
 import KontsevichSegal.FieldTheory

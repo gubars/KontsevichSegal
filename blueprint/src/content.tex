@@ -249,7 +249,85 @@ in Sections~2 and~5.
   positive-definite $g_0$ is encoded equivalently as diagonalizability over
   $\mathbb R$: an eigenbasis with real eigenvalues $\theta$ satisfying
   $\sum_i |\theta_i| < 1$.
+  This simplification, flagged when the definition was written, now bites: because
+  self-adjointness is quantified over \emph{some} $g_0$, the encoded set does not vary
+  with $g_0$ and so cannot serve as the \emph{fibre} $\Pi(V,g_0)$ of
+  Proposition~\ref{prop:parametrization}. A $g_0$-relative version is required and is
+  owed; splitting this node belongs with that construction.
 \end{definition}
+
+\begin{lemma}[The space of positive-definite real forms is contractible; in-repo machinery]
+  \label{lem:posdef-base}
+  \lean{KontsevichSegal.Parametrization.PosDefForm,
+    KontsevichSegal.Parametrization.symmPosDef_convex,
+    KontsevichSegal.Parametrization.base_contractible}
+  \leanok
+  The set of symmetric positive-definite real bilinear forms on $V$, carrying the
+  topology induced from the canonical module topology on the space of real bilinear
+  forms, is convex and nonempty, hence contractible.
+
+  This is the base of the fibre bundle of Proposition~\ref{prop:parametrization}, and its
+  contractibility is one of the two ingredients KS use for the contractibility clause.
+  It has no dependencies on other nodes: it is a statement about real forms alone.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Convexity is immediate from closure of positive-definiteness under sums and positive
+  scalar multiples; the Euclidean form on a basis supplies a point; a nonempty convex set
+  in a topological vector space is contractible.
+\end{proof}
+
+\begin{lemma}[The modulus form and the $\Theta$-precursor; in-repo machinery]
+  \label{lem:modulus-form}
+  \lean{KontsevichSegal.Parametrization.modulusForm,
+    KontsevichSegal.Parametrization.modulusForm_posDef,
+    KontsevichSegal.Parametrization.sinPencil}
+  \leanok
+  \uses{def:allowable, lem:eigenvalue-minmax}
+  For $g \in Q_{\mathbb C}(V)$ with a diagonalization $g = \sum \lambda_k y_k^2$, the form
+  $\sum |\lambda_k| y_k^2$ is real and positive-definite, and the operator obtained by
+  pairing $g$'s imaginary part against it is a function of $g$ alone.
+
+  The form is positive-definite and nondegenerate for the witness used, the angle data
+  transfers between witnesses --- the angles themselves are already functions of $g$ via
+  Lemma~\ref{lem:eigenvalue-minmax} --- and the $\Theta$-precursor is choice-free.
+  Whether the form is \emph{canonically} associated to $g$ --- KS's assertion, which
+  would make it KS's $g_0$ --- is the separate claim of
+  Lemma~\ref{lem:modulus-canonicity} and is not established here.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  Positive-definiteness is witness-local and immediate from the diagonal presentation.
+  The two transfer lemmas follow from the min--max characterization of the angles
+  (Lemma~\ref{lem:eigenvalue-minmax}), which shows that a rescaled diagonalizing basis is
+  merely another eigenbasis of the same pencil operator. The $\Theta$-precursor is then
+  obtained by pairing the imaginary part of $g$ against the form, with no choice of
+  rotation or basis entering.
+\end{proof}
+
+\begin{lemma}[Canonicity of the modulus form; KS p.~12]
+  \label{lem:modulus-canonicity}
+  \lean{KontsevichSegal.Parametrization.modulus_welldef,
+    KontsevichSegal.Parametrization.sinPencil_selfAdjoint}
+  \notready
+  \uses{lem:modulus-form}
+  The modulus form of Lemma~\ref{lem:modulus-form} is independent of the diagonalization
+  used to build it, and the $\Theta$-precursor is self-adjoint with respect to it.
+  Equivalently, in KS's formulation, the subspace
+  $P = \bigoplus e^{-\mathrm i \theta_k/2} V_k$ of $V_{\mathbb C}$ is canonically
+  associated to $g$, so the form is KS's $g_0$ and the $(g_0,\Theta)$ parametrization is
+  well defined.
+
+  Both statements are formalized and carried as tracked \texttt{sorry}s. They are true ---
+  KS assert canonicity --- and statable, but not yet proved. The open step is uniqueness
+  of the eigenspace decomposition: both diagonalizing witnesses are eigenbases of the
+  \emph{same} pencil operator, so what remains is that the eigenspace components of a
+  vector are witness-independent, plus a fibrewise regrouping. No choice-dependence
+  obstruction was found; this is a focused gap, estimated at 150--250 lines. Until it
+  closes, the form of Lemma~\ref{lem:modulus-form} is \emph{not} known to be KS's $g_0$.
+\end{lemma}
 
 \begin{proposition}[Parametrization; KS Proposition 2.4]
   \label{prop:parametrization}
@@ -275,7 +353,7 @@ in Sections~2 and~5.
 
 \begin{proof}
   \notready
-  \uses{def:allowable}
+  \uses{def:allowable, lem:modulus-canonicity, lem:posdef-base}
   (Paper, pp.~10--11.) The diagonalization of
   Definition~\ref{def:allowable} presents $g$ as a sequence of angles
   $\theta_1 \geq \dots \geq \theta_m$ in $(-\pi,\pi)$ and a decomposition
@@ -286,6 +364,10 @@ in Sections~2 and~5.
   canonical, carries a real positive-definite form $g_0$, and
   $V = \exp(\mathrm i \pi \Theta/2)(P)$ where $\Theta$ is $g_0$-self-adjoint
   with $\|\Theta\|_1 < 1$; condition (4) is exactly the trace-norm bound.
+  The intended formalization route runs through Lemma~\ref{lem:modulus-canonicity} for the
+  canonical $g_0$ and Lemma~\ref{lem:posdef-base} for the base; the fibre-bundle and
+  balanced-product structure remain unbuilt, and the canonicity of $g_0$ is itself still
+  a tracked \texttt{sorry}.
 \end{proof}
 
 \begin{lemma}[The positive-definite retraction of $Q_{\mathbb C}(V)$; in-repo machinery]

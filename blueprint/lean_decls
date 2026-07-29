@@ -6,6 +6,14 @@ defn_2_1_equiv_angle_condition
 not_neg_real_axis
 volume_element_positive
 TraceNormLtOne
+KontsevichSegal.Parametrization.PosDefForm
+KontsevichSegal.Parametrization.symmPosDef_convex
+KontsevichSegal.Parametrization.base_contractible
+KontsevichSegal.Parametrization.modulusForm
+KontsevichSegal.Parametrization.modulusForm_posDef
+KontsevichSegal.Parametrization.sinPencil
+KontsevichSegal.Parametrization.modulus_welldef
+KontsevichSegal.Parametrization.sinPencil_selfAdjoint
 KontsevichSegal.Retraction.seg_arg
 KontsevichSegal.Retraction.g0
 KontsevichSegal.Retraction.g0_posDef

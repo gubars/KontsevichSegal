@@ -6,3 +6,4 @@ import KontsevichSegal.ComplexMetrics.Restriction
 import KontsevichSegal.ComplexMetrics.ShilovBoundary
 import KontsevichSegal.ComplexMetrics.HodgeScaffold
 import KontsevichSegal.ComplexMetrics.Contractibility
+import KontsevichSegal.ComplexMetrics.Parametrization
