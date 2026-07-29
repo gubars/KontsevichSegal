@@ -253,7 +253,6 @@ in Sections~2 and~5.
 
 \begin{proposition}[Parametrization and contractibility; KS Proposition 2.4]
   \label{prop:parametrization}
-  \lean{QC_parametrization, QC_contractible}
   \notready
   \uses{def:allowable, def:trace-norm-fiber, found:homogeneous-bundles}
   $Q_{\mathbb C}(V)$ is a fibre bundle over the space of positive-definite
@@ -268,7 +267,14 @@ in Sections~2 and~5.
   associated-bundle machinery, an inner-product-space structure compatible
   with the algebraic setup of the formalization, and a topology on
   $Q_{\mathbb C}(V)$, which is needed even to state contractibility; none
-  are available in Mathlib.
+  are available in Mathlib. The missing infrastructure is foundation~F2
+  (\texttt{found:homogeneous-bundles}): the $\mathrm{GL}(V)/\mathrm{O}(V)$
+  homogeneous-space action with associated-bundle machinery, together with
+  an inner-product layer compatible with the algebraic setup of
+  \texttt{QC}. Contractibility additionally waits on foundation~F1, a
+  topology on $Q_{\mathbb C}(V)$, currently bundled inside
+  \texttt{found:homogeneous-bundles} and separating out when that node is
+  split.
 \end{proposition}
 
 \begin{proof}
@@ -354,7 +360,6 @@ in Sections~2 and~5.
 
 \begin{proposition}[Domain of holomorphy; KS Proposition 2.7]
   \label{prop:domain-holomorphy}
-  \lean{QC_domain_of_holomorphy}
   \notready
   \uses{def:allowable, found:scv-tube-domain}
   The domain $Q_{\mathbb C}(V)$ is holomorphically convex, i.e.\ a domain of
@@ -362,7 +367,12 @@ in Sections~2 and~5.
 
   Stating this in Lean requires a complex-manifold structure on the space of
   quadratic forms, the notion of domain of holomorphy (Stein theory), and
-  Siegel domains; none of these are in Mathlib.
+  Siegel domains; none of these are in Mathlib. The missing infrastructure
+  is foundation~F3 (\texttt{found:scv-tube-domain}): a complex structure on
+  the space of forms, the Stein / domain-of-holomorphy predicate, and
+  Siegel domains. Under the project's axiomatize-versus-prove rule the deep
+  classical theorems there are background to be axiomatized, while
+  ``$Q_{\mathbb C}(V)$ is Stein'' remains a proof obligation.
 \end{proposition}
 
 \begin{proof}
@@ -471,7 +481,6 @@ in Sections~2 and~5.
 
 \begin{theorem}[Two copies of the Lorentzian metrics on the Shilov boundary; KS p.~9]
   \label{thm:two-copies}
-  \lean{two_copies_on_boundary}
   \notready
   \uses{def:allowable, def:lorentzian, prop:domain-holomorphy, found:hodge-star,
     found:scv-tube-domain}
@@ -487,12 +496,16 @@ in Sections~2 and~5.
   Lorentzian metrics.
 
   The faithful statement is not yet expressible in Lean. It requires:
-  (1) induced forms on exterior powers and the Hodge star, for the
-  affine-variety embedding
+  (1) the \emph{codomain} of the affine-variety embedding
   $Q_{\mathbb C}(V) \to \prod_{0 \leq p \leq d/2} \mathcal U(\Lambda^p V)$
-  from the proof of Proposition~\ref{prop:domain-holomorphy}, whose $p = 0$
-  factor $(\det g)^{1/2}$ carries the branch that separates the two copies
-  (in the naive closure inside $S^2(V^*_{\mathbb C})$ the copies coincide);
+  from the proof of Proposition~\ref{prop:domain-holomorphy}, namely the
+  product of Siegel domains itself. The embedding's components already
+  exist: the induced forms on $\Lambda^p$ at every degree, the Hodge star,
+  and the $p = 0$ factor $(\det g)^{1/2}$ whose branch separates the two
+  copies (in the naive closure inside $S^2(V^*_{\mathbb C})$ the copies
+  coincide) are built in \texttt{ComplexMetrics/HodgeScaffold.lean} and are
+  load-bearing for Theorem~\ref{thm:angle-equiv}; but $\mathcal U(\cdot)$
+  is undefined, so the target of the map cannot be written;
   (2) Siegel domains and the Cayley transform, giving the bounded
   realization; (3) the Shilov boundary notion itself, the smallest compact
   subset of the closure on which every holomorphic function attains its
@@ -503,7 +516,6 @@ in Sections~2 and~5.
 
 \begin{proposition}[$Q_{\mathbb C}(V)$ is a polydisc when $\dim V = 2$; KS p.~15]
   \label{prop:two-dim-polydisc}
-  \lean{QC_two_dim_polydisc}
   \notready
   \uses{def:allowable, found:homogeneous-bundles}
   When $\dim V = 2$, the conformal class $(\det g)^{-1/2} g$ decouples from
@@ -516,7 +528,12 @@ in Sections~2 and~5.
 
   Stating this in Lean requires the projective geometry of
   $\mathbb P(V_{\mathbb C})$ and the conformal/volume decomposition of
-  quadratic forms.
+  quadratic forms. The missing infrastructure is foundation~F1 (a topology
+  and complex structure on $Q_{\mathbb C}(V)$) together with foundation~F3
+  (\texttt{found:scv-tube-domain}, for the polydisc as a bounded domain),
+  plus one piece belonging to neither: the projective geometry of
+  $\mathbb P(V_{\mathbb C})$ and the $(\det g)^{-1/2}g$ conformal/volume
+  decoupling, which is a small in-repo build rather than a Mathlib gap.
 \end{proposition}
 
 \input{section3}

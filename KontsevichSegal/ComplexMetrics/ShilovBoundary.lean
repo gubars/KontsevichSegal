@@ -19,7 +19,8 @@ by complex conjugation; the nondegenerate points of the Shilov boundary are the
 time-oriented Lorentzian metrics. (Distinguishing the two copies as boundary
 *points* requires the bounded affine-variety realization of QC(V) from the proof
 of Prop 2.7 — the branch of √det(g) differs in the two limits — which is beyond
-the current formalization; see `two_copies_on_boundary` below.)
+the current formalization; the claim is recorded as `\notready` prose at
+blueprint node `thm:two-copies`.)
 -/
 
 import KontsevichSegal.ComplexMetrics.Defs
@@ -614,47 +615,3 @@ theorem only_lorentzian_on_boundary {V : Type*} [AddCommGroup V] [Module ℝ V]
       exact Finset.sum_nonneg fun k _ => mul_nonneg (hneg k) (sq_nonneg _)
   obtain ⟨x, y, hxy, hge⟩ := hcontra
   exact absurd hge (not_le.mpr (htransfer x y hxy))
-
-/-- **KS paper Section 2, page 9 — two copies on the Shilov boundary.**
-PLACEHOLDER (`True` conclusion). The paper's actual claim, quoted:
-
-"In fact the Shilov boundary of Q_C(V) contains *two* disjoint copies of the
-space of Lorentzian metrics on V, for an eigenvalue λ can approach the
-negative real axis either from above or from below. The two copies are
-interchanged by the complex-conjugation map on Q_C(V). Because of our choice
-to make the orientation-reversing elements of GL(V) act antilinearly on the
-orientation-line of V, we can say that the nondegenerate points of the Shilov
-boundary are the *time-oriented* Lorentzian metrics."
-
-The subject of the claim is the **Shilov boundary** of QC(V) "regarded as a
-bounded domain in an affine variety (cf. the proof of 2.7)". This cannot be
-faithfully expressed with current infrastructure. Precisely missing:
-
-1. **Induced forms on exterior powers / Hodge star `∗_g`** (same Mathlib gap
-   blocking `Equivalence.lean`): needed for the embedding of QC(V) into the
-   product `∏_{0 ≤ p ≤ d/2} U(⋀ᵖ V)` of Siegel domains from the proof of
-   Prop 2.7. The p = 0 factor is `vol_g = (det g)^(1/2)`, whose branch is
-   what separates the two copies — in the naive closure of QC(V) inside
-   S²(V*_ℂ) the two copies coincide, so no statement about subsets of the
-   space of forms can express the disjointness.
-2. **Siegel domain theory and the Cayley transform** ("unit disc"
-   realization): needed to regard the image as a *bounded* domain, without
-   which sup-norm characterizations degenerate.
-3. **The Shilov boundary itself**: the smallest compact subset of the closure
-   on which every holomorphic function defined near the closure attains its
-   sup ([Hör] p. 67). Statable from Mathlib's holomorphy + topology once
-   (1)–(2) exist, but meaningless before.
-
-(A partial double-cover formulation — the closure of the graph
-`{(g, √det g) : g ∈ QC(V)}` having exactly two conjugate-swapped points over
-each Lorentzian metric — *is* expressible today, but its subject is not the
-Shilov boundary, so per the project's no-approximations policy it is not used
-as a stand-in.)
-
-KS paper, paragraph after Theorem 2.2. -/
-theorem two_copies_on_boundary (V : Type*) [AddCommGroup V] [Module ℝ V]
-    [FiniteDimensional ℝ V] :
-    -- PLACEHOLDER: True stands for the Shilov-boundary claim quoted in the
-    -- docstring, which cannot yet be expressed (see items 1-3 above).
-    True := by
-  trivial

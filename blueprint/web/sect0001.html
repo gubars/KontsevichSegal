@@ -726,36 +726,15 @@
 
     
     
-    <button class="modal lean">L∃∀N</button>
-        <div class="modal-container">
-      <div class="modal-content">
-        <header>
-          <h1>Lean declarations</h1>
-          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
-</button>
-        </header>
-        
-        <ul class="uses">
-          
-          <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_parametrization" class="lean_decl">QC_parametrization</a></li>
-          
-          <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_contractible" class="lean_decl">QC_contractible</a></li>
-          
-        </ul>
-    
-      </div>
-    </div>
-
-    
         </div>
   </div>
   <div class="proposition_thmcontent">
-  <p>    \(Q_{\mathbb C}(V)\) is a fibre bundle over the space of positive-definite inner products on \(V\) whose fibre at \(g_0\) is \(\Pi (V, g_0)\). Equivalently, choosing a reference inner product, </p>
+  <p>   \(Q_{\mathbb C}(V)\) is a fibre bundle over the space of positive-definite inner products on \(V\) whose fibre at \(g_0\) is \(\Pi (V, g_0)\). Equivalently, choosing a reference inner product, </p>
 <div class="displaymath" id="a0000000017">
   \[  Q_{\mathbb C}(V) \; \cong \;  \mathrm{GL}(V) \times _{\mathrm{O}(V)} \Pi (V).  \]
 </div>
 <p> In particular, \(Q_{\mathbb C}(V)\) is contractible. </p>
-<p>Stating this in Lean requires \(\mathrm{GL}(V)/\mathrm{O}(V)\) actions with associated-bundle machinery, an inner-product-space structure compatible with the algebraic setup of the formalization, and a topology on \(Q_{\mathbb C}(V)\), which is needed even to state contractibility; none are available in Mathlib. </p>
+<p>Stating this in Lean requires \(\mathrm{GL}(V)/\mathrm{O}(V)\) actions with associated-bundle machinery, an inner-product-space structure compatible with the algebraic setup of the formalization, and a topology on \(Q_{\mathbb C}(V)\), which is needed even to state contractibility; none are available in Mathlib. The missing infrastructure is foundation&#160;F2 (<span class="ttfamily">found:homogeneous-bundles</span>): the \(\mathrm{GL}(V)/\mathrm{O}(V)\) homogeneous-space action with associated-bundle machinery, together with an inner-product layer compatible with the algebraic setup of <span class="ttfamily">QC</span>. Contractibility additionally waits on foundation&#160;F1, a topology on \(Q_{\mathbb C}(V)\), currently bundled inside <span class="ttfamily">found:homogeneous-bundles</span> and separating out when that node is split. </p>
 
   </div>
 </div>
@@ -1033,30 +1012,11 @@
 
     
     
-    <button class="modal lean">L∃∀N</button>
-        <div class="modal-container">
-      <div class="modal-content">
-        <header>
-          <h1>Lean declarations</h1>
-          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
-</button>
-        </header>
-        
-        <ul class="uses">
-          
-          <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_domain_of_holomorphy" class="lean_decl">QC_domain_of_holomorphy</a></li>
-          
-        </ul>
-    
-      </div>
-    </div>
-
-    
         </div>
   </div>
   <div class="proposition_thmcontent">
-  <p>    The domain \(Q_{\mathbb C}(V)\) is holomorphically convex, i.e. a domain of holomorphy in \(S^2(V^*_{\mathbb C})\). </p>
-<p>Stating this in Lean requires a complex-manifold structure on the space of quadratic forms, the notion of domain of holomorphy (Stein theory), and Siegel domains; none of these are in Mathlib. </p>
+  <p>   The domain \(Q_{\mathbb C}(V)\) is holomorphically convex, i.e. a domain of holomorphy in \(S^2(V^*_{\mathbb C})\). </p>
+<p>Stating this in Lean requires a complex-manifold structure on the space of quadratic forms, the notion of domain of holomorphy (Stein theory), and Siegel domains; none of these are in Mathlib. The missing infrastructure is foundation&#160;F3 (<span class="ttfamily">found:scv-tube-domain</span>): a complex structure on the space of forms, the Stein / domain-of-holomorphy predicate, and Siegel domains. Under the project’s axiomatize-versus-prove rule the deep classical theorems there are background to be axiomatized, while “\(Q_{\mathbb C}(V)\) is Stein” remains a proof obligation. </p>
 
   </div>
 </div>
@@ -1375,30 +1335,11 @@
 
     
     
-    <button class="modal lean">L∃∀N</button>
-        <div class="modal-container">
-      <div class="modal-content">
-        <header>
-          <h1>Lean declarations</h1>
-          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
-</button>
-        </header>
-        
-        <ul class="uses">
-          
-          <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/two_copies_on_boundary" class="lean_decl">two_copies_on_boundary</a></li>
-          
-        </ul>
-    
-      </div>
-    </div>
-
-    
         </div>
   </div>
   <div class="theorem_thmcontent">
-  <p>    The Shilov boundary of \(Q_{\mathbb C}(V)\), regarded as a bounded domain in an affine variety as in the proof of Proposition&#160;<a href="sect0001.html#prop:domain-holomorphy">13</a>, contains <em>two</em> disjoint copies of the space of Lorentzian metrics on \(V\), for an eigenvalue \(\lambda \) can approach the negative real axis either from above or from below. The two copies are interchanged by the complex-conjugation map on \(Q_{\mathbb C}(V)\). With orientation-reversing elements of \(\mathrm{GL}(V)\) acting antilinearly on the orientation line, the nondegenerate points of the Shilov boundary are the <em>time-oriented</em> Lorentzian metrics. </p>
-<p>The faithful statement is not yet expressible in Lean. It requires: (1) induced forms on exterior powers and the Hodge star, for the affine-variety embedding \(Q_{\mathbb C}(V) \to \prod _{0 \leq p \leq d/2} \mathcal U(\Lambda ^p V)\) from the proof of Proposition&#160;<a href="sect0001.html#prop:domain-holomorphy">13</a>, whose \(p = 0\) factor \((\det g)^{1/2}\) carries the branch that separates the two copies (in the naive closure inside \(S^2(V^*_{\mathbb C})\) the copies coincide); (2) Siegel domains and the Cayley transform, giving the bounded realization; (3) the Shilov boundary notion itself, the smallest compact subset of the closure on which every holomorphic function attains its supremum. </p>
+  <p>   The Shilov boundary of \(Q_{\mathbb C}(V)\), regarded as a bounded domain in an affine variety as in the proof of Proposition&#160;<a href="sect0001.html#prop:domain-holomorphy">13</a>, contains <em>two</em> disjoint copies of the space of Lorentzian metrics on \(V\), for an eigenvalue \(\lambda \) can approach the negative real axis either from above or from below. The two copies are interchanged by the complex-conjugation map on \(Q_{\mathbb C}(V)\). With orientation-reversing elements of \(\mathrm{GL}(V)\) acting antilinearly on the orientation line, the nondegenerate points of the Shilov boundary are the <em>time-oriented</em> Lorentzian metrics. </p>
+<p>The faithful statement is not yet expressible in Lean. It requires: (1) the <em>codomain</em> of the affine-variety embedding \(Q_{\mathbb C}(V) \to \prod _{0 \leq p \leq d/2} \mathcal U(\Lambda ^p V)\) from the proof of Proposition&#160;<a href="sect0001.html#prop:domain-holomorphy">13</a>, namely the product of Siegel domains itself. The embedding’s components already exist: the induced forms on \(\Lambda ^p\) at every degree, the Hodge star, and the \(p = 0\) factor \((\det g)^{1/2}\) whose branch separates the two copies (in the naive closure inside \(S^2(V^*_{\mathbb C})\) the copies coincide) are built in <span class="ttfamily">ComplexMetrics/HodgeScaffold.lean</span> and are load-bearing for Theorem&#160;<a href="sect0001.html#thm:angle-equiv">3</a>; but \(\mathcal U(\cdot )\) is undefined, so the target of the map cannot be written; (2) Siegel domains and the Cayley transform, giving the bounded realization; (3) the Shilov boundary notion itself, the smallest compact subset of the closure on which every holomorphic function attains its supremum. </p>
 
   </div>
 </div>
@@ -1441,30 +1382,11 @@
 
     
     
-    <button class="modal lean">L∃∀N</button>
-        <div class="modal-container">
-      <div class="modal-content">
-        <header>
-          <h1>Lean declarations</h1>
-          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
-</button>
-        </header>
-        
-        <ul class="uses">
-          
-          <li><a href="https://gubars.github.io/KontsevichSegal/docs/find/#doc/QC_two_dim_polydisc" class="lean_decl">QC_two_dim_polydisc</a></li>
-          
-        </ul>
-    
-      </div>
-    </div>
-
-    
         </div>
   </div>
   <div class="proposition_thmcontent">
-  <p>    When \(\dim V = 2\), the conformal class \((\det g)^{-1/2} g\) decouples from the volume element, and a nondegenerate complex metric is determined up to scale by its two null directions in \(\mathbb P(V_{\mathbb C})\); allowability puts one in each open hemisphere separated by the equator \(\mathbb P(V)\). The domain \(Q_{\mathbb C}(V)\) is thus a \(3\)-dimensional polydisc: one disc for each of the two complex structures (null directions) and one for the volume element. </p>
-<p>Stating this in Lean requires the projective geometry of \(\mathbb P(V_{\mathbb C})\) and the conformal/volume decomposition of quadratic forms. </p>
+  <p>   When \(\dim V = 2\), the conformal class \((\det g)^{-1/2} g\) decouples from the volume element, and a nondegenerate complex metric is determined up to scale by its two null directions in \(\mathbb P(V_{\mathbb C})\); allowability puts one in each open hemisphere separated by the equator \(\mathbb P(V)\). The domain \(Q_{\mathbb C}(V)\) is thus a \(3\)-dimensional polydisc: one disc for each of the two complex structures (null directions) and one for the volume element. </p>
+<p>Stating this in Lean requires the projective geometry of \(\mathbb P(V_{\mathbb C})\) and the conformal/volume decomposition of quadratic forms. The missing infrastructure is foundation&#160;F1 (a topology and complex structure on \(Q_{\mathbb C}(V)\)) together with foundation&#160;F3 (<span class="ttfamily">found:scv-tube-domain</span>, for the polydisc as a bounded domain), plus one piece belonging to neither: the projective geometry of \(\mathbb P(V_{\mathbb C})\) and the \((\det g)^{-1/2}g\) conformal/volume decoupling, which is a small in-repo build rather than a Mathlib gap. </p>
 
   </div>
 </div>

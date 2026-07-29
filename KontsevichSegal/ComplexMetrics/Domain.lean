@@ -1,11 +1,21 @@
-/- Properties of the domain QC(V): contractibility (Prop 2.4), domain of
-holomorphy (Prop 2.7), two-dimensional case.
+/- The fibre Π(V) of the QC(V) bundle (KS Proposition 2.4).
 
-This file formalizes (as sorry'd placeholders) the structural results about QC(V)
-from Section 2 of:
+This file formalizes the trace-norm fibre Π(V, g₀) of Proposition 2.4 from Section 2 of:
 
   Kontsevich, M. and Segal, G., "Wick rotation and the positivity of energy in
   quantum field theory", arXiv:2105.10161 [hep-th], 2021.
+
+RETIREMENT (2026-07-29). This file previously carried four `True`-conclusion placeholder
+theorems: `QC_parametrization` and `QC_contractible` (Prop 2.4),
+`QC_domain_of_holomorphy` (Prop 2.7), and `QC_two_dim_polydisc` (p. 15). None of their
+real statements is expressible against the current formalization, so none could carry a
+`sorry` either; a `True` conclusion credentialled claims that no Lean statement made. All
+four were REMOVED, and each claim now lives as `\notready` prose at its blueprint node
+(`prop:parametrization`, `prop:domain-holomorphy`, `prop:two-dim-polydisc`), naming the
+foundation it waits on: F1 (a topology on QC(V)), F2 (`found:homogeneous-bundles`, the
+associated bundle GL(V) ×_{O(V)} Π(V) with a compatible inner-product layer), and F3
+(`found:scv-tube-domain`, Stein/Siegel/Shilov theory). Reviewed artifact:
+`blueprint/restatements/true-retirement-section2.md`.
 -/
 
 import KontsevichSegal.ComplexMetrics.Defs
@@ -31,10 +41,12 @@ endomorphisms Θ : V →ₗ[ℝ] V that are self-adjoint with respect to g₀
 and satisfy ∑ᵢ |θᵢ| < 1 where θᵢ are the eigenvalues. Equivalently, Π(V, g₀) is
 the interior of the convex hull of rank-1 orthogonal projections in V.
 
-**Simplified formulation.** `V` carries no inner product here (see the
-formalization note on `QC_parametrization`), so g₀-self-adjointness cannot be
-stated directly. We instead require that Θ is diagonalizable over ℝ — there is
-a basis `b` of eigenvectors with eigenvalues `θ i` — with ∑ᵢ |θᵢ| < 1. An
+**Simplified formulation.** `V` carries no inner product here (`QC`'s
+definition uses a plain `AddCommGroup`/`Module ℝ`, whereas
+`InnerProductSpace ℝ V` would require `NormedAddCommGroup V`), so
+g₀-self-adjointness cannot be stated directly. We instead require that Θ is
+diagonalizable over ℝ — there is a basis `b` of eigenvectors with eigenvalues
+`θ i` — with ∑ᵢ |θᵢ| < 1. An
 operator is self-adjoint with respect to *some* positive-definite inner product
 iff it is diagonalizable over ℝ (declare the eigenbasis orthonormal), so this
 encodes "Θ ∈ Π(V, g₀) for some positive-definite g₀". The fiber at a *fixed*
@@ -51,80 +63,3 @@ structure TraceNormLtOne (V : Type*) [AddCommGroup V] [Module ℝ V]
     ∃ (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
       (θ : Fin (Module.finrank ℝ V) → ℝ),
       (∀ i, toLinearMap (b i) = θ i • b i) ∧ ∑ i, |θ i| < 1
-
-/-! ## KS paper Proposition 2.4: fiber bundle structure and contractibility -/
-
-/-- **KS paper Proposition 2.4 (parametrization).** Every allowable complex metric
-`g ∈ QC(V)` can be parametrized by a positive-definite inner product `g₀` on `V`
-and an operator `Θ ∈ Π(V, g₀)` (self-adjoint with trace-norm < 1). This exhibits
-QC(V) as a fiber bundle over the space of positive-definite inner products with
-fiber Π(V, g₀).
-
-More precisely, choosing a reference inner product, one obtains the associated-bundle
-decomposition `QC(V) ≅ GL(V) ×_{O(V)} Π(V)`.
-
-**Formalization note.** The full statement requires GL(V)/O(V) actions, associated
-bundle machinery, and an inner product space structure compatible with the algebraic
-`AddCommGroup`/`Module` setup used in `QC`. Since `InnerProductSpace ℝ V` requires
-`NormedAddCommGroup V` (incompatible with the plain `AddCommGroup` in `QC`'s
-definition), this is stated as a `True` placeholder. -/
-theorem QC_parametrization (V : Type*) [AddCommGroup V] [Module ℝ V]
-    [FiniteDimensional ℝ V] :
-    -- Placeholder: the real statement requires compatible inner product space structure.
-    True := by
-  trivial
-
-/-- **KS paper Proposition 2.4 (contractibility).** QC(V) is contractible.
-
-The contractibility follows from Prop 2.4: QC(V) is a fiber bundle with
-contractible fibers Π(V, g₀) (convex open sets) over a contractible base
-(the space of positive-definite inner products).
-
-**Formalization note.** We do not yet have a topology on `QC V`, so the
-contractibility statement cannot be expressed as `∃ (c : QC V), Nonempty
-(ContinuousMap.Homotopy (ContinuousMap.id (QC V)) (ContinuousMap.const (QC V) c))`.
-This placeholder records the result with a `True` conclusion until the topology is
-formalized. -/
-theorem QC_contractible (V : Type*) [AddCommGroup V] [Module ℝ V]
-    [FiniteDimensional ℝ V] :
-    -- Placeholder: the real statement requires a topology on QC V.
-    True := by
-  trivial
-
-/-! ## KS paper Proposition 2.7: domain of holomorphy -/
-
-/-- **KS paper Proposition 2.7.** QC(V) is holomorphically convex — it is a domain
-of holomorphy in the space of complex quadratic forms on V.
-
-The proof in [KS] observes that QC(V) is the intersection of a product of Siegel
-domains ∏ U(∧ᵖ(V)) with an affine subvariety, and Siegel domains are known domains
-of holomorphy.
-
-**Formalization note.** Expressing this requires: (1) the complex-manifold structure
-on the space of quadratic forms, (2) the notion of domain of holomorphy (Stein
-manifold), and (3) Siegel domains. None of these are in Mathlib. This placeholder
-records the result with a `True` conclusion. -/
-theorem QC_domain_of_holomorphy (V : Type*) [AddCommGroup V] [Module ℝ V]
-    [FiniteDimensional ℝ V] :
-    -- Placeholder: requires complex-manifold structure and Stein domain theory.
-    True := by
-  trivial
-
-/-! ## Two-dimensional special case (KS paper, p. 15) -/
-
-/-- **KS paper, p. 15 (unnumbered).** When `dim V = 2`, the domain QC(V) is a
-3-dimensional polydisc.
-
-When `d = 2`, the conformal structure decouples from the volume element. A
-nondegenerate complex metric is determined by two null directions in P(V_ℂ)
-(one in each hemisphere) plus a complex volume element, giving a 3-dimensional
-polydisc.
-
-**Formalization note.** This is stated as a placeholder. The polydisc identification
-requires projective geometry and the conformal/volume decomposition of quadratic
-forms, which are not yet formalized. -/
-theorem QC_two_dim_polydisc (V : Type*) [AddCommGroup V] [Module ℝ V]
-    [FiniteDimensional ℝ V] (_hdim : Module.finrank ℝ V = 2) :
-    -- Placeholder: requires projective geometry and polydisc identification.
-    True := by
-  trivial
