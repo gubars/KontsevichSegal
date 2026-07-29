@@ -16,6 +16,11 @@ foundation it waits on: F1 (a topology on QC(V)), F2 (`found:homogeneous-bundles
 associated bundle GL(V) ×_{O(V)} Π(V) with a compatible inner-product layer), and F3
 (`found:scv-tube-domain`, Stein/Siegel/Shilov theory). Reviewed artifact:
 `blueprint/restatements/true-retirement-section2.md`.
+
+(2026-07-30 addendum: `QC_contractible`, restated here at F1 with the project's
+first honest `sorry`, MOVED to `ComplexMetrics/Contractibility.lean` when it was
+proved — the proof lives in that file, which imports this one, so the theorem
+could not remain here.)
 -/
 
 import KontsevichSegal.ComplexMetrics.Defs
@@ -107,38 +112,3 @@ instance AllowableComplexMetric.instTopologicalSpace (V : Type*) [AddCommGroup V
     TopologicalSpace (AllowableComplexMetric V) :=
   TopologicalSpace.induced AllowableComplexMetric.toForm
     (moduleTopology ℝ (V →ₗ[ℝ] V →ₗ[ℝ] ℂ))
-
-/-- **KS paper Proposition 2.4 (contractibility; KSTeX 220-222).** QC(V) is
-contractible.
-
-This is the project's first tracked `sorry`. The three conditions that make it
-honest: (i) STATABLE — `AllowableComplexMetric.instTopologicalSpace` supplies
-the topology and `AllowableComplexMetric.toForm_injective` makes it faithful;
-(ii) TRUE — KS prove it (Proposition 2.4): QC(V) is a fibre bundle with
-contractible (convex) fibres Π(V, g₀) over the contractible space of
-positive-definite inner products; (iii) NOT PROVABLE with current
-infrastructure — the proof routes through the associated-bundle decomposition
-(foundation F2), and QC(V) is NOT itself convex, so
-`Convex.contractibleSpace` does not apply directly. Witness at d = 1: for
-`V = ℝ` the allowable set is ℂ ∖ (-∞, 0], and the segment from -1 + εi to
--1 - εi passes through -1. (At d = 1 the set IS star-convex about 1, so a
-d = 1 special case is separately provable, but that is not KS's claim.)
-
-Stated on `AllowableComplexMetric V`, not `QC V`: the types are equal by
-definition, but `QC` is a `def` and instance search does not unfold it to
-find the topology instance.
-
-Intended proof route (checkpoint 1 machinery in place): NOT KS's fibre bundle,
-but the deformation retraction built in
-`KontsevichSegal/ComplexMetrics/Contractibility.lean` — the continuous map
-`g ↦ g₀(g) = Re((det g)^{-1/2}·g)` onto the positive-definite cone
-(`KontsevichSegal.Retraction.g0`, `g0_posDef`, `g0_continuous`), with the
-straight segment from `g` to `g₀(g)` angle-contracting entrywise in `g`'s own
-diagonalizing basis (`KontsevichSegal.Retraction.seg_arg`, `g0_diag`). The
-remaining assembly (allowability of the homotopy at each `t`, joint
-`(t, g)`-continuity, the `ContinuousMap.Homotopy` packaging, and the endpoint
-contraction of the convex positive-definite cone) is checkpoint 2. -/
-theorem QC_contractible (V : Type*) [AddCommGroup V] [Module ℝ V]
-    [FiniteDimensional ℝ V] :
-    ContractibleSpace (AllowableComplexMetric V) := by
-  sorry

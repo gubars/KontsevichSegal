@@ -19,10 +19,15 @@ This route does NOT prove Proposition 2.4 itself: foundation F2 (the associated
 bundle GL(V) ×_{O(V)} Π(V)) remains owed for `prop:parametrization` regardless. The
 retraction is additive, never a substitute.
 
-Everything in this file is proved (no sorry). The remaining assembly — allowability
-of the homotopy at each t, joint (t, g)-continuity, the `ContinuousMap.Homotopy`
-packaging, and the endpoint contraction of the convex positive-definite cone — is
-checkpoint 2 and lives with `QC_contractible`'s tracked sorry in `Domain.lean`.
+Everything in this file is proved (no sorry). Checkpoint 2 added the assembly —
+allowability of the segment at each t (`segMetric`), joint (t, g)-continuity of the
+homotopies, the two `ContinuousMap.Homotopy` stages, and the endpoint contraction of
+the convex positive-definite cone — and `QC_contractible` itself now lives, PROVED,
+at the bottom of this file. It MOVED here from `Domain.lean`: its proof depends on
+this file, which imports `Domain.lean`, so the theorem could not stay there. The
+general-purpose supports (`nondegenerate_of_angle_cond`,
+`AllowableComplexMetric.ofRealPosDef`, `AllowableComplexMetric.euclid`) live in
+`ComplexMetrics/EigenvalueMinmax.lean` per the import-direction rule.
 
 Blueprint: `lem:posdef-retraction` in `blueprint/src/content.tex`. Reviewed artifact:
 `blueprint/restatements/retraction-checkpoint1.md`.
@@ -30,6 +35,7 @@ Blueprint: `lem:posdef-retraction` in `blueprint/src/content.tex`. Reviewed arti
 
 import KontsevichSegal.ComplexMetrics.Domain
 import KontsevichSegal.ComplexMetrics.Equivalence
+import KontsevichSegal.ComplexMetrics.EigenvalueMinmax
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -411,4 +417,295 @@ theorem g0_continuous :
   rw [hfac]
   exact hre.comp (hsmul.comp (hc.prodMk h0))
 
+/-! ## Checkpoint 2: the assembly -/
+
+/-- Entry positivity: on `g`'s own diagonalizing basis, every retracted eigenvalue
+`Re(c·λ_k)` is positive — `g0_posDef` evaluated at basis vectors through `g0_diag`. -/
+theorem entry_pos (g : AllowableComplexMetric V)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2)
+    (k : Fin (Module.finrank ℝ V)) :
+    0 < ((detSqrtReal g.toComplexMetric)⁻¹ * eig k).re := by
+  have h1 := g0_posDef g (b k) (b.ne_zero k)
+  have h2 := g0_diag g hdiag (b k)
+  rw [h2] at h1
+  have hsum : ∑ i, ((detSqrtReal g.toComplexMetric)⁻¹ * eig i).re * (b.repr (b k) i) ^ 2
+      = ((detSqrtReal g.toComplexMetric)⁻¹ * eig k).re := by
+    rw [Finset.sum_eq_single k]
+    · simp [Module.Basis.repr_self]
+    · intro j _ hj
+      simp [Module.Basis.repr_self, Ne.symm hj]
+    · intro h; exact absurd (Finset.mem_univ k) h
+  rwa [hsum] at h1
+
+/-- Diagonal identity of the stage-1 segment form on `g`'s own basis. -/
+theorem segForm_diag (g : AllowableComplexMetric V) (t : ℝ)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ}
+    (hdiag : ∀ v, g.toForm v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    ∀ v, ((1 - t) • g.toForm + t • g0C g) v v
+      = ∑ k, ((1 - t) • eig k
+          + t • ((((detSqrtReal g.toComplexMetric)⁻¹ * eig k).re : ℝ) : ℂ))
+        * (b.repr v k : ℂ) ^ 2 := by
+  intro v
+  have e1 : ((1 - t) • g.toForm + t • g0C g) v v
+      = (1 - t) • g.toForm v v + t • (((g0 g v v : ℝ) : ℂ)) := rfl
+  rw [e1, hdiag v, g0_diag g hdiag v]
+  push_cast
+  rw [Finset.smul_sum, Finset.smul_sum, ← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl fun k _ => ?_
+  simp only [Complex.real_smul]
+  ring
+
+/-- **The stage-1 segment is allowable**: the straight line from `g` to its retraction,
+as an allowable metric. The `angle_cond` witness is `g`'s OWN basis with eigenvalues
+`(1-t)·λ_k + t·Re(c·λ_k)`, exactly the shape `seg_arg` controls. -/
+noncomputable def segMetric (g : AllowableComplexMetric V) (t : ℝ)
+    (ht : t ∈ Set.Icc (0 : ℝ) 1) : AllowableComplexMetric V where
+  toForm := (1 - t) • g.toForm + t • g0C g
+  symmetric' := fun v w => by
+    change (1 - t) • g.toForm v w + t • g0C g v w
+        = (1 - t) • g.toForm w v + t • g0C g w v
+    rw [g0C_apply, g0C_apply, g.symmetric' v w]
+  nondegenerate := by
+    obtain ⟨b, eig, hAC, hdiag⟩ := g.angle_cond
+    have hseg := fun k => seg_arg (eig k) (hAC.nonzero k) (hAC.abs_arg_lt_pi k)
+      (((detSqrtReal g.toComplexMetric)⁻¹ * eig k).re) (entry_pos g hdiag k) t ht
+    exact nondegenerate_of_angle_cond ((1 - t) • g.toForm + t • g0C g)
+      (b := b)
+      (eig := fun k => (1 - t) • eig k
+        + t • ((((detSqrtReal g.toComplexMetric)⁻¹ * eig k).re : ℝ) : ℂ))
+      ⟨fun k => (hseg k).1,
+       fun k => not_nonpos_of_abs_arg_lt_pi (hseg k).1
+         (lt_of_le_of_lt (hseg k).2 (hAC.abs_arg_lt_pi k)),
+       lt_of_le_of_lt (Finset.sum_le_sum fun k _ => (hseg k).2) hAC.sum_arg_lt_pi⟩
+      (segForm_diag g t hdiag)
+  angle_cond := by
+    obtain ⟨b, eig, hAC, hdiag⟩ := g.angle_cond
+    have hseg := fun k => seg_arg (eig k) (hAC.nonzero k) (hAC.abs_arg_lt_pi k)
+      (((detSqrtReal g.toComplexMetric)⁻¹ * eig k).re) (entry_pos g hdiag k) t ht
+    exact ⟨b,
+      fun k => (1 - t) • eig k
+        + t • ((((detSqrtReal g.toComplexMetric)⁻¹ * eig k).re : ℝ) : ℂ),
+      ⟨fun k => (hseg k).1,
+       fun k => not_nonpos_of_abs_arg_lt_pi (hseg k).1
+         (lt_of_le_of_lt (hseg k).2 (hAC.abs_arg_lt_pi k)),
+       lt_of_le_of_lt (Finset.sum_le_sum fun k _ => (hseg k).2) hAC.sum_arg_lt_pi⟩,
+      segForm_diag g t hdiag⟩
+
+@[simp] theorem segMetric_toForm (g : AllowableComplexMetric V) (t : ℝ)
+    (ht : t ∈ Set.Icc (0 : ℝ) 1) :
+    (segMetric g t ht).toForm = (1 - t) • g.toForm + t • g0C g := rfl
+
+/-- Positive combination of positives, in the convex-combination shape. `nlinarith`
+alone does not close `0 < a·X + c·Y`; the explicit case split does. -/
+theorem convex_pos_combo {s X Y : ℝ} (hs0 : 0 ≤ s) (hs1 : s ≤ 1)
+    (hX : 0 < X) (hY : 0 < Y) : 0 < (1 - s) * X + s * Y := by
+  rcases eq_or_lt_of_le hs1 with heq | hlt
+  · rw [heq]; simpa using hY
+  · have h1 := mul_pos (show (0 : ℝ) < 1 - s by linarith) hX
+    have h2 := mul_nonneg hs0 hY.le
+    linarith
+
+omit [FiniteDimensional ℝ V] in
+/-- The set of positive-definite real bilinear forms is convex. -/
+theorem posDef_convex :
+    Convex ℝ {P : LinearMap.BilinForm ℝ V | ∀ v, v ≠ 0 → 0 < P v v} := by
+  intro P hP Q hQ a c ha hc hac v hv
+  have e : (a • P + c • Q) v v = a * P v v + c * Q v v := by
+    simp [LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul]
+  change 0 < (a • P + c • Q) v v
+  rw [e, show a = 1 - c by linarith]
+  exact convex_pos_combo hc (by linarith) (hP v hv) (hQ v hv)
+
+/-! ## Joint continuity and the two homotopy stages -/
+
+theorem g0C_symm (g : AllowableComplexMetric V) (v w : V) : g0C g v w = g0C g w v := by
+  rw [g0C_apply, g0C_apply, g.symmetric' v w]
+
+/-- `g ↦ g0C g` is continuous: `g0_continuous` composed with the linear coercion
+`B ↦ B.compr₂ (Algebra.linearMap ℝ ℂ)`. -/
+theorem g0C_continuous :
+    letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+    Continuous (fun g : AllowableComplexMetric V => g0C g) := by
+  letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+  letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℝ) := moduleTopology ℝ _
+  haveI : ContinuousAdd (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := IsModuleTopology.toContinuousAdd ℝ _
+  have hco : Continuous
+      (fun B : V →ₗ[ℝ] V →ₗ[ℝ] ℝ => B.compr₂ (Algebra.linearMap ℝ ℂ)) :=
+    IsModuleTopology.continuous_of_linearMap
+      ({ toFun := fun B => B.compr₂ (Algebra.linearMap ℝ ℂ)
+         map_add' := fun B C => by ext v w; simp
+         map_smul' := fun r B => by ext v w; simp } :
+        (V →ₗ[ℝ] V →ₗ[ℝ] ℝ) →ₗ[ℝ] (V →ₗ[ℝ] V →ₗ[ℝ] ℂ))
+  have hfac : (fun g : AllowableComplexMetric V => g0C g)
+      = (fun B : V →ₗ[ℝ] V →ₗ[ℝ] ℝ => B.compr₂ (Algebra.linearMap ℝ ℂ))
+        ∘ (fun g => g0 g) := rfl
+  rw [hfac]
+  exact hco.comp g0_continuous
+
+/-- Joint `(t, g)`-continuity of the stage-1 segment form. The ℝ-`smul` and addition
+come DIRECTLY from `ModuleTopology.continuousSMul` and
+`IsModuleTopology.toContinuousAdd` — no bilinear lemma is needed here, unlike the
+ℂ-`smul` in `g0_continuous`. -/
+theorem seg_jointly_continuous :
+    letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+    Continuous (fun p : ℝ × AllowableComplexMetric V =>
+      (1 - p.1) • p.2.toForm + p.1 • g0C p.2) := by
+  letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+  haveI : ContinuousAdd (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := IsModuleTopology.toContinuousAdd ℝ _
+  haveI : ContinuousSMul ℝ (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) :=
+    ModuleTopology.continuousSMul ℝ (V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+  have htoForm : Continuous (fun p : ℝ × AllowableComplexMetric V => p.2.toForm) :=
+    continuous_induced_dom.comp continuous_snd
+  have hg0C : Continuous (fun p : ℝ × AllowableComplexMetric V => g0C p.2) :=
+    g0C_continuous.comp continuous_snd
+  exact ((continuous_const.sub continuous_fst).smul htoForm).add
+    (continuous_fst.smul hg0C)
+
+/-- The retraction, as a `ContinuousMap`. -/
+noncomputable def retractCM :
+    C(AllowableComplexMetric V, AllowableComplexMetric V) where
+  toFun := fun g => segMetric g 1 ⟨zero_le_one, le_refl 1⟩
+  continuous_toFun := by
+    letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+    apply continuous_induced_rng.mpr
+    have hfac : (AllowableComplexMetric.toForm
+        ∘ fun g : AllowableComplexMetric V => segMetric g 1 ⟨zero_le_one, le_refl 1⟩)
+        = (fun p : ℝ × AllowableComplexMetric V =>
+            (1 - p.1) • p.2.toForm + p.1 • g0C p.2)
+          ∘ (fun g : AllowableComplexMetric V => ((1 : ℝ), g)) := rfl
+    rw [hfac]
+    exact seg_jointly_continuous.comp (Continuous.prodMk continuous_const continuous_id)
+
+/-- Stage 1: the straight-line homotopy from the identity to the retraction. -/
+noncomputable def stage1 :
+    ContinuousMap.Homotopy (ContinuousMap.id (AllowableComplexMetric V)) retractCM where
+  toFun := fun p => segMetric p.2 (p.1 : ℝ) p.1.2
+  continuous_toFun := by
+    letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+    apply continuous_induced_rng.mpr
+    have hfac : (AllowableComplexMetric.toForm
+        ∘ fun p : unitInterval × AllowableComplexMetric V =>
+          segMetric p.2 (p.1 : ℝ) p.1.2)
+        = (fun q : ℝ × AllowableComplexMetric V =>
+            (1 - q.1) • q.2.toForm + q.1 • g0C q.2)
+          ∘ (fun p : unitInterval × AllowableComplexMetric V => ((p.1 : ℝ), p.2)) := rfl
+    rw [hfac]
+    exact seg_jointly_continuous.comp
+      ((continuous_subtype_val.comp continuous_fst).prodMk continuous_snd)
+  map_zero_left := fun g => by
+    apply AllowableComplexMetric.ext
+    simp
+  map_one_left := fun g => by
+    apply AllowableComplexMetric.ext
+    simp [retractCM]
+
+/-- The stage-2 segment: the straight line from the retraction's value to the Euclidean
+basepoint, allowable because it is real and positive definite throughout. -/
+noncomputable def seg2Metric (g : AllowableComplexMetric V) (s : ℝ)
+    (hs : s ∈ Set.Icc (0 : ℝ) 1) : AllowableComplexMetric V :=
+  AllowableComplexMetric.ofRealPosDef ((1 - s) • g0C g + s • euclidForm)
+    (fun v w => by
+      change (1 - s) • g0C g v w + s • euclidForm v w
+          = (1 - s) • g0C g w v + s • euclidForm w v
+      rw [g0C_symm g v w, euclidForm_symm v w])
+    (fun v w => by
+      change ((1 - s) • g0C g v w + s • euclidForm v w).im = 0
+      rw [Complex.add_im, Complex.smul_im, Complex.smul_im, g0C_apply,
+        euclidForm_apply, Complex.ofReal_im, Complex.ofReal_im]
+      simp)
+    (fun v hv => by
+      change 0 < ((1 - s) • g0C g v v + s • euclidForm v v).re
+      rw [Complex.add_re, Complex.smul_re, Complex.smul_re, g0C_apply,
+        euclidForm_apply, Complex.ofReal_re, Complex.ofReal_re]
+      have h1 : 0 < ((detSqrtReal g.toComplexMetric)⁻¹ * g.toForm v v).re := by
+        have h := g0_posDef g v hv
+        rwa [g0_apply] at h
+      have h2 : 0 < (∑ i, (Module.finBasis ℝ V).repr v i
+          * (Module.finBasis ℝ V).repr v i : ℝ) := by
+        have h := euclidForm_re_pos v hv
+        rwa [euclidForm_apply, Complex.ofReal_re] at h
+      obtain ⟨hs0, hs1⟩ := hs
+      exact convex_pos_combo hs0 hs1 h1 h2)
+
+@[simp] theorem seg2Metric_toForm (g : AllowableComplexMetric V) (s : ℝ)
+    (hs : s ∈ Set.Icc (0 : ℝ) 1) :
+    (seg2Metric g s hs).toForm = (1 - s) • g0C g + s • euclidForm := rfl
+
+theorem seg2_jointly_continuous :
+    letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+    Continuous (fun p : ℝ × AllowableComplexMetric V =>
+      (1 - p.1) • g0C p.2 + p.1 • euclidForm) := by
+  letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+  haveI : ContinuousAdd (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := IsModuleTopology.toContinuousAdd ℝ _
+  haveI : ContinuousSMul ℝ (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) :=
+    ModuleTopology.continuousSMul ℝ (V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+  have hg0C : Continuous (fun p : ℝ × AllowableComplexMetric V => g0C p.2) :=
+    g0C_continuous.comp continuous_snd
+  exact ((continuous_const.sub continuous_fst).smul hg0C).add
+    (continuous_fst.smul continuous_const)
+
+/-- Stage 2: the straight-line homotopy from the retraction to the constant map at the
+Euclidean basepoint, staying inside the positive-definite (hence allowable) cone. -/
+noncomputable def stage2 :
+    ContinuousMap.Homotopy (retractCM (V := V))
+      (ContinuousMap.const (AllowableComplexMetric V) AllowableComplexMetric.euclid) where
+  toFun := fun p => seg2Metric p.2 (p.1 : ℝ) p.1.2
+  continuous_toFun := by
+    letI : TopologicalSpace (V →ₗ[ℝ] V →ₗ[ℝ] ℂ) := moduleTopology ℝ _
+    apply continuous_induced_rng.mpr
+    have hfac : (AllowableComplexMetric.toForm
+        ∘ fun p : unitInterval × AllowableComplexMetric V =>
+          seg2Metric p.2 (p.1 : ℝ) p.1.2)
+        = (fun q : ℝ × AllowableComplexMetric V =>
+            (1 - q.1) • g0C q.2 + q.1 • euclidForm)
+          ∘ (fun p : unitInterval × AllowableComplexMetric V => ((p.1 : ℝ), p.2)) := rfl
+    rw [hfac]
+    exact seg2_jointly_continuous.comp
+      ((continuous_subtype_val.comp continuous_fst).prodMk continuous_snd)
+  map_zero_left := fun g => by
+    apply AllowableComplexMetric.ext
+    simp [retractCM]
+  map_one_left := fun g => by
+    apply AllowableComplexMetric.ext
+    simp [AllowableComplexMetric.euclid]
+
 end KontsevichSegal.Retraction
+
+open KontsevichSegal.Retraction in
+/-- **KS paper Proposition 2.4 (contractibility; KSTeX 220-222), PROVED.** QC(V) is
+contractible.
+
+History: this statement carried the project's first (and only) tracked `sorry`, from
+`32bffa2` (F1, which supplied the topology and made it statable) until the present
+commit. The three conditions that made that sorry honest — statable, true, not then
+provable — are discharged in order: the F1 topology still carries the statement, KS's
+claim is unchanged, and the proof now exists below.
+
+Proof route: a deformation retraction onto the real positive-definite cone, NOT KS's
+fibre bundle. The straight-line homotopy `stage1` takes `g` to its normalized real
+part `g₀(g) = Re((det g)^{-1/2}·g)` — allowable at every `t` because, in `g`'s own
+diagonalizing basis, each eigenvalue moves along the segment from `λ_k` to
+`Re(c·λ_k) > 0`, on which `|arg|` only shrinks (`seg_arg`); `stage2` then contracts
+the positive-definite image to the Euclidean basepoint inside the convex cone, and
+`Homotopy.trans` composes the stages.
+
+QC(V) is NOT itself convex, so `Convex.contractibleSpace` does not apply directly —
+witness at d = 1: for `V = ℝ` the allowable set is ℂ ∖ (-∞, 0], and the segment from
+-1 + εi to -1 - εi passes through -1. That is exactly why the route retracts to the
+positive-definite cone first.
+
+This proves the contractibility clause of KS Proposition 2.4 WITHOUT proving
+Proposition 2.4 itself (the fibre-bundle parametrization); foundation F2 is still
+owed for `prop:parametrization`.
+
+Stated on `AllowableComplexMetric V`, not `QC V`: the types are equal by definition,
+but `QC` is a `def` and instance search does not unfold it to find the topology
+instance. -/
+theorem QC_contractible (V : Type*) [AddCommGroup V] [Module ℝ V]
+    [FiniteDimensional ℝ V] :
+    ContractibleSpace (AllowableComplexMetric V) := by
+  rw [contractible_iff_id_nullhomotopic]
+  exact ⟨AllowableComplexMetric.euclid, ⟨(stage1 (V := V)).trans stage2⟩⟩

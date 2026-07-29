@@ -2723,3 +2723,148 @@ example : ∑ i : Fin 1,
 
 /-- And `pi/6 < pi`: the codim-1 restricted witness satisfies the angle bound. -/
 example : Real.pi / 6 < Real.pi := by linarith [Real.pi_pos]
+
+/-! ## Retraction support (checkpoint 2): nondegeneracy from the angle condition, the
+real-positive-definite constructor, and the Euclidean basepoint -/
+
+/-- Every eigenvalue of an angle-condition tuple has argument strictly inside
+`(-π, π)`: the `not_nonpos_real` field excludes `π`, and `arg` never reaches `-π`. -/
+theorem AngleCondition.abs_arg_lt_pi {d : ℕ} {eig : Fin d → ℂ}
+    (hAC : AngleCondition eig) (k : Fin d) : |Complex.arg (eig k)| < Real.pi := by
+  rw [abs_lt]
+  refine ⟨Complex.neg_pi_lt_arg _, lt_of_le_of_ne (Complex.arg_le_pi _) fun h => ?_⟩
+  obtain ⟨hre, him⟩ := Complex.arg_eq_pi_iff.mp h
+  rcases hAC.not_nonpos_real k with h' | h'
+  · exact absurd h' (not_lt.mpr hre.le)
+  · exact h' him
+
+/-- A nonzero complex number with `|arg| < π` is off the closed negative real axis
+(the disjunction shape of the `not_nonpos_real` field of `AngleCondition`). -/
+theorem not_nonpos_of_abs_arg_lt_pi {z : ℂ} (hz : z ≠ 0)
+    (h : |Complex.arg z| < Real.pi) : 0 < z.re ∨ z.im ≠ 0 := by
+  by_contra hcon
+  push_neg at hcon
+  obtain ⟨hre, him⟩ := hcon
+  have hrelt : z.re < 0 := by
+    rcases lt_or_eq_of_le hre with h' | h'
+    · exact h'
+    · exact absurd (Complex.ext (by simpa using h') (by simpa using him)) hz
+  have hpi : Complex.arg z = Real.pi := Complex.arg_eq_pi_iff.mpr ⟨hrelt, him⟩
+  rw [hpi, abs_of_pos Real.pi_pos] at h
+  exact lt_irrefl _ h
+
+section RetractionSupport
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+
+omit [FiniteDimensional ℝ V] in
+/-- **Nondegeneracy follows from an angle-condition diagonalization**: rotate so all
+eigenvalues sit in the open right half-plane (`AngleCondition.exists_rotation`), where
+the rotated real part is positive definite (`rotatedReOfForm_posDef`); then `B v v ≠ 0`
+for `v ≠ 0`, so `w := v` witnesses nondegeneracy.
+
+This lemma is ADDITIVE. It meets the precondition the status doc set for removing the
+`nondegenerate` FIELD of `AllowableComplexMetric` (long flagged as "redundant, derivable
+in principle"), but that removal is a breaking refactor across every construction site
+and is deliberately NOT performed; the field stays. -/
+theorem nondegenerate_of_angle_cond (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    {b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V}
+    {eig : Fin (Module.finrank ℝ V) → ℂ} (hAC : AngleCondition eig)
+    (hdiag : ∀ v, B v v = ∑ i, eig i * (b.repr v i : ℂ) ^ 2) :
+    ∀ v, v ≠ 0 → ∃ w, B v w ≠ 0 := by
+  intro v hv
+  obtain ⟨φ, _, _, hpos⟩ := hAC.exists_rotation
+  refine ⟨v, fun h0 => ?_⟩
+  have hposdef := rotatedReOfForm_posDef B φ b eig hdiag hpos v hv
+  have hval : rotatedReOfForm B φ v v
+      = (Complex.exp (-(φ : ℂ) * Complex.I) * B v v).re := rfl
+  rw [hval, h0, mul_zero] at hposdef
+  simp at hposdef
+
+/-- **Any symmetric ℂ-valued form with real values and positive-definite real part is
+an allowable metric**: simultaneous orthogonalization of the real part
+(`exists_basis_isOrtho_pair_of_posdef`) diagonalizes the form with positive real
+entries, so every argument is `0` and the angle sum is `0 < π`. -/
+noncomputable def AllowableComplexMetric.ofRealPosDef (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v)
+    (him : ∀ v w, (B v w).im = 0)
+    (hre : ∀ v, v ≠ 0 → 0 < (B v v).re) : AllowableComplexMetric V where
+  toForm := B
+  symmetric' := hsymm
+  nondegenerate := fun v hv => ⟨v, fun h0 => by
+    have h := hre v hv
+    rw [h0] at h
+    simp at h⟩
+  angle_cond := by
+    classical
+    have hPsymm : ∀ x y, (B.compr₂ Complex.reLm) x y = (B.compr₂ Complex.reLm) y x :=
+      fun x y => by simp [LinearMap.compr₂_apply, hsymm x y]
+    have hPpos : ∀ v, v ≠ 0 → 0 < (B.compr₂ Complex.reLm) v v := fun v hv => hre v hv
+    obtain ⟨b, horthP, _⟩ := KontsevichSegal.Hodge.exists_basis_isOrtho_pair_of_posdef
+      (B.compr₂ Complex.reLm) (B.compr₂ Complex.reLm) hPsymm hPsymm hPpos
+    have horthB : ∀ i j, i ≠ j → B (b i) (b j) = 0 := fun i j hij =>
+      Complex.ext (horthP i j hij) (by simpa using him (b i) (b j))
+    refine ⟨b, fun k => B (b k) (b k),
+      ⟨fun k h0 => by
+          have h := hre (b k) (b.ne_zero k)
+          rw [h0] at h
+          simp at h,
+       fun k => Or.inl (hre (b k) (b.ne_zero k)),
+       ?_⟩,
+      fun v => bilin_diag_of_orthogonal B b horthB v⟩
+    have hzero : ∀ k, Complex.arg (B (b k) (b k)) = 0 := fun k =>
+      Complex.arg_eq_zero_iff.mpr ⟨(hre (b k) (b.ne_zero k)).le, him _ _⟩
+    simp only [hzero, abs_zero, Finset.sum_const_zero]
+    exact Real.pi_pos
+
+@[simp] theorem AllowableComplexMetric.ofRealPosDef_toForm (B : V →ₗ[ℝ] V →ₗ[ℝ] ℂ)
+    (hsymm : ∀ v w, B v w = B w v) (him : ∀ v w, (B v w).im = 0)
+    (hre : ∀ v, v ≠ 0 → 0 < (B v v).re) :
+    (AllowableComplexMetric.ofRealPosDef B hsymm him hre).toForm = B := rfl
+
+/-- The standard Euclidean form on the canonical real basis, as a real bilinear form. -/
+noncomputable def euclidR : LinearMap.BilinForm ℝ V :=
+  LinearMap.mk₂ ℝ
+    (fun v w => ∑ i, (Module.finBasis ℝ V).repr v i * (Module.finBasis ℝ V).repr w i)
+    (fun v₁ v₂ w => by
+      simp only [map_add, Finsupp.add_apply, add_mul, Finset.sum_add_distrib])
+    (fun c v w => by
+      simp only [map_smul, Finsupp.smul_apply, smul_eq_mul, Finset.mul_sum, mul_assoc])
+    (fun v w₁ w₂ => by
+      simp only [map_add, Finsupp.add_apply, mul_add, Finset.sum_add_distrib])
+    (fun c v w => by
+      simp only [map_smul, Finsupp.smul_apply, smul_eq_mul, Finset.mul_sum, mul_left_comm])
+
+/-- The standard Euclidean form, ℂ-valued. -/
+noncomputable def euclidForm : V →ₗ[ℝ] V →ₗ[ℝ] ℂ :=
+  euclidR.compr₂ (Algebra.linearMap ℝ ℂ)
+
+theorem euclidForm_apply (v w : V) :
+    euclidForm v w
+      = ((∑ i, (Module.finBasis ℝ V).repr v i * (Module.finBasis ℝ V).repr w i : ℝ) : ℂ) := by
+  simp [euclidForm, euclidR, LinearMap.compr₂_apply, Algebra.linearMap_apply,
+    Algebra.algebraMap_eq_smul_one, Complex.real_smul]
+
+theorem euclidForm_symm (v w : V) : euclidForm v w = euclidForm w v := by
+  rw [euclidForm_apply, euclidForm_apply]
+  congr 1
+  exact Finset.sum_congr rfl fun i _ => mul_comm _ _
+
+theorem euclidForm_re_pos (v : V) (hv : v ≠ 0) : 0 < (euclidForm v v).re := by
+  rw [euclidForm_apply, Complex.ofReal_re]
+  have hrepr : (Module.finBasis ℝ V).repr v ≠ 0 :=
+    fun h => hv ((Module.finBasis ℝ V).repr.map_eq_zero_iff.mp h)
+  obtain ⟨i0, hi0⟩ := Finsupp.ne_iff.mp hrepr
+  simp only [Finsupp.coe_zero, Pi.zero_apply] at hi0
+  exact Finset.sum_pos' (fun i _ => mul_self_nonneg _)
+    ⟨i0, Finset.mem_univ _, mul_self_pos.mpr hi0⟩
+
+/-- **The Euclidean basepoint: `AllowableComplexMetric V` is nonempty.** No basepoint
+existed before this; `ContractibleSpace` (KS Proposition 2.4's contractibility clause)
+needs one. Works at every dimension, including `d = 0` (empty sums). -/
+noncomputable def AllowableComplexMetric.euclid : AllowableComplexMetric V :=
+  AllowableComplexMetric.ofRealPosDef euclidForm euclidForm_symm
+    (fun v w => by rw [euclidForm_apply, Complex.ofReal_im])
+    euclidForm_re_pos
+
+end RetractionSupport

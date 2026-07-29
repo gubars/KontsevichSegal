@@ -292,7 +292,8 @@ in Sections~2 and~5.
   \label{lem:posdef-retraction}
   \lean{KontsevichSegal.Retraction.seg_arg, KontsevichSegal.Retraction.g0,
     KontsevichSegal.Retraction.g0_posDef, KontsevichSegal.Retraction.g0_diag,
-    KontsevichSegal.Retraction.g0_continuous}
+    KontsevichSegal.Retraction.g0_continuous, nondegenerate_of_angle_cond,
+    AllowableComplexMetric.ofRealPosDef, AllowableComplexMetric.euclid}
   \leanok
   \uses{def:allowable, def:allowable-hodge, thm:angle-equiv, found:hodge-star}
   For $g \in Q_{\mathbb C}(V)$ write $c = (\det g)^{-1/2}$ in the real-coframe principal
@@ -309,6 +310,10 @@ in Sections~2 and~5.
   basis, so allowability is preserved, and $Q_{\mathbb C}(V)$ retracts onto the convex
   positive-definite cone. The diagonalization is consumed as a \emph{proposition}, never as
   extracted data, so nothing here depends on Proposition~2.4.
+  The same file also supplies three general-purpose additions used by the assembly: a
+  derivation of nondegeneracy from the angle condition, a constructor making any real
+  positive-definite form allowable, and the Euclidean metric --- the first basepoint for
+  $Q_{\mathbb C}(V)$, which was not previously known to be nonempty.
 \end{lemma}
 
 \begin{proof}
@@ -332,7 +337,7 @@ in Sections~2 and~5.
   \uses{def:allowable}
   $Q_{\mathbb C}(V)$ is contractible.
 
-  The statement is formalized. $Q_{\mathbb C}(V)$ carries the topology induced along
+  The statement and proof are formalized. $Q_{\mathbb C}(V)$ carries the topology induced along
   \texttt{toForm} from the canonical module topology on
   $S^2(V^*_{\mathbb C})$; the induced topology is faithful because \texttt{toForm} is
   injective, the remaining fields of the structure being \texttt{Prop}-valued. The
@@ -343,7 +348,7 @@ in Sections~2 and~5.
 \end{proposition}
 
 \begin{proof}
-  \notready
+  \leanok
   \uses{lem:posdef-retraction}
   (Route: deformation retraction, not KS's bundle.) The map
   $g \mapsto g_0(g) = \operatorname{Re}((\det g)^{-1/2} g)$ of
@@ -353,12 +358,13 @@ in Sections~2 and~5.
   segment lies in the convex cone spanned by $\lambda_k$ and the positive reals, of aperture
   $|\arg \lambda_k| < \pi$. Hence $|\arg|$ contracts entrywise and the angle sum can only
   shrink, so the segment stays allowable and the homotopy is well defined. Composing with the
-  contraction of the convex positive-definite cone gives the result. What remains unformalized
-  is the assembly: allowability of the homotopy at each $t$, joint $(t,g)$-continuity and the
-  \texttt{Homotopy} packaging, and the endpoint contraction. KS instead derive
-  contractibility from the fibre-bundle description of
-  Proposition~\ref{prop:parametrization}, which this route does not prove; foundation~F2 is
-  therefore still owed for that proposition.
+  contraction of the convex positive-definite cone gives the result. The assembly is formalized: allowability of the segment at each $t$, joint
+  $(t,g)$-continuity of the homotopy, the endpoint contraction of the convex
+  positive-definite cone, and their composition. KS instead derive contractibility from
+  the fibre-bundle description of Proposition~\ref{prop:parametrization}. This route does
+  \emph{not} prove that proposition --- it establishes the corollary without the theorem
+  it is a corollary of in the paper --- so foundation~F2 remains owed for
+  Proposition~\ref{prop:parametrization}.
 \end{proof}
 
 \begin{definition}[Restriction of the form to a subspace]
