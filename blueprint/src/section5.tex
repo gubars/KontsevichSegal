@@ -141,7 +141,13 @@ technique behind Theorem~5.2; they are not separate statements to formalize.
   real-analytically. This is the category required for the operator assignment of
   Section~5: the forthcoming Principle~5.1 and Theorem~5.2 move a cobordism inside a
   complexification $M_{\mathbb C}$, a holomorphic thickening that exists only when the
-  cobordism and its metric are real-analytic.
+  cobordism and its metric are real-analytic. In the Lean encoding this restriction is
+  carried only by the ambient real-analyticity gate on the category
+  (\texttt{IsGloballyHyperbolicOmega} is definitionally \texttt{IsGloballyHyperbolic}
+  under the \texttt{[IsRealAnalytic]} hypothesis): the real-analyticity of an individual
+  cobordism's manifold and metric is not constrained at the morphism level, that finer
+  per-morphism condition being deferred with the real-analytic geometry of
+  Definition~\ref{found:real-analytic-complexification}.
 
   \emph{The metric normal form and the deformation into allowable metrics.} For a
   globally hyperbolic cobordism equipped with a time-function, the metric, written
