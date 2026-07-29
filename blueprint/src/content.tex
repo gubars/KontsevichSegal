@@ -251,7 +251,7 @@ in Sections~2 and~5.
   $\sum_i |\theta_i| < 1$.
 \end{definition}
 
-\begin{proposition}[Parametrization and contractibility; KS Proposition 2.4]
+\begin{proposition}[Parametrization; KS Proposition 2.4]
   \label{prop:parametrization}
   \notready
   \uses{def:allowable, def:trace-norm-fiber, found:homogeneous-bundles}
@@ -261,7 +261,6 @@ in Sections~2 and~5.
   \[
     Q_{\mathbb C}(V) \;\cong\; \mathrm{GL}(V) \times_{\mathrm{O}(V)} \Pi(V).
   \]
-  In particular, $Q_{\mathbb C}(V)$ is contractible.
 
   Stating this in Lean requires $\mathrm{GL}(V)/\mathrm{O}(V)$ actions with
   associated-bundle machinery, an inner-product-space structure compatible
@@ -271,10 +270,7 @@ in Sections~2 and~5.
   (\texttt{found:homogeneous-bundles}): the $\mathrm{GL}(V)/\mathrm{O}(V)$
   homogeneous-space action with associated-bundle machinery, together with
   an inner-product layer compatible with the algebraic setup of
-  \texttt{QC}. Contractibility additionally waits on foundation~F1, a
-  topology on $Q_{\mathbb C}(V)$, currently bundled inside
-  \texttt{found:homogeneous-bundles} and separating out when that node is
-  split.
+  \texttt{QC}.
 \end{proposition}
 
 \begin{proof}
@@ -290,6 +286,42 @@ in Sections~2 and~5.
   canonical, carries a real positive-definite form $g_0$, and
   $V = \exp(\mathrm i \pi \Theta/2)(P)$ where $\Theta$ is $g_0$-self-adjoint
   with $\|\Theta\|_1 < 1$; condition (4) is exactly the trace-norm bound.
+\end{proof}
+
+\begin{proposition}[Contractibility; KS Proposition 2.4]
+  \label{prop:contractibility}
+  \lean{AllowableComplexMetric.toForm_injective,
+    AllowableComplexMetric.instTopologicalSpace, QC_contractible}
+  \leanok
+  \uses{def:allowable, def:trace-norm-fiber, prop:parametrization}
+  $Q_{\mathbb C}(V)$ is contractible.
+
+  The statement is formalized. $Q_{\mathbb C}(V)$ carries the topology induced along
+  \texttt{toForm} from the canonical module topology on
+  $S^2(V^*_{\mathbb C})$; the induced topology is faithful because \texttt{toForm} is
+  injective, the remaining fields of the structure being \texttt{Prop}-valued. The
+  topology is canonical rather than chosen: it is Mathlib's basis-free
+  \texttt{moduleTopology}, and on a finite-dimensional space any Hausdorff
+  topological-vector-space topology agrees with it, so no basis-independence
+  obligation is incurred. This discharges foundation~F1.
+\end{proposition}
+
+\begin{proof}
+  \notready
+  \uses{prop:parametrization}
+  (Paper, KSTeX 220--222.) Contractibility follows from the fibre-bundle
+  description of Proposition~\ref{prop:parametrization}: the fibres
+  $\Pi(V,g_0)$ are convex, hence contractible, and the base --- the space of
+  positive-definite inner products --- is contractible. The Lean proof is
+  therefore gated on foundation~F2, not on F1: it needs the associated-bundle
+  decomposition, and it cannot be obtained by applying convexity to
+  $Q_{\mathbb C}(V)$ directly, because $Q_{\mathbb C}(V)$ is \emph{not} convex.
+  Witness at $d = 1$: for $V = \mathbb R$ an allowable metric is
+  $g(v,w) = \lambda vw$ with $\lambda \in \mathbb C \setminus (-\infty, 0]$, and
+  the segment from $-1 + \varepsilon \mathrm i$ to $-1 - \varepsilon \mathrm i$
+  passes through $-1$. (At $d = 1$ the set is star-convex about $1$, so that
+  special case is separately provable; the general claim is not, and KS prove it
+  via the bundle.) The Lean statement therefore carries a tracked \texttt{sorry}.
 \end{proof}
 
 \begin{definition}[Restriction of the form to a subspace]

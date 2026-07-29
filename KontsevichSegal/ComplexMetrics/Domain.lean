@@ -19,6 +19,8 @@ associated bundle GL(V) ×_{O(V)} Π(V) with a compatible inner-product layer), 
 -/
 
 import KontsevichSegal.ComplexMetrics.Defs
+import Mathlib.Topology.Algebra.Module.ModuleTopology
+import Mathlib.Topology.Homotopy.Contractible
 
 /-! ## Π(V): the fiber of the QC bundle (KS paper Proposition 2.4)
 
@@ -63,3 +65,69 @@ structure TraceNormLtOne (V : Type*) [AddCommGroup V] [Module ℝ V]
     ∃ (b : Module.Basis (Fin (Module.finrank ℝ V)) ℝ V)
       (θ : Fin (Module.finrank ℝ V) → ℝ),
       (∀ i, toLinearMap (b i) = θ i • b i) ∧ ∑ i, |θ i| < 1
+
+/-! ## F1: the topology on QC(V) -/
+
+/-- Two allowable complex metrics with the same underlying form are equal. All
+fields of `AllowableComplexMetric` other than `toForm` (`symmetric'`,
+`nondegenerate`, `angle_cond`) are `Prop`-valued, so the form determines the
+structure. -/
+@[ext]
+theorem AllowableComplexMetric.ext {V : Type*} [AddCommGroup V] [Module ℝ V]
+    [FiniteDimensional ℝ V] {g g' : AllowableComplexMetric V}
+    (h : g.toForm = g'.toForm) : g = g' := by
+  cases g with | mk f₁ s₁ n₁ a₁ =>
+  cases g' with | mk f₂ s₂ n₂ a₂ =>
+  obtain rfl : f₁ = f₂ := h
+  rfl
+
+/-- `toForm` is injective: an allowable complex metric is determined by its
+bilinear form. This is load-bearing for F1, not decorative: it makes `toForm`
+an embedding of `AllowableComplexMetric V` into the space of forms, so the
+induced topology of `AllowableComplexMetric.instTopologicalSpace` is faithful,
+and `QC_contractible` below is a claim about QC(V) itself rather than about
+the image of `toForm` in the space of forms. -/
+theorem AllowableComplexMetric.toForm_injective (V : Type*) [AddCommGroup V]
+    [Module ℝ V] [FiniteDimensional ℝ V] :
+    Function.Injective
+      (AllowableComplexMetric.toForm : AllowableComplexMetric V → (V →ₗ[ℝ] V →ₗ[ℝ] ℂ)) :=
+  fun _ _ h => AllowableComplexMetric.ext h
+
+/-- The topology on QC(V) (foundation F1): the topology induced along `toForm`
+from the canonical module topology on the space of forms. `moduleTopology ℝ _`
+is canonical and basis-free (the finest topology making addition and the
+ℝ-action continuous), so no choice is made here and no basis-independence
+proof is owed. Moreover `FiniteDimensional ℝ (V →ₗ[ℝ] V →ₗ[ℝ] ℂ)` holds by
+instance search, so `isModuleTopologyOfFiniteDimensional` applies: any
+Hausdorff topological-vector-space topology on the form space agrees with the
+module topology, and every reasonable alternative therefore induces the same
+topology on QC(V). -/
+instance AllowableComplexMetric.instTopologicalSpace (V : Type*) [AddCommGroup V]
+    [Module ℝ V] [FiniteDimensional ℝ V] :
+    TopologicalSpace (AllowableComplexMetric V) :=
+  TopologicalSpace.induced AllowableComplexMetric.toForm
+    (moduleTopology ℝ (V →ₗ[ℝ] V →ₗ[ℝ] ℂ))
+
+/-- **KS paper Proposition 2.4 (contractibility; KSTeX 220-222).** QC(V) is
+contractible.
+
+This is the project's first tracked `sorry`. The three conditions that make it
+honest: (i) STATABLE — `AllowableComplexMetric.instTopologicalSpace` supplies
+the topology and `AllowableComplexMetric.toForm_injective` makes it faithful;
+(ii) TRUE — KS prove it (Proposition 2.4): QC(V) is a fibre bundle with
+contractible (convex) fibres Π(V, g₀) over the contractible space of
+positive-definite inner products; (iii) NOT PROVABLE with current
+infrastructure — the proof routes through the associated-bundle decomposition
+(foundation F2), and QC(V) is NOT itself convex, so
+`Convex.contractibleSpace` does not apply directly. Witness at d = 1: for
+`V = ℝ` the allowable set is ℂ ∖ (-∞, 0], and the segment from -1 + εi to
+-1 - εi passes through -1. (At d = 1 the set IS star-convex about 1, so a
+d = 1 special case is separately provable, but that is not KS's claim.)
+
+Stated on `AllowableComplexMetric V`, not `QC V`: the types are equal by
+definition, but `QC` is a `def` and instance search does not unfold it to
+find the topology instance. -/
+theorem QC_contractible (V : Type*) [AddCommGroup V] [Module ℝ V]
+    [FiniteDimensional ℝ V] :
+    ContractibleSpace (AllowableComplexMetric V) := by
+  sorry

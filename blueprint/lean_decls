@@ -6,6 +6,9 @@ defn_2_1_equiv_angle_condition
 not_neg_real_axis
 volume_element_positive
 TraceNormLtOne
+AllowableComplexMetric.toForm_injective
+AllowableComplexMetric.instTopologicalSpace
+QC_contractible
 AllowableComplexMetric.restrict
 AllowableComplexMetric.restrict_symmetric
 restrict_allowable
