@@ -3,6 +3,7 @@ import KontsevichSegal.Basic
 import KontsevichSegal.Cobordism
 import KontsevichSegal.Cobordism.Category
 import KontsevichSegal.ComplexMetrics
+import KontsevichSegal.ComplexMetrics.Contractibility
 import KontsevichSegal.ComplexMetrics.Defs
 import KontsevichSegal.ComplexMetrics.Domain
 import KontsevichSegal.ComplexMetrics.EigenvalueMinmax

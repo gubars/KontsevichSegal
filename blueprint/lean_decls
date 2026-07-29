@@ -6,6 +6,11 @@ defn_2_1_equiv_angle_condition
 not_neg_real_axis
 volume_element_positive
 TraceNormLtOne
+KontsevichSegal.Retraction.seg_arg
+KontsevichSegal.Retraction.g0
+KontsevichSegal.Retraction.g0_posDef
+KontsevichSegal.Retraction.g0_diag
+KontsevichSegal.Retraction.g0_continuous
 AllowableComplexMetric.toForm_injective
 AllowableComplexMetric.instTopologicalSpace
 QC_contractible

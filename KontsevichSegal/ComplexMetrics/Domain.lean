@@ -126,7 +126,18 @@ d = 1 special case is separately provable, but that is not KS's claim.)
 
 Stated on `AllowableComplexMetric V`, not `QC V`: the types are equal by
 definition, but `QC` is a `def` and instance search does not unfold it to
-find the topology instance. -/
+find the topology instance.
+
+Intended proof route (checkpoint 1 machinery in place): NOT KS's fibre bundle,
+but the deformation retraction built in
+`KontsevichSegal/ComplexMetrics/Contractibility.lean` — the continuous map
+`g ↦ g₀(g) = Re((det g)^{-1/2}·g)` onto the positive-definite cone
+(`KontsevichSegal.Retraction.g0`, `g0_posDef`, `g0_continuous`), with the
+straight segment from `g` to `g₀(g)` angle-contracting entrywise in `g`'s own
+diagonalizing basis (`KontsevichSegal.Retraction.seg_arg`, `g0_diag`). The
+remaining assembly (allowability of the homotopy at each `t`, joint
+`(t, g)`-continuity, the `ContinuousMap.Homotopy` packaging, and the endpoint
+contraction of the convex positive-definite cone) is checkpoint 2. -/
 theorem QC_contractible (V : Type*) [AddCommGroup V] [Module ℝ V]
     [FiniteDimensional ℝ V] :
     ContractibleSpace (AllowableComplexMetric V) := by

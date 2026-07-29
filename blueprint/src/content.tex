@@ -288,12 +288,48 @@ in Sections~2 and~5.
   with $\|\Theta\|_1 < 1$; condition (4) is exactly the trace-norm bound.
 \end{proof}
 
+\begin{lemma}[The positive-definite retraction of $Q_{\mathbb C}(V)$; in-repo machinery]
+  \label{lem:posdef-retraction}
+  \lean{KontsevichSegal.Retraction.seg_arg, KontsevichSegal.Retraction.g0,
+    KontsevichSegal.Retraction.g0_posDef, KontsevichSegal.Retraction.g0_diag,
+    KontsevichSegal.Retraction.g0_continuous}
+  \leanok
+  \uses{def:allowable, def:allowable-hodge, thm:angle-equiv, found:hodge-star}
+  For $g \in Q_{\mathbb C}(V)$ write $c = (\det g)^{-1/2}$ in the real-coframe principal
+  branch and $g_0(g) = \operatorname{Re}(c\,g)$. Then $g_0(g)$ is a real
+  positive-definite form; it is diagonal in $g$'s own real diagonalizing basis, with
+  entries $\operatorname{Re}(c\lambda_k) > 0$; the map $g \mapsto g_0(g)$ is continuous
+  from $Q_{\mathbb C}(V)$ to the space of real forms; and for $\lambda \neq 0$ with
+  $|\arg\lambda| < \pi$, $r > 0$ and $t \in [0,1]$ the segment point
+  $(1-t)\lambda + tr$ is nonzero with $|\arg| \leq |\arg\lambda|$.
+
+  This is machinery, not a result of the paper. It supports the contractibility clause of
+  Proposition~\ref{prop:parametrization} by a route KS do not take: the segment bound makes
+  the straight-line homotopy from $g$ to $g_0(g)$ angle-contracting entrywise in $g$'s own
+  basis, so allowability is preserved, and $Q_{\mathbb C}(V)$ retracts onto the convex
+  positive-definite cone. The diagonalization is consumed as a \emph{proposition}, never as
+  extracted data, so nothing here depends on Proposition~2.4.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  The segment bound is elementary: reducing along $\cos \arg$ and sign-splitting, it follows
+  from an algebraic identity closed by \texttt{nlinarith}, with the lower half-plane handled
+  by conjugation. Positive-definiteness of $g_0$ is the $p = 1$ case of
+  Definition~\ref{def:allowable-hodge}, already proved en route to
+  Theorem~\ref{thm:angle-equiv}. Diagonality in $g$'s own basis is immediate from the
+  diagonal presentation, since taking real parts of values preserves it. Continuity uses the
+  canonical module topology on the space of forms; the principal square root, though defined
+  by a choice, is pinned to $\exp(\tfrac12 \log \det)$ by its uniqueness characterization
+  and is continuous off the negative real axis.
+\end{proof}
+
 \begin{proposition}[Contractibility; KS Proposition 2.4]
   \label{prop:contractibility}
   \lean{AllowableComplexMetric.toForm_injective,
     AllowableComplexMetric.instTopologicalSpace, QC_contractible}
   \leanok
-  \uses{def:allowable, def:trace-norm-fiber, prop:parametrization}
+  \uses{def:allowable}
   $Q_{\mathbb C}(V)$ is contractible.
 
   The statement is formalized. $Q_{\mathbb C}(V)$ carries the topology induced along
@@ -308,20 +344,21 @@ in Sections~2 and~5.
 
 \begin{proof}
   \notready
-  \uses{prop:parametrization}
-  (Paper, KSTeX 220--222.) Contractibility follows from the fibre-bundle
-  description of Proposition~\ref{prop:parametrization}: the fibres
-  $\Pi(V,g_0)$ are convex, hence contractible, and the base --- the space of
-  positive-definite inner products --- is contractible. The Lean proof is
-  therefore gated on foundation~F2, not on F1: it needs the associated-bundle
-  decomposition, and it cannot be obtained by applying convexity to
-  $Q_{\mathbb C}(V)$ directly, because $Q_{\mathbb C}(V)$ is \emph{not} convex.
-  Witness at $d = 1$: for $V = \mathbb R$ an allowable metric is
-  $g(v,w) = \lambda vw$ with $\lambda \in \mathbb C \setminus (-\infty, 0]$, and
-  the segment from $-1 + \varepsilon \mathrm i$ to $-1 - \varepsilon \mathrm i$
-  passes through $-1$. (At $d = 1$ the set is star-convex about $1$, so that
-  special case is separately provable; the general claim is not, and KS prove it
-  via the bundle.) The Lean statement therefore carries a tracked \texttt{sorry}.
+  \uses{lem:posdef-retraction}
+  (Route: deformation retraction, not KS's bundle.) The map
+  $g \mapsto g_0(g) = \operatorname{Re}((\det g)^{-1/2} g)$ of
+  Lemma~\ref{lem:posdef-retraction} is continuous and lands in the real positive-definite
+  forms. In $g$'s own diagonalizing basis both $g$ and $g_0(g)$ are diagonal, with entries
+  $\lambda_k$ and $\operatorname{Re}(c\lambda_k) > 0$, so each entry of the straight-line
+  segment lies in the convex cone spanned by $\lambda_k$ and the positive reals, of aperture
+  $|\arg \lambda_k| < \pi$. Hence $|\arg|$ contracts entrywise and the angle sum can only
+  shrink, so the segment stays allowable and the homotopy is well defined. Composing with the
+  contraction of the convex positive-definite cone gives the result. What remains unformalized
+  is the assembly: allowability of the homotopy at each $t$, joint $(t,g)$-continuity and the
+  \texttt{Homotopy} packaging, and the endpoint contraction. KS instead derive
+  contractibility from the fibre-bundle description of
+  Proposition~\ref{prop:parametrization}, which this route does not prove; foundation~F2 is
+  therefore still owed for that proposition.
 \end{proof}
 
 \begin{definition}[Restriction of the form to a subspace]
