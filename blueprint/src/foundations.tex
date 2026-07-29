@@ -59,10 +59,10 @@ queue reads unambiguously.
   \abstractnode
   The Section~5 counterpart: the development is parametric over an arbitrary
   \texttt{LorentzianCobordismGeometry}, never a concrete one. This node carries that
-  abstraction together with the \texttt{GhCategory} closure/openness assumptions (that the
-  globally hyperbolic cobordisms are closed under concatenation and form an open
-  subcategory), which are categorical bookkeeping over the abstract geometry rather than a
-  construction to formalize.
+  parametrization only. The closure and openness of the globally hyperbolic subcategory
+  (that globally hyperbolic cobordisms are closed under concatenation and form an open
+  subcategory) are facts the paper establishes, not abstract bookkeeping; they are proof
+  obligations tracked under Definition~\ref{found:lorentzian-causal-geometry}.
 \end{definition}
 
 \section{Buildable foundations}
@@ -120,7 +120,9 @@ here. Difficulty is flagged as \emph{grind} (sit down and formalize),
   The geometric content abstracted by \texttt{LorentzianCobordismGeometry},
   \texttt{LightConeGeometry} and \texttt{GhCategory}: Lorentzian metrics of signature
   $(d-1,1)$, light-cone structure, timelike geodesics, smooth time-functions, global
-  hyperbolicity, and the geodesic normal form $h_t - \mathrm dt^2$. Lorentzian causal
+  hyperbolicity with the closure of globally hyperbolic cobordisms under concatenation and
+  the openness of the time-function condition (the \texttt{GhCategory} proof obligations),
+  and the geodesic normal form $h_t - \mathrm dt^2$. Lorentzian causal
   geometry is standard mathematics but absent from Mathlib. Pairs with the
   deliberately-abstract Definition~\ref{abstract:lorentzian-domain}.
   \emph{Research-scale.}
